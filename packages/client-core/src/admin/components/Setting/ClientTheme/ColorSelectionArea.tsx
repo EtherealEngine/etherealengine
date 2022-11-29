@@ -1,25 +1,36 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { defaultThemeSettings } from '@xrengine/common/src/constants/DefaultThemeSettings'
 import { ThemeOptions } from '@xrengine/common/src/interfaces/ClientSetting'
 import capitalizeFirstLetter from '@xrengine/common/src/utils/capitalizeFirstLetter'
 
-import { Divider, Grid } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
+import DeleteIcon from '@mui/icons-material/Delete'
+import { Box, Button, Divider, Grid, IconButton, InputBase, Radio } from '@mui/material'
 
-import InputRadio from '../../../common/InputRadio'
 import { InputMenuItem } from '../../../common/InputSelect'
+import InputText from '../../../common/InputText'
 import SketchColorPicker from '../../../common/SketchColorPicker'
 import styles from '../../../styles/settings.module.scss'
 
 interface ColorSelectionAreaProps {
-  mode: string
+  selectedMode: string
   colorModes: string[]
   theme: ThemeOptions
   onChangeMode: Function
   onChangeColor: Function
+  onChangeThemes: Function
 }
 
-const ColorSelectionArea = ({ mode, colorModes, theme, onChangeMode, onChangeColor }: ColorSelectionAreaProps) => {
+const ColorSelectionArea = ({
+  selectedMode,
+  colorModes,
+  theme,
+  onChangeMode,
+  onChangeColor,
+  onChangeThemes
+}: ColorSelectionAreaProps) => {
   const { t } = useTranslation()
 
   const colorModesMenu: InputMenuItem[] = colorModes.map((el) => {
@@ -29,17 +40,53 @@ const ColorSelectionArea = ({ mode, colorModes, theme, onChangeMode, onChangeCol
     }
   })
 
+  const createNewTheme = () => {
+    onChangeThemes({ add: 'New Theme' })
+  }
+
+  const onChangeExistingTheme = (oldName, newName) => {
+    onChangeThemes({ add: newName, remove: oldName })
+  }
+
+  const deleteNewTheme = (val) => {
+    onChangeThemes({ remove: val })
+  }
+
   return (
     <Grid container>
-      <Grid item sm={12} md={12} marginTop="25px">
-        <InputRadio
-          name="mode"
-          label={t('admin:components.setting.theme')}
-          value={mode}
-          options={colorModesMenu}
-          onChange={(e) => onChangeMode(e)}
-        />
-      </Grid>
+      <div
+        style={{
+          marginTop: '16px',
+          flexDirection: 'column',
+          display: 'flex'
+        }}
+      >
+        {colorModesMenu.map((mode, index) => (
+          <Box key={index} sx={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 1 }}>
+            <Radio checked={selectedMode === mode.value} onClick={() => onChangeMode(mode.value)} />
+            <InputText
+              sx={{ flexGrow: 1 }}
+              name="socialIcon"
+              disabled={Object.keys(defaultThemeSettings).includes(mode.value)}
+              label={t('admin:components.setting.icon')}
+              value={mode.value}
+              onChange={(e) => onChangeExistingTheme(mode.value, e.target.value)}
+            />
+            {!Object.keys(defaultThemeSettings).includes(mode.value) && (
+              <IconButton
+                title={t('admin:components.common.delete')}
+                className={styles.iconButton}
+                onClick={() => deleteNewTheme(mode.value)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            )}
+          </Box>
+        ))}
+        <Button variant="contained" onClick={createNewTheme}>
+          <AddIcon /> {t('admin:components.setting.addSocialLink')}
+        </Button>
+      </div>
       <Divider variant="inset" component="div" className={styles.colorGridDivider} />
       <Grid item sm={12} md={12} className={styles.colorGridContainer}>
         <label>Main Background:</label>

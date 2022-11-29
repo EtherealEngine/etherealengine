@@ -44,9 +44,23 @@ const ClientTheme = () => {
     setThemeSettings(tempSetting)
   }
 
-  const handleChangeMode = (event) => {
-    const { value } = event.target
+  const handleChangeMode = (value) => {
     setSelectedMode(value)
+  }
+
+  const handleAddRemoveTheme = ({ add, remove }) => {
+    const newThemes = { ...themeSettings }
+    if (add) {
+      newThemes[add] = themeSettings[selectedMode]
+      // if (!remove)
+      //   setSelectedMode(add)
+    }
+    if (remove) {
+      delete newThemes[remove]
+      // if (!add)
+      //   setSelectedMode(Object.keys(themeSettings)[0])
+    }
+    setThemeSettings(newThemes)
   }
 
   const handleChangeThemeMode = (event) => {
@@ -126,10 +140,11 @@ const ClientTheme = () => {
       <ThemePlayground />
 
       <ColorSelectionArea
-        mode={selectedMode}
+        selectedMode={selectedMode}
         theme={theme}
         colorModes={Object.keys(themeSettings)}
         onChangeMode={handleChangeMode}
+        onChangeThemes={handleAddRemoveTheme}
         onChangeColor={handleChangeColor}
       />
 

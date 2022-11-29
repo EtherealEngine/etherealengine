@@ -22,9 +22,10 @@ interface Props {
   disabled?: boolean
   sx?: SxProps<Theme>
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  Component?: any
 }
 
-const InputRadio = ({ className, name, label, value, options, error, disabled, sx, onChange }: Props) => {
+const InputRadio = ({ className, name, label, value, options, error, disabled, sx, onChange, Component }: Props) => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', mb: 2, ...sx }}>
       <FormControl
@@ -36,7 +37,10 @@ const InputRadio = ({ className, name, label, value, options, error, disabled, s
         <FormLabel sx={{ mt: 0.5, mr: 5 }}>{label}</FormLabel>
         <RadioGroup name={name} value={value} onChange={onChange} row>
           {options.map((el, index) => (
-            <FormControlLabel key={index} value={el.value} control={<Radio />} label={el.label} />
+            <>
+              <FormControlLabel key={index} value={el.value} control={<Radio />} label={el.label} />
+              {Component && <Component el={el} index={index} />}
+            </>
           ))}
         </RadioGroup>
       </FormControl>

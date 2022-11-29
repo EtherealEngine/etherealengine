@@ -153,7 +153,7 @@ const ThemePlayground = () => {
       <Typography className={styles.settingsSubHeading}>{t('admin:components.setting.themePlayground')}</Typography>
       <Box className="themeDemoArea">
         <nav className="navbar">
-          <div className="logoSection">XREngine</div>
+          <div className="logoSection">Ethereal Engine</div>
         </nav>
         <div className="mainSection">
           <div className="sidebar">
