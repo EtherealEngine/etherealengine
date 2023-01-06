@@ -21,6 +21,15 @@ import { LocalTransformComponent, setLocalTransformComponent } from '../transfor
 import { XRState } from './XRState'
 
 /**
+ * A SkyAnchorComponent adds an anchor point to the scene that is in the sky
+ */
+export const SkyAnchorComponent = defineComponent({
+  name: 'SkyAnchorComponent'
+})
+
+export const SCENE_COMPONENT_SKY_ANCHOR = 'sky-anchor'
+
+/**
  * A PersistentAnchorComponent specifies that an entity represents an
  *   AR location that can be resolved by a Visual Positioning System
  */

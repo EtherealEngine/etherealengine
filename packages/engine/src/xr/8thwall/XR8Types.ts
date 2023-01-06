@@ -28,6 +28,7 @@ export type XR8Type = {
     }>
     updateCameraProjectionMatrix: (args: { origin: Vec3; facing: Quat }) => void
   }
+  LayersController: LayerControllerType
   XrPermissions
   Vps: {
     makeWayspotWatcher: (args: {
@@ -44,7 +45,7 @@ export type XR8Type = {
     projectWayspots: () => Promise<Array<any>>
   }
   Threejs: {
-    xrScene: () => { renderer: WebGLRenderer; scene: Scene; camera: PerspectiveCamera }
+    xrScene: () => { renderer: WebGLRenderer; scene: Scene; camera: PerspectiveCamera; layerScenes: LayerScenes }
     pipelineModule: () => CameraPipelineModule
   }
   stop: () => void
@@ -65,6 +66,7 @@ export type CameraPipelineModuleListeners =
   | { event: 'reality.projectwayspotfound'; process: (event: WayspotFoundEvent) => void }
   | { event: 'reality.projectwayspotupdated'; process: (event: WayspotUpdatedEvent) => void }
   | { event: 'reality.projectwayspotlost'; process: (event: WayspotLostEvent) => void }
+  | { event: 'layerscontroller.layerfound'; process: (event: LayerFoundEvent) => void }
   | { event: 'facecontroller.faceloading'; process: (event: Event) => void }
   | { event: 'facecontroller.facescanning'; process: (event: Event) => void }
   | { event: 'facecontroller.facefound'; process: (event: Event) => void }
@@ -98,6 +100,46 @@ export type CameraPipelineModule = {
   requiredPermission?: () => void
   listeners?: Array<CameraPipelineModuleListeners>
 }
+
+export type Layers = 'sky'
+
+export type LayerArgsType = {
+  nearClip?: number
+  farClip?: number
+  coordinates?: {
+    origin?: {
+      position?: Vec3
+      rotation?: Quat
+    }
+    scale?: number
+    axes?: 'LEFT_HANDED' | 'RIGHT_HANDED'
+    mirroredDisplay?: boolean
+  }
+  layers?: Record<
+    Layers,
+    {
+      invertLayerMask?: boolean
+      edgeSmoothness?: number
+      layerName?: string
+    }
+  >
+}
+
+export type LayerControllerType = {
+  configure: (args: LayerArgsType) => void
+  getLayerNames: () => string[]
+  pipelineModule: () => void
+  recenter: () => void
+}
+
+export type LayerFoundEvent = {
+  detail?: {
+    name?: Layers
+    percentage?: number
+  }
+}
+
+export type LayerScenes = Record<Layers, { scene: Scene }>
 
 export type Wayspot = {
   id: string

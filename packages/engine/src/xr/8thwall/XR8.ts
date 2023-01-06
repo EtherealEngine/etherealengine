@@ -21,7 +21,7 @@ import {
 import { EngineRenderer } from '../../renderer/WebGLRendererSystem'
 import { SkyboxComponent } from '../../scene/components/SkyboxComponent'
 import { updateSkybox } from '../../scene/functions/loaders/SkyboxFunctions'
-import { PersistentAnchorComponent } from '../XRAnchorComponents'
+import { PersistentAnchorComponent, SkyAnchorComponent } from '../XRAnchorComponents'
 import { endXRSession, requestXRSession } from '../XRSessionFunctions'
 import { XRAction, XRState } from '../XRState'
 import { XR8Pipeline } from './XR8Pipeline'
@@ -107,14 +107,17 @@ const initialize8thwallDevice = async (existingCanvas: HTMLCanvasElement | null,
   const requiredPermissions = XR8.XrPermissions.permissions()
   return new Promise<HTMLCanvasElement>((resolve, reject) => {
     const enableVps = !!vpsQuery().length
+    const enableSkyAnchor = !!skyAnchorQuery().length
+    /** Layers API cannot be used at the same time as the XrController */
 
-    XR8.XrController.configure({
-      // enableLighting: true
-      // enableWorldPoints: true,
-      // imageTargets: true,
-      scale: 'absolute',
-      enableVps
-    })
+    if (!enableSkyAnchor)
+      XR8.XrController.configure({
+        // enableLighting: true
+        // enableWorldPoints: true,
+        // imageTargets: true,
+        scale: 'absolute',
+        enableVps
+      })
 
     // if (enableVps) {
     //   VpsCoachingOverlay.configure({
@@ -125,10 +128,14 @@ const initialize8thwallDevice = async (existingCanvas: HTMLCanvasElement | null,
     XR8.addCameraPipelineModules([
       XR8.GlTextureRenderer.pipelineModule() /** draw the camera feed */,
       XR8.Threejs.pipelineModule(),
-      XR8.XrController.pipelineModule(),
+      enableSkyAnchor ? XR8.LayersController.pipelineModule() : XR8.XrController.pipelineModule(),
       // VpsCoachingOverlay.pipelineModule(),
       XRExtras.RuntimeError.pipelineModule()
     ])
+
+    if (enableSkyAnchor) {
+      XR8.LayersController.configure({ layers: { sky: { layerName: 'sky', invertLayerMask: false } } })
+    }
 
     const permissions = [
       requiredPermissions.CAMERA,
@@ -274,12 +281,13 @@ class XRFrameProxy {
 
 const skyboxQuery = defineQuery([SkyboxComponent])
 const vpsQuery = defineQuery([PersistentAnchorComponent])
+const skyAnchorQuery = defineQuery([SkyAnchorComponent])
 
 export default async function XR8System(world: World) {
   let _8thwallScripts = null as XR8Assets | null
   const xrState = getState(XRState)
 
-  const using8thWall = isMobile && (!navigator.xr || !(await navigator.xr.isSessionSupported('immersive-ar')))
+  const using8thWall = true //isMobile && (!navigator.xr || !(await navigator.xr.isSessionSupported('immersive-ar')))
 
   let cameraCanvas: HTMLCanvasElement | null = null
 
@@ -420,10 +428,11 @@ export default async function XR8System(world: World) {
    */
   const vpsReactor = startReactor(function XR8VPSReactor() {
     const hasPersistentAnchor = useQuery(vpsQuery).length
+    const hasSkyAnchor = useQuery(skyAnchorQuery).length
 
     useEffect(() => {
       /** data oriented approach to overriding functions, check if it's already changed, and abort if as such */
-      if (hasPersistentAnchor || using8thWall) {
+      if (hasPersistentAnchor || hasSkyAnchor || using8thWall) {
         overrideXRSessionFunctions()
       } else {
         revertXRSessionFunctions()
@@ -472,6 +481,7 @@ export default async function XR8System(world: World) {
     revertXRSessionFunctions()
     vpsReactor.stop()
     removeQuery(world, vpsQuery)
+    removeQuery(world, skyAnchorQuery)
   }
 
   return {

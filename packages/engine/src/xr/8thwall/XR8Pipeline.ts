@@ -7,6 +7,7 @@ import { PersistentAnchorActions } from '../XRAnchorComponents'
 import { XR8 } from './XR8'
 import {
   CameraPipelineModule,
+  LayerFoundEvent,
   onUpdate,
   WayspotFoundEvent,
   WayspotLostEvent,
@@ -61,6 +62,13 @@ export const XR8Pipeline = (world: World, cameraCanvas: HTMLCanvasElement): Came
     dispatchAction(PersistentAnchorActions.anchorLost({ name }))
   }
 
+  const onLayerFound = (event: LayerFoundEvent) => {
+    console.log(event)
+    if (event.detail?.name === 'sky') {
+      XR8.LayersController.recenter()
+    }
+  }
+
   return {
     name: 'EE_CameraPipeline',
     onAttach: ({ canvas, orientation }) => {
@@ -70,7 +78,8 @@ export const XR8Pipeline = (world: World, cameraCanvas: HTMLCanvasElement): Came
       orientCameraFeed(orientation)
     },
     onStart: () => {
-      const { camera, renderer } = XR8.Threejs.xrScene()
+      const { camera, renderer, layerScenes } = XR8.Threejs.xrScene()
+      console.log({ layerScenes })
       renderer.render = (scene, camera) => {
         /** disable the 8thwall threejs renderer */
       }
@@ -78,6 +87,14 @@ export const XR8Pipeline = (world: World, cameraCanvas: HTMLCanvasElement): Came
       XR8.XrController.updateCameraProjectionMatrix({
         origin: camera.position,
         facing: camera.quaternion
+      })
+      XR8.LayersController.configure({
+        coordinates: {
+          origin: {
+            position: camera.position,
+            rotation: camera.quaternion
+          }
+        }
       })
       const watcher = XR8.Vps.makeWayspotWatcher({
         onVisible: () => {},
@@ -98,7 +115,8 @@ export const XR8Pipeline = (world: World, cameraCanvas: HTMLCanvasElement): Came
       { event: 'reality.projectwayspotfound', process: onWayspotFound },
       { event: 'reality.projectwayspotscanning', process: onWayspotScanning },
       { event: 'reality.projectwayspotlost', process: onWayspotLost },
-      { event: 'reality.projectwayspotupdated', process: onWayspotUpdated }
+      { event: 'reality.projectwayspotupdated', process: onWayspotUpdated },
+      { event: 'layerscontroller.layerfound', process: onLayerFound }
       // { event: 'reality.meshfound', process: onMeshFound },
       // { event: 'reality.meshupdated', process: onMeshUpdate },
       // { event: 'reality.meshlost', process: onMeshLost }
