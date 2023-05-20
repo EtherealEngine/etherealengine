@@ -113,23 +113,25 @@ export const configureRedis = () => (app: Application) => {
 }
 
 export const configureK8s = () => (app: Application) => {
-  if (appConfig.kubernetes.enabled) {
-    const kc = new k8s.KubeConfig()
-    kc.loadFromDefault()
-    const serverState = getMutableState(ServerState)
+  logger.info(`kubernetes enabled? = ${appConfig.kubernetes.enabled} !`)
+  //if (appConfig.kubernetes.enabled) {
+  logger.info('kubernetes enabled starting pods.')
+  const kc = new k8s.KubeConfig()
+  kc.loadFromDefault()
+  const serverState = getMutableState(ServerState)
 
-    const k8AgonesClient = kc.makeApiClient(k8s.CustomObjectsApi)
-    const k8DefaultClient = kc.makeApiClient(k8s.CoreV1Api)
-    const k8AppsClient = kc.makeApiClient(k8s.AppsV1Api)
-    const k8BatchClient = kc.makeApiClient(k8s.BatchV1Api)
+  const k8AgonesClient = kc.makeApiClient(k8s.CustomObjectsApi)
+  const k8DefaultClient = kc.makeApiClient(k8s.CoreV1Api)
+  const k8AppsClient = kc.makeApiClient(k8s.AppsV1Api)
+  const k8BatchClient = kc.makeApiClient(k8s.BatchV1Api)
 
-    serverState.merge({
-      k8AppsClient,
-      k8BatchClient,
-      k8DefaultClient,
-      k8AgonesClient
-    })
-  }
+  serverState.merge({
+    k8AppsClient,
+    k8BatchClient,
+    k8DefaultClient,
+    k8AgonesClient
+  })
+  //}
   return app
 }
 

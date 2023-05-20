@@ -6,7 +6,6 @@ import { defineAction, defineState, dispatchAction, getMutableState } from '@eth
 import { API } from '../../API'
 
 const logger = multiLogger.child({ component: 'client-core:BotsCommand' })
-
 //State
 export const BOTS_PAGE_LIMIT = 100
 
@@ -40,7 +39,7 @@ export const AdminBotsCommandReceptors = {
 
 //Service
 export const AdminBotCommandService = {
-  createBotCammand: async (data: CreateBotCammand) => {
+  createBotCommand: async (data: CreateBotCammand) => {
     try {
       const botCommand = (await API.instance.client.service('bot-command').create(data)) as BotCommands
       dispatchAction(AdminBotCommandActions.botCommandCreated({ botCommand }))
@@ -57,7 +56,9 @@ export const AdminBotCommandService = {
     }
   }
 }
+
 //Action
+
 export class AdminBotCommandActions {
   static botCommandCreated = defineAction({
     type: 'ee.client.AdminBotCommand.BOT_COMMAND_ADMIN_CREATE' as const,

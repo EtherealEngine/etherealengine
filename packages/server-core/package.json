@@ -49,6 +49,7 @@
     "@feathersjs/authentication-oauth": "5.0.1",
     "@feathersjs/errors": "5.0.1",
     "@feathersjs/express": "5.0.1",
+    "@feathersjs/koa":"5.0.4",
     "@feathersjs/feathers": "5.0.1",
     "@feathersjs/knex": "5.0.1",
     "@feathersjs/transport-commons": "5.0.1",

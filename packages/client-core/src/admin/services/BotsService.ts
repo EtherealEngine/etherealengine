@@ -64,6 +64,7 @@ export const AdminBotServiceReceptors = {
 export const AdminBotService = {
   createBotAsAdmin: async (data: CreateBotAsAdmin) => {
     try {
+      console.log(`bot service creating bot ${data.name}`)
       const bot = await API.instance.client.service('bot').create(data)
       dispatchAction(AdminBotsActions.botCreated({ bot }))
     } catch (error) {
@@ -94,6 +95,7 @@ export const AdminBotService = {
   },
   removeBots: async (id: string) => {
     try {
+      console.log(`bot service removing bot ${id}`)
       const bot = (await API.instance.client.service('bot').remove(id)) as AdminBot
       dispatchAction(AdminBotsActions.botRemoved({ bot }))
     } catch (error) {

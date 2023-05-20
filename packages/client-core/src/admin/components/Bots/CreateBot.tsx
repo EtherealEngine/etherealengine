@@ -64,6 +64,7 @@ const CreateBot = () => {
     }
   }, [user?.id?.value, adminLocationState.updateNeeded.value])
 
+  /*
   const handleChangeCommand = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     const { name, value } = e.target
     command.merge({ id: uuidv4(), [name]: value })
@@ -81,7 +82,7 @@ const CreateBot = () => {
     } else {
       NotificationService.dispatchNotify(t('admin:components.bot.commandRequired'), { variant: 'error' })
     }
-  }
+  }*/
 
   const data: Instance[] = instanceData.get({ noproxy: true }).map((element) => {
     return element
@@ -131,10 +132,10 @@ const CreateBot = () => {
     AdminLocationService.fetchAdminLocations()
   }
 
-  const removeCommand = (id: string) => {
+  /*const removeCommand = (id: string) => {
     const data = commandData.get({ noproxy: true }).filter((el) => el.id !== id)
     commandData.set(data)
-  }
+  }*/
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -222,13 +223,13 @@ const CreateBot = () => {
             }
           />
 
-          <AddCommand
+          {/*<AddCommand
             command={command.value}
             handleChangeCommand={handleChangeCommand}
             addCommandData={addCommandData}
             commandData={commandData.get({ noproxy: true })}
             removeCommand={removeCommand}
-          />
+          />*/}
         </form>
       </CardContent>
     </Card>

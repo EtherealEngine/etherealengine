@@ -24,8 +24,8 @@ interface Props {
 
 const AddCommand = ({ command, handleChangeCommand, addCommandData, commandData, removeCommand }: Props) => {
   const { t } = useTranslation()
-  return (
-    <div>
+  return {
+    /*<div>
       <Grid container spacing={2}>
         <Grid item xs={4}>
           <InputText
@@ -72,8 +72,8 @@ const AddCommand = ({ command, handleChangeCommand, addCommandData, commandData,
           )
         })}
       </div>
-    </div>
-  )
+      </div>*/
+  }
 }
 
 export default AddCommand

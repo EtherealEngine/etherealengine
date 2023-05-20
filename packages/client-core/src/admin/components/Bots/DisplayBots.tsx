@@ -22,26 +22,27 @@ import UpdateBot from './UpdateBot'
 
 const DisplayBots = () => {
   const expanded = useHookstate<string | false>('panel0')
-  const command = useHookstate<BotCommands>({
+  /*const command = useHookstate<BotCommands>({
     name: '',
     description: ''
-  })
+  })*/
   const openUpdateBot = useHookstate(false)
   const openConfirm = useHookstate(false)
   const bot = useHookstate<AdminBot | undefined>(undefined)
   const botName = useHookstate('')
   const botId = useHookstate('')
 
-  const handleChangeCommand = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+  /*const handleChangeCommand = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     const { name, value } = e.target
     command.merge({ [name]: value })
-  }
+  }*/
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   const handleChange = (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => {
     expanded.set(isExpanded ? panel : false)
   }
   const botAdmin = useHookstate(getMutableState(AdminBotState))
-  const botCommand = useHookstate(getMutableState(AdminBotsCommandState))
+  //const botCommand = useHookstate(getMutableState(AdminBotsCommandState))
   const user = useHookstate(getMutableState(AuthState).user)
   const botAdminData = botAdmin.bots
   const { t } = useTranslation()
@@ -57,7 +58,7 @@ const DisplayBots = () => {
     openUpdateBot.set(true)
   }
 
-  const submitCommandBot = (id: string) => {
+  /*const submitCommandBot = (id: string) => {
     const data: CreateBotCammand = {
       name: command.name.value,
       description: command.description.value,
@@ -68,14 +69,14 @@ const DisplayBots = () => {
       name: '',
       description: ''
     })
-  }
+  }*/
 
   const submitRemoveBot = async () => {
     await AdminBotService.removeBots(botId.value)
     openConfirm.set(false)
   }
 
-  const botRefresh = async () => {
+  /*const botRefresh = async () => {
     if (botCommand.updateNeeded.value) await AdminBotService.fetchBotAsAdmin()
   }
 
@@ -91,7 +92,7 @@ const DisplayBots = () => {
     } else {
       NotificationService.dispatchNotify(t('admin:components.bot.commandRequired'), { variant: 'error' })
     }
-  }
+  }*/
 
   return (
     <div className={styles.botRootRight}>
@@ -154,12 +155,13 @@ const DisplayBots = () => {
                   </Grid>
                 </Grid>
 
-                <Typography
+                {/*<Typography
                   className={styles.secondaryHeading}
                   style={{ marginTop: '25px', marginBottom: '10px' }}
                   component="h1"
                 >
                   {t('admin:components.bot.addMoreCommand')}
+                }
                 </Typography>
 
                 <AddCommand
@@ -168,7 +170,7 @@ const DisplayBots = () => {
                   addCommandData={() => addCommand(bot.id)}
                   commandData={bot.botCommands ?? []}
                   removeCommand={removeCommand}
-                />
+                      />*/}
               </div>
             </AccordionDetails>
           </Accordion>
