@@ -23,22 +23,21 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { Material } from 'three'
-
-import { MaterialPluginType } from '@etherealengine/engine/src/renderer/materials/components/MaterialPluginComponent'
-import { Entity } from '../../../ecs/classes/Entity'
+import { PluginObjectType } from '../../../common/functions/OnBeforeCompilePlugin'
 import { MaterialSource } from './MaterialSource'
+export type PluginParameterType = {
+  type: string
+  default: any
+  min?: number
+  max?: number
+  options?: any[]
+}
 
-export type MaterialWithEntity = Material & { entity: Entity }
-
-export type MaterialStatus = 'LOADED' | 'MISSING' | 'UNLOADED'
-
-export type MaterialComponentType = {
-  prototype: string
-  material: Material
-  parameters: { [field: string]: any }
-  plugins: MaterialPluginType[]
-  //plugins: Record<string,any>
+export type PluginPrototypeComponentType = {
+  prototypeId: string
+  parameters: {
+    [parameterName: string]: PluginParameterType
+  }
+  pluginObject: PluginObjectType
   src: MaterialSource
-  status: MaterialStatus
 }

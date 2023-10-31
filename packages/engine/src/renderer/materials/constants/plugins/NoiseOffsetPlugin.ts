@@ -31,21 +31,19 @@ import { getMutableState, getState, NO_PROXY } from '@etherealengine/hyperflux'
 
 import { EngineState } from '../../../../ecs/classes/EngineState'
 import { defineSystem } from '../../../../ecs/functions/SystemFunctions'
-import { MaterialPluginType } from '../../components/MaterialPluginComponent'
+import { PluginPrototypeComponentType } from '../../components/MaterialPluginPrototypeComponent'
 import { SourceType } from '../../components/MaterialSource'
 import { MaterialLibraryState } from '../../MaterialLibrary'
-
-export type NoiseOffsetParameters = {
-  noiseTexture: DataTexture | null
-  textureSize: number
-  frequency: number
-}
+import { FloatArg } from '../DefaultArgs'
 
 let time: IUniform | null = null
 
-export const NoiseOffsetPlugin: MaterialPluginType = {
-  plugin: {
-    id: 'noiseOffset',
+const NOISE_OFFSET_PROTOTYPE_ID = 'NoiseOffset'
+
+export const NoiseOffsetPlugin: PluginPrototypeComponentType = {
+  prototypeId: NOISE_OFFSET_PROTOTYPE_ID,
+  pluginObject: {
+    id: NOISE_OFFSET_PROTOTYPE_ID,
     priority: 0.4,
     compile: (shader, renderer) => {
       const plugin = getMutableState(MaterialLibraryState).plugins['noiseOffset']
@@ -111,10 +109,15 @@ transformed += offset;
     }
   },
   parameters: {
-    noiseTexture: null,
-    textureSize: 128,
-    frequency: 0.001
-  } as NoiseOffsetParameters,
+    textureSize: {
+      ...FloatArg,
+      default: 128
+    },
+    frequency: {
+      ...FloatArg,
+      default: 0.001
+    }
+  },
   src: {
     type: SourceType.BUILT_IN,
     path: ''
@@ -168,7 +171,7 @@ const reactor = () => {
     noiseTexture.magFilter = LinearFilter
     noiseTexture.unpackAlignment = 1
     noiseTexture.needsUpdate = true
-    pluginState.parameters['noiseTexture'].set(noiseTexture)
+    //pluginState.parameters['noiseTexture'].set(noiseTexture)
   }, [])
   return null
 }

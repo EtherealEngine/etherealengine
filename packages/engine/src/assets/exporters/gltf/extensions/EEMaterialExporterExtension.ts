@@ -30,6 +30,7 @@ import { getState } from '@etherealengine/hyperflux'
 import matches from 'ts-matches'
 import { MaterialLibraryState } from '../../../../renderer/materials/MaterialLibrary'
 import { materialToDefaultArgs } from '../../../../renderer/materials/functions/MaterialLibraryFunctions'
+import { serializeMaterialPlugin } from '../../../../renderer/materials/functions/MaterialPluginFunctions'
 import { GLTFWriter } from '../GLTFExporter'
 import { ExporterExtension } from './ExporterExtension'
 
@@ -53,6 +54,16 @@ export function isOldEEMaterial(extension: any) {
     .test(argValues)
 }
 
+export type EEMaterialPluginType = {
+  prototype: string
+  parameters: {
+    [field: string]: {
+      type: string
+      contents: any
+    }
+  }
+}
+
 export type EEMaterialExtensionType = {
   uuid: string
   name: string
@@ -63,7 +74,7 @@ export type EEMaterialExtensionType = {
       contents: any
     }
   }
-  plugins: string[]
+  plugins: EEMaterialPluginType
 }
 
 export default class EEMaterialExporterExtension extends ExporterExtension {
@@ -104,11 +115,13 @@ export default class EEMaterialExporterExtension extends ExporterExtension {
     delete materialDef.emissiveFactor
     const materialEntry = getState(MaterialLibraryState).materials[material.uuid]
     materialDef.extensions = materialDef.extensions ?? {}
+    const plugins = materialEntry?.plugins ?? material.userData.plugins ?? []
+    const pluginData = plugins.map(serializeMaterialPlugin)
     materialDef.extensions[this.name] = {
       uuid: material.uuid,
       name: material.name,
       prototype: materialEntry?.prototype ?? material.userData.type ?? material.type,
-      plugins: materialEntry?.plugins ?? material.userData.plugins ?? [],
+      plugins: pluginData,
       args: result
     }
     this.writer.extensionsUsed[this.name] = true

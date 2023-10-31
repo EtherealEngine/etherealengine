@@ -23,11 +23,18 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { PluginObjectType } from '../../../common/functions/OnBeforeCompilePlugin'
 import { MaterialSource } from './MaterialSource'
-
 export type MaterialPluginType = {
-  plugin: PluginObjectType
+  /*plugin: {
+    id: string
+    priority?: number
+    //compile: typeof Material.prototype.onBeforeCompile
+    pluginID:string,
+    parameter: Record<string,any>
+  }*/
+  pluginID: string
+  pluginProtoID: string
+  internal_state: Record<string, any>
   parameters: Record<string, any>
   src: MaterialSource
 }

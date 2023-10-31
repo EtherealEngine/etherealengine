@@ -291,7 +291,7 @@ export function changeMaterialPrototype(material: Material, protoId: string) {
     ...nuMat.userData,
     ...Object.fromEntries(Object.entries(material.userData).filter(([k, v]) => k !== 'type'))
   }
-  materialEntry.plugins.map((pluginId: string) => {})
+  //materialEntry.plugins.map((pluginId: string) => {})
   registerMaterial(nuMat, materialEntry.src)
   return nuMat
 }

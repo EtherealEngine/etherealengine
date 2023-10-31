@@ -23,12 +23,11 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import React, { useCallback, useEffect } from 'react'
-import { Material, Texture } from 'three'
-
 import styles from '@etherealengine/editor/src/components/layout/styles.module.scss'
 import { AssetLoader } from '@etherealengine/engine/src/assets/classes/AssetLoader'
 import createReadableTexture from '@etherealengine/engine/src/assets/functions/createReadableTexture'
+import { MaterialLibraryState } from '@etherealengine/engine/src/renderer/materials/MaterialLibrary'
+import { BoolArg, FloatArg } from '@etherealengine/engine/src/renderer/materials/constants/DefaultArgs'
 import { LibraryEntryType } from '@etherealengine/engine/src/renderer/materials/constants/LibraryEntry'
 import {
   changeMaterialPrototype,
@@ -37,8 +36,9 @@ import {
   prototypeFromId
 } from '@etherealengine/engine/src/renderer/materials/functions/MaterialLibraryFunctions'
 import { removeMaterialPlugin } from '@etherealengine/engine/src/renderer/materials/functions/MaterialPluginFunctions'
-import { MaterialLibraryState } from '@etherealengine/engine/src/renderer/materials/MaterialLibrary'
-import { getMutableState, getState, none, State, useState } from '@etherealengine/hyperflux'
+import { State, getMutableState, getState, none, useState } from '@etherealengine/hyperflux'
+import React, { useCallback, useEffect } from 'react'
+import { Material, Texture } from 'three'
 
 import { Box, Divider, Stack } from '@mui/material'
 
@@ -69,6 +69,7 @@ export default function MaterialEditor({ material, ...rest }: { material: Materi
   const materialLibrary = useState(getMutableState(MaterialLibraryState))
   const materialComponent = materialLibrary.materials[material.uuid]
   let prototypeComponent = materialLibrary.prototypes[materialComponent.prototype.value].value
+
   const loadingData = useState(false)
   const prototypes = Object.values(materialLibrary.prototypes.value).map((prototype) => ({
     label: prototype.prototypeId,
@@ -249,6 +250,32 @@ export default function MaterialEditor({ material, ...rest }: { material: Materi
                       onChange={plugin.set}
                     />
                   </InputGroup>
+                  <div>
+                    <h2>Parameter Values</h2>
+                    {/*<pre>{JSON.stringify(plugin.value, null, 2)}</pre>*/}
+                    <pre>
+                      {JSON.stringify(getState(MaterialLibraryState).plugins[plugin.value].plugin.parameter, null, 2)}
+                    </pre>
+                  </div>
+
+                  <ParameterInput
+                    entity={getState(MaterialLibraryState).plugins[plugin.value].plugin.id}
+                    values={getState(MaterialLibraryState).plugins[plugin.value].plugin.parameter}
+                    defaults={{
+                      parameter1: BoolArg,
+                      parameter2: { ...FloatArg, default: 0.01 },
+                      parameter3: { ...FloatArg, default: 1 }
+                      //emissiveMultiplier: { ...FloatArg, default: 1 },
+                      //lightMapSize: { ...FloatArg, default: 1024 },
+                      //texelsPerUnit: { ...FloatArg, default: 16 }
+                    }}
+                    onChange={() => {
+                      return (val) => {
+                        1
+                      }
+                    }}
+                  />
+
                   <Button
                     onClick={() => {
                       removeMaterialPlugin(material, plugin.value)

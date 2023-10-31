@@ -27,6 +27,7 @@ import { defineState, getMutableState, getState, StateDefinition } from '@ethere
 
 import { MaterialComponentType } from './components/MaterialComponent'
 import { MaterialPluginType } from './components/MaterialPluginComponent'
+import { PluginPrototypeComponentType } from './components/MaterialPluginPrototypeComponent'
 import { MaterialPrototypeComponentType } from './components/MaterialPrototypeComponent'
 import { MaterialSourceComponentType } from './components/MaterialSource'
 import MeshBasicMaterial from './constants/material-prototypes/MeshBasicMaterial.mat'
@@ -40,11 +41,12 @@ import { ShaderMaterial } from './constants/material-prototypes/ShaderMaterial.m
 import { ShadowMaterial } from './constants/material-prototypes/ShadowMaterial.mat'
 import { NoiseOffsetPlugin } from './constants/plugins/NoiseOffsetPlugin'
 import { registerMaterialPrototype } from './functions/MaterialLibraryFunctions'
-import { registerMaterialPlugin } from './functions/MaterialPluginFunctions'
+import { registerMaterialPluginPrototype } from './functions/MaterialPluginFunctions'
 
 export type MaterialLibraryType = {
   prototypes: Record<string, MaterialPrototypeComponentType>
   materials: Record<string, MaterialComponentType>
+  pluginPrototypes: Record<string, PluginPrototypeComponentType>
   plugins: Record<string, MaterialPluginType>
   sources: Record<string, MaterialSourceComponentType>
   initialized: boolean
@@ -55,6 +57,7 @@ export const MaterialLibraryState: StateDefinition<MaterialLibraryType> = define
   initial: {
     prototypes: {},
     materials: {},
+    pluginPrototypes: {},
     plugins: {},
     sources: {},
     initialized: false
@@ -78,7 +81,7 @@ export function initializeMaterialLibrary() {
     ].map(registerMaterialPrototype)
 
     //load default plugins from source
-    ;[NoiseOffsetPlugin].map(registerMaterialPlugin)
+    ;[NoiseOffsetPlugin].map(registerMaterialPluginPrototype)
     getMutableState(MaterialLibraryState).initialized.set(true)
   }
 }
