@@ -23,7 +23,13 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { CreateBucketCommand, DeleteObjectCommand, HeadBucketCommand, ListObjectsV2Command } from '@aws-sdk/client-s3'
+import {
+  CreateBucketCommand,
+  DeleteObjectCommand,
+  HeadBucketCommand,
+  ListObjectsV2Command,
+  ObjectCannedACL
+} from '@aws-sdk/client-s3'
 import appRootPath from 'app-root-path'
 import fs from 'fs'
 import path from 'path'
@@ -92,7 +98,7 @@ const s3StorageBeforeTest = async (provider: S3Provider): Promise<any> => {
     if (err.code !== 'NotFound') throw err
   }
   if (bucketExists == null) {
-    await provider.provider.send(new CreateBucketCommand({ Bucket: provider.bucket, ACL: 'public-read' }))
+    await provider.provider.send(new CreateBucketCommand({ Bucket: provider.bucket, ACL: ObjectCannedACL.public_read }))
   }
   return
 }
