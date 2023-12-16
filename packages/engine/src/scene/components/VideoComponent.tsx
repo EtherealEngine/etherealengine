@@ -24,7 +24,21 @@ Ethereal Engine. All Rights Reserved.
 */
 
 import React, { useEffect } from 'react'
-import { DoubleSide, Group, LinearFilter, Mesh, MeshBasicMaterial, Side, Texture, Vector2 } from 'three'
+import {
+  BackSide,
+  BufferGeometry,
+  DoubleSide,
+  FrontSide,
+  Group,
+  LinearFilter,
+  Mesh,
+  MeshBasicMaterial,
+  PlaneGeometry,
+  Side,
+  SphereGeometry,
+  Texture,
+  Vector2
+} from 'three'
 
 import { defineState } from '@etherealengine/hyperflux'
 
@@ -41,9 +55,10 @@ import {
 import { useEntityContext } from '../../ecs/functions/EntityFunctions'
 import { isMobileXRHeadset } from '../../xr/XRState'
 import { ContentFitType, ObjectFitFunctions } from '../../xrui/functions/ObjectFitFunctions'
+import { ImageProjection, ImageProjectionType } from '../classes/ImageUtils'
 import { clearErrors } from '../functions/ErrorFunctions'
 import { addObjectToGroup, removeObjectFromGroup } from './GroupComponent'
-import { PLANE_GEO, resizeImageMesh } from './ImageComponent'
+import { resizeImageMesh } from './ImageComponent'
 import { MediaComponent, MediaElementComponent } from './MediaComponent'
 import { UUIDComponent } from './UUIDComponent'
 
@@ -77,26 +92,29 @@ export const VideoComponent = defineComponent({
   onInit: (entity) => {
     const videoGroup = new Group()
     videoGroup.name = `video-group-${entity}`
-    const videoMesh = new Mesh(PLANE_GEO, new MeshBasicMaterial())
+    const videoMesh = new Mesh(new PlaneGeometry(1, 1, 1, 1) as BufferGeometry, new MeshBasicMaterial())
     return {
       side: DoubleSide as Side,
       size: new Vector2(1, 1),
       fit: 'contain' as ContentFitType,
+      /**
+       * An entity with with an attached MediaComponent.
+       * If an empty string, then the current entity is used.
+       */
       mediaUUID: '',
       videoGroup,
-      videoMesh
+      videoMesh,
+      projection: ImageProjection.Equirectangular360 as ImageProjectionType
     }
   },
 
   toJSON: (entity, component) => {
     return {
-      /**
-       * An entity with with an attached MediaComponent;if an empty string, then the current entity is assumed
-       */
       mediaUUID: component.mediaUUID.value,
       side: component.side.value,
       size: component.size.value,
-      fit: component.fit.value
+      fit: component.fit.value,
+      projection: component.projection.value
     }
   },
 
@@ -108,6 +126,7 @@ export const VideoComponent = defineComponent({
     if (typeof json.side === 'number') component.side.set(json.side)
     if (typeof json.size === 'object') component.size.set(new Vector2(json.size.x, json.size.y))
     if (typeof json.fit === 'string') component.fit.set(json.fit)
+    if (typeof json.projection === 'string') component.projection.set(json.projection)
   },
 
   onRemove: (entity, component) => {
@@ -142,22 +161,34 @@ function VideoReactor() {
 
   // update mesh
   useEffect(() => {
-    const videoMesh = video.videoMesh.value
-    resizeImageMesh(videoMesh)
-    const scale = ObjectFitFunctions.computeContentFitScale(
-      videoMesh.scale.x,
-      videoMesh.scale.y,
-      video.size.width.value,
-      video.size.height.value,
-      video.fit.value
-    )
-    videoMesh.scale.multiplyScalar(scale)
-    videoMesh.updateMatrix()
+    const mesh = video.videoMesh.value
+    if (!mesh) return
+    if (mesh.geometry) mesh.geometry.dispose()
+    if (video.projection.value === ImageProjection.Equirectangular360) {
+      mesh.geometry = new SphereGeometry(1, 64, 32)
+      mesh.material.side = BackSide
+      video.videoGroup.scale.value.setScalar(1)
+    }
+    if (video.projection.value === ImageProjection.Flat) {
+      mesh.geometry = new PlaneGeometry(1, 1, 1, 1)
+      mesh.material.side = FrontSide
+
+      resizeImageMesh(mesh)
+      const scale = ObjectFitFunctions.computeContentFitScale(
+        mesh.scale.x,
+        mesh.scale.y,
+        video.size.width.value,
+        video.size.height.value,
+        video.fit.value
+      )
+      mesh.scale.multiplyScalar(scale)
+      mesh.updateMatrix()
+    }
 
     const videoGroup = video.videoGroup.value
     addObjectToGroup(entity, videoGroup)
     return () => removeObjectFromGroup(entity, videoGroup)
-  }, [video.size, video.fit, video.videoMesh.material.map])
+  }, [video.size, video.fit, video.videoMesh.material.map, video.projection])
 
   useEffect(() => {
     const map = video.videoMesh.material.map
