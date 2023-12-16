@@ -266,8 +266,8 @@ export default defineConfig(async () => {
       ...(isDevOrLocal
         ? {
             https: {
-              key: fs.readFileSync(path.join(packageRoot.path, 'certs/key.pem')),
-              cert: fs.readFileSync(path.join(packageRoot.path, 'certs/cert.pem'))
+              key: fs.readFileSync(path.join(packageRoot.path, process.env.KEY ?? 'certs/key.pem')),
+              cert: fs.readFileSync(path.join(packageRoot.path, process.env.CERT ?? 'certs/cert.pem'))
             }
           }
         : {})

@@ -36,8 +36,8 @@ const serve = process.env.TEST === 'true' ? serveStatic('../server/upload_test/'
 
 let server: https.Server = null!
 const options = {
-  key: fs.readFileSync(join(packageRoot.path, 'certs/key.pem')),
-  cert: fs.readFileSync(join(packageRoot.path, 'certs/cert.pem'))
+  key: fs.readFileSync(join(packageRoot.path, process.env.KEY ?? 'certs/key.pem')),
+  cert: fs.readFileSync(join(packageRoot.path, process.env.CERT ?? 'certs/cert.pem'))
 }
 
 const createTestFileServer = (port: number, isServerRunning: boolean) => {

@@ -55,8 +55,8 @@ app.use(async (ctx) => {
 app.listen = function () {
   let server;
   if (HTTPS) {
-    const key = readFileSync(join(packageRoot, 'certs/key.pem'))
-    const cert = readFileSync(join(packageRoot, 'certs/cert.pem'))
+    const key = readFileSync(join(packageRoot, process.env.key))
+    const cert = readFileSync(join(packageRoot, process.env.cert))
     server = createServer({key: key, cert: cert }, this.callback());
   } else {
     server = _createServer(this.callback());
