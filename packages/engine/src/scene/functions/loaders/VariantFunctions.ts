@@ -15,6 +15,7 @@ import { GroupComponent, addObjectToGroup, removeObjectFromGroup } from '../../c
 import { InstancingComponent } from '../../components/InstancingComponent'
 import { MeshComponent } from '../../components/MeshComponent'
 import { ModelComponent } from '../../components/ModelComponent'
+import { SceneAssetPendingTagComponent } from '../../components/SceneAssetPendingTagComponent'
 import { VariantComponent, VariantLevel } from '../../components/VariantComponent'
 import getFirstMesh from '../../util/meshUtils'
 
@@ -57,7 +58,10 @@ export function setModelVariant(entity: Entity) {
     const deviceVariant = variantComponent.levels.find((level) => level.value.metadata['device'] === targetDevice)
     const modelRelativePath = pathResolver().exec(modelComponent.src.value)?.[2]
     const deviceRelativePath = deviceVariant ? pathResolver().exec(deviceVariant.src.value)?.[2] : ''
-    deviceVariant && modelRelativePath !== deviceRelativePath && modelComponent.src.set(deviceVariant.src.value)
+    if (deviceVariant && modelRelativePath !== deviceRelativePath) {
+      SceneAssetPendingTagComponent.removeResource(entity, modelComponent.src.value)
+      modelComponent.src.set(deviceVariant.src.value)
+    }
   } else if (variantComponent.heuristic.value === 'DISTANCE') {
     const distance = DistanceFromCameraComponent.squaredDistance[entity]
     for (let i = 0; i < variantComponent.levels.length; i++) {
@@ -66,7 +70,10 @@ export function setModelVariant(entity: Entity) {
       const minDistance = Math.pow(level.metadata['minDistance'], 2)
       const maxDistance = Math.pow(level.metadata['maxDistance'], 2)
       const useLevel = minDistance <= distance && distance <= maxDistance
-      useLevel && modelComponent.src.value !== level.src && modelComponent.src.set(level.src)
+      if (useLevel && modelComponent.src.value !== level.src) {
+        SceneAssetPendingTagComponent.removeResource(entity, modelComponent.src.value)
+        modelComponent.src.set(level.src)
+      }
       if (useLevel) break
     }
   }

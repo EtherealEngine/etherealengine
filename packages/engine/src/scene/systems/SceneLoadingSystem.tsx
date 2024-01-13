@@ -48,6 +48,7 @@ import { Entity, UndefinedEntity } from '../../ecs/classes/Entity'
 import { SceneState } from '../../ecs/classes/Scene'
 import {
   ComponentJSONIDMap,
+  defineQuery,
   getComponent,
   hasComponent,
   removeComponent,
@@ -74,6 +75,8 @@ import { SourceComponent } from '../components/SourceComponent'
 import { UUIDComponent } from '../components/UUIDComponent'
 import { VisibleComponent } from '../components/VisibleComponent'
 import { proxifyParentChildRelationships } from '../functions/loadGLTFModel'
+
+const query = defineQuery([SceneAssetPendingTagComponent])
 
 const reactor = () => {
   const scenes = useHookstate(getMutableState(SceneState).scenes)
@@ -304,6 +307,7 @@ const EntityChildLoadReactor = (props: {
 }) => {
   const parentEntity = props.parentEntity
   const selfEntity = useHookstate(UndefinedEntity)
+  const sceneLoaded = useHookstate(getMutableState(EngineState).sceneLoaded)
   const entityJSONState = props.entityJSONState
   const parentLoaded = !!useOptionalComponent(parentEntity, UUIDComponent)
   const dynamicParentState = useOptionalComponent(parentEntity, SceneDynamicLoadTagComponent)
@@ -360,7 +364,11 @@ const EntityChildLoadReactor = (props: {
 
   return (
     <>
-      {selfEntity.value
+      {/* 
+        we only need to include component reactors once the scene has loaded.
+        Scene loading is handled entirely through the first useEffect in this reactor
+      */}
+      {selfEntity.value && sceneLoaded.value
         ? entityJSONState.components.map((compState) => (
             <ErrorBoundary key={compState.value.name + ' - ' + selfEntity.value}>
               <ComponentLoadReactor

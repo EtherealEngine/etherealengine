@@ -37,7 +37,6 @@ import {
   getComponent,
   getOptionalComponent,
   hasComponent,
-  removeComponent,
   setComponent,
   useComponent,
   useOptionalComponent
@@ -137,7 +136,7 @@ export const ColliderComponent = defineComponent({
       hasComponent(entity, SceneObjectComponent) &&
       !hasComponent(entity, RigidBodyComponent)
     )
-      setComponent(entity, SceneAssetPendingTagComponent)
+      SceneAssetPendingTagComponent.addResource(entity, ColliderComponent.jsonID)
     setComponent(entity, InputComponent)
   },
 
@@ -166,7 +165,7 @@ export const ColliderComponent = defineComponent({
     const modelHierarchy = useHookstate(ModelComponent.entitiesInModelHierarchyState[entity])
 
     useEffect(() => {
-      removeComponent(entity, SceneAssetPendingTagComponent)
+      SceneAssetPendingTagComponent.removeResource(entity, ColliderComponent.jsonID)
 
       const isMeshCollider = [ShapeType.TriMesh, ShapeType.ConvexPolyhedron].includes(colliderComponent.shapeType.value)
       const physicsWorld = getState(PhysicsState).physicsWorld

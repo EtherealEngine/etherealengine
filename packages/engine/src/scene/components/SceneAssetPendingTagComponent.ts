@@ -23,13 +23,46 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { createState } from '@etherealengine/hyperflux'
+import { createState, none } from '@etherealengine/hyperflux'
 
 import { Entity } from '../../ecs/classes/Entity'
-import { defineComponent } from '../../ecs/functions/ComponentFunctions'
+import {
+  defineComponent,
+  getComponent,
+  getMutableComponent,
+  hasComponent,
+  removeComponent,
+  setComponent
+} from '../../ecs/functions/ComponentFunctions'
 
 export const SceneAssetPendingTagComponent = defineComponent({
   name: 'SceneAssetPendingTagComponent',
+
+  onInit(entity) {
+    return [] as string[]
+  },
+
+  onSet(entity, component, json) {
+    if (!json) return
+
+    if (Array.isArray(json)) component.set(json)
+  },
+
+  addResource: (entity: Entity, resource: string) => {
+    if (!hasComponent(entity, SceneAssetPendingTagComponent)) setComponent(entity, SceneAssetPendingTagComponent)
+    if (!getComponent(entity, SceneAssetPendingTagComponent).includes(resource)) {
+      getMutableComponent(entity, SceneAssetPendingTagComponent).merge([resource])
+    }
+  },
+
+  removeResource: (entity: Entity, resource: string) => {
+    if (!hasComponent(entity, SceneAssetPendingTagComponent)) return
+    const index = getComponent(entity, SceneAssetPendingTagComponent).indexOf(resource)
+    if (index < 0) return
+    getMutableComponent(entity, SceneAssetPendingTagComponent)[index].set(none)
+    if (!getComponent(entity, SceneAssetPendingTagComponent).length)
+      removeComponent(entity, SceneAssetPendingTagComponent)
+  },
 
   loadingProgress: createState(
     {} as Record<

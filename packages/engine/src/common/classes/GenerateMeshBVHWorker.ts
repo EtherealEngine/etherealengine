@@ -87,6 +87,8 @@ export class GenerateMeshBVHWorker {
         }
       }
 
+      if (!geometry.attributes.position) reject(new Error('Missing position attribute'))
+
       const index = geometry.index ? Uint32Array.from(geometry.index.array) : null
       const position = Float32Array.from(
         (geometry.attributes.position as BufferAttribute | InterleavedBufferAttribute).array

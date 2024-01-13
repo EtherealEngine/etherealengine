@@ -51,6 +51,7 @@ import { InstancingComponent } from '../components/InstancingComponent'
 import { MeshComponent } from '../components/MeshComponent'
 import { ModelComponent } from '../components/ModelComponent'
 import { NameComponent } from '../components/NameComponent'
+import { SceneAssetPendingTagComponent } from '../components/SceneAssetPendingTagComponent'
 import { SceneObjectComponent } from '../components/SceneObjectComponent'
 import { UUIDComponent } from '../components/UUIDComponent'
 import { VisibleComponent } from '../components/VisibleComponent'
@@ -232,6 +233,9 @@ export const generateEntityJsonFromObject = (rootEntity: Entity, obj: Object3D, 
     parentEntity,
     uuid
   })
+
+  if (hasComponent(rootEntity, SceneAssetPendingTagComponent))
+    SceneAssetPendingTagComponent.addResource(objEntity, `${rootEntity}`)
 
   setComponent(objEntity, NameComponent, name)
   setComponent(objEntity, TransformComponent, {
