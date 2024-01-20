@@ -205,6 +205,9 @@ export const HierarchyTreeNode = (props: HierarchyTreeNodeProps) => {
         if (item.type === ItemTypes.Component) {
           EditorControlFunctions.createObjectFromSceneElement([{ name: item!.componentJsonID }], parentNode, beforeNode)
           return
+        } else if (item.type === ItemTypes.PrefabComponents) {
+          EditorControlFunctions.createObjectFromSceneElement(item.components, parentNode, beforeNode)
+          return
         }
       }
 
@@ -239,7 +242,7 @@ export const HierarchyTreeNode = (props: HierarchyTreeNodeProps) => {
   }
 
   const [{ canDropBefore, isOverBefore }, beforeDropTarget] = useDrop({
-    accept: [ItemTypes.Node, ItemTypes.File, ItemTypes.Component, ...SupportedFileTypes],
+    accept: [ItemTypes.Node, ItemTypes.File, ItemTypes.Component, ItemTypes.PrefabComponents, ...SupportedFileTypes],
     drop: dropItem(node, 'Before'),
     canDrop: canDropItem(node.entity),
     collect: (monitor) => ({
@@ -249,7 +252,7 @@ export const HierarchyTreeNode = (props: HierarchyTreeNodeProps) => {
   })
 
   const [{ canDropAfter, isOverAfter }, afterDropTarget] = useDrop({
-    accept: [ItemTypes.Node, ItemTypes.File, ItemTypes.Component, ...SupportedFileTypes],
+    accept: [ItemTypes.Node, ItemTypes.File, ItemTypes.Component, ItemTypes.PrefabComponents, ...SupportedFileTypes],
     drop: dropItem(node, 'After'),
     canDrop: canDropItem(node.entity),
     collect: (monitor) => ({
@@ -259,7 +262,7 @@ export const HierarchyTreeNode = (props: HierarchyTreeNodeProps) => {
   })
 
   const [{ canDropOn, isOverOn }, onDropTarget] = useDrop({
-    accept: [ItemTypes.Node, ItemTypes.File, ItemTypes.Component, ...SupportedFileTypes],
+    accept: [ItemTypes.Node, ItemTypes.File, ItemTypes.Component, ItemTypes.PrefabComponents, ...SupportedFileTypes],
     drop: dropItem(node, 'On'),
     canDrop: canDropItem(node.entity, true),
     collect: (monitor) => ({

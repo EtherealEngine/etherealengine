@@ -31,6 +31,7 @@ import { createEntity } from '../../ecs/functions/EntityFunctions'
 
 export const UUIDComponent = defineComponent({
   name: 'UUIDComponent',
+  jsonID: 'uuid-component',
 
   onInit: () => '' as EntityUUID,
 

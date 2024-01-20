@@ -34,23 +34,31 @@ import { ItemTypes } from '../../constants/AssetTypes'
 import { EditorControlFunctions } from '../../functions/EditorControlFunctions'
 import { getCursorSpawnPosition } from '../../functions/screenSpaceFunctions'
 import { EditorState } from '../../services/EditorServices'
+import { PrefabricatedComponentsType } from '../assets/SceneAssetsPanel'
 import { SceneElementType } from '../element/ElementList'
 import * as styles from '../styles.module.scss'
 
 const ViewportDnD = () => {
   const [{ isDragging, isOver }, dropRef] = useDrop({
-    accept: [ItemTypes.Component],
+    accept: [ItemTypes.Component, ItemTypes.PrefabComponents],
     collect: (monitor) => ({
       isDragging: monitor.getItem() !== null && monitor.canDrop(),
       isOver: monitor.isOver()
     }),
-    drop(item: SceneElementType, monitor) {
+    drop(item: SceneElementType | PrefabricatedComponentsType, monitor) {
       const vec3 = new Vector3()
       getCursorSpawnPosition(monitor.getClientOffset() as Vector2, vec3)
-      EditorControlFunctions.createObjectFromSceneElement([
-        { name: item!.componentJsonID },
-        { name: TransformComponent.jsonID, props: { position: vec3 } }
-      ])
+      if (item.type === ItemTypes.PrefabComponents) {
+        EditorControlFunctions.createObjectFromSceneElement([
+          ...(item as PrefabricatedComponentsType).components,
+          { name: TransformComponent.jsonID, props: { position: vec3 } }
+        ])
+      } else {
+        EditorControlFunctions.createObjectFromSceneElement([
+          { name: (item as SceneElementType).componentJsonID },
+          { name: TransformComponent.jsonID, props: { position: vec3 } }
+        ])
+      }
     }
   })
 

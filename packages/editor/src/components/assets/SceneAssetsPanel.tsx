@@ -38,10 +38,23 @@ import { FixedSizeList } from 'react-window'
 
 import { NO_PROXY, useHookstate } from '@etherealengine/hyperflux'
 
-import { StaticResourceType, staticResourcePath } from '@etherealengine/common/src/schema.type.module'
+import { ShapeType } from '@dimforge/rapier3d-compat'
+import {
+  ComponentJsonType,
+  StaticResourceType,
+  staticResourcePath
+} from '@etherealengine/common/src/schema.type.module'
 import { AssetLoader } from '@etherealengine/engine/src/assets/classes/AssetLoader'
 import { AssetClass } from '@etherealengine/engine/src/assets/enum/AssetClass'
 import { Engine } from '@etherealengine/engine/src/ecs/classes/Engine'
+import { ColliderComponent } from '@etherealengine/engine/src/scene/components/ColliderComponent'
+import { EnvmapComponent } from '@etherealengine/engine/src/scene/components/EnvmapComponent'
+import { ModelComponent } from '@etherealengine/engine/src/scene/components/ModelComponent'
+import { ShadowComponent } from '@etherealengine/engine/src/scene/components/ShadowComponent'
+import { TransformComponent } from '@etherealengine/engine/src/transform/components/TransformComponent'
+import { Vector3 } from 'three'
+import { ItemTypes } from '../../constants/AssetTypes'
+import { EditorControlFunctions } from '../../functions/EditorControlFunctions'
 import { DockContainer } from '../EditorContainer'
 import StringInput from '../inputs/StringInput'
 import { PanelDragContainer, PanelIcon, PanelTitle } from '../layout/Panel'
@@ -52,10 +65,13 @@ import VideoNodeEditor from '../properties/VideoNodeEditor'
 import { AssetSelectionChangePropsType, AssetsPreviewPanel } from './AssetsPreviewPanel'
 import styles from './styles.module.scss'
 
-type FolderType = { folderType: 'folder'; assetClass: string }
-type ResourceType = { folderType: 'staticResource' } & StaticResourceType
-
-type CategorizedStaticResourceType = FolderType | ResourceType
+export type PrefabricatedComponentsType = {
+  label: string
+  components: ComponentJsonType[]
+  type: typeof ItemTypes.PrefabComponents
+}
+type FolderType = { assetClass: string }
+type ResourceItemType = StaticResourceType | PrefabricatedComponentsType
 
 const ResourceIcons = {
   [AssetClass.Model]: ModelNodeEditor.iconComponent,
@@ -64,32 +80,85 @@ const ResourceIcons = {
   [AssetClass.Audio]: PositionalAudioNodeEditor.iconComponent
 }
 
-const StaticResourceItem = (props: {
+const DEFAULT_PREFAB_COMPONENTS: PrefabricatedComponentsType[] = [
+  {
+    components: [{ name: ModelComponent.jsonID }, { name: ShadowComponent.jsonID }, { name: EnvmapComponent.jsonID }],
+    label: 'Simple Model',
+    type: ItemTypes.PrefabComponents
+  },
+  {
+    components: [
+      { name: ModelComponent.jsonID },
+      {
+        name: ColliderComponent.jsonID,
+        props: {
+          shape: ShapeType.TriMesh
+        }
+      }
+    ],
+    label: 'Mesh Collider',
+    type: ItemTypes.PrefabComponents
+  }
+]
+
+const FolderItem = ({
+  data: { resources, onClick, selectedCategory },
+  index
+}: {
   data: {
-    resources: CategorizedStaticResourceType[]
-    onClick: (resource: CategorizedStaticResourceType) => void
+    resources: FolderType[]
+    onClick: (resource: FolderType) => void
     selectedCategory: string | null
   }
   index: number
 }) => {
-  const { resources, onClick, selectedCategory } = props.data
-  const index = props.index
   const resource = resources[index]
-
-  if (resource.folderType === 'folder') {
-    return (
-      <div
-        key={resource.folderType}
-        className={`${styles.resourceItemContainer} ${selectedCategory === resource.assetClass ? styles.selected : ''}`}
-        onClick={() => onClick(resource)}
-      >
-        {resource.assetClass}
-      </div>
-    )
-  }
+  return (
+    <div
+      key={resource.assetClass}
+      className={`${styles.resourceItemContainer} ${selectedCategory === resource.assetClass ? styles.selected : ''}`}
+      onClick={() => onClick(resource)}
+    >
+      {resource.assetClass}
+    </div>
+  )
 }
 
-const ResourceFile = ({ resource }: { resource: StaticResourceType }) => {
+const PrefabComponentItem = ({ resource }: { resource: PrefabricatedComponentsType }) => {
+  const [_, drag, preview] = useDrag(() => ({
+    type: resource.type,
+    item: resource,
+    multiple: false
+  }))
+  useEffect(() => {
+    if (preview) preview(getEmptyImage(), { captureDraggingState: true })
+  }, [preview])
+  return (
+    <div
+      ref={drag}
+      key={resource.label}
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        cursor: 'pointer',
+        background: 'var(--dropdownMenuBackground)',
+        marginBottom: '-30px',
+        textAlign: 'center'
+      }}
+      onDoubleClick={() =>
+        EditorControlFunctions.createObjectFromSceneElement([
+          ...resource.components,
+          { name: TransformComponent.jsonID, props: { position: new Vector3(0, 0, 0) } }
+        ])
+      }
+    >
+      <span>{resource.label}</span>
+    </div>
+  )
+}
+
+const StaticResourceItem = ({ resource }: { resource: StaticResourceType }) => {
   const { onAssetSelectionChanged } = useContext(AssetsPreviewContext)
 
   const assetType = AssetLoader.getAssetType(resource.key)
@@ -138,13 +207,12 @@ const ResourceFile = ({ resource }: { resource: StaticResourceType }) => {
 
 const SceneAssetsPanel = () => {
   const { t } = useTranslation()
-  const staticResources = useHookstate<CategorizedStaticResourceType[]>([])
-  const categorizedStaticResources = useHookstate({} as Record<string, StaticResourceType[]>)
+  const categorizedStaticResources = useHookstate({} as Record<string, ResourceItemType[]>)
   const selectedCategory = useHookstate<string | null>(null)
   const loading = useHookstate(false)
   const searchText = useHookstate('')
   const searchTimeoutCancelRef = useRef<(() => void) | null>(null)
-  const searchedStaticResources = useHookstate<StaticResourceType[]>([])
+  const searchedStaticResources = useHookstate<ResourceItemType[]>([])
 
   useEffect(() => {
     const staticResourcesFindApi = () =>
@@ -157,21 +225,19 @@ const SceneAssetsPanel = () => {
             return
           }
 
-          const categorizedResources: Record<string, StaticResourceType[]> = {}
-          const categorizedResourcesList: CategorizedStaticResourceType[] = []
+          const categorizedResources: Record<string, ResourceItemType[]> = {
+            'Default Prefabs': DEFAULT_PREFAB_COMPONENTS
+          }
 
           resources.data.forEach((resource) => {
             const assetClass = AssetLoader.getAssetClass(resource.key)
             if (!(assetClass in categorizedResources)) {
-              categorizedResourcesList.push({ folderType: 'folder', assetClass })
               categorizedResources[assetClass] = []
             }
             categorizedResources[assetClass].push(resource)
-            categorizedResourcesList.push({ folderType: 'staticResource', ...resource })
           })
 
           categorizedStaticResources.set(categorizedResources)
-          staticResources.set(categorizedResourcesList)
         })
         .then(() => {
           loading.set(false)
@@ -189,26 +255,29 @@ const SceneAssetsPanel = () => {
   }, [searchText])
 
   const ResourceList = useCallback(
-    ({ height, width }) => (
-      <FixedSizeList
-        height={height}
-        width={width}
-        itemSize={32}
-        itemCount={staticResources.length}
-        itemData={{
-          resources: staticResources.get(NO_PROXY),
-          selectedCategory: selectedCategory.value,
-          onClick: (resource: FolderType) => {
-            selectedCategory.set(resource.assetClass)
-            searchText.set('')
-          }
-        }}
-        itemKey={(index) => index}
-      >
-        {StaticResourceItem}
-      </FixedSizeList>
-    ),
-    [selectedCategory]
+    ({ height, width }) => {
+      const folderTypes = Object.keys(categorizedStaticResources.value).map((assetClass) => ({ assetClass }))
+      return (
+        <FixedSizeList
+          height={height}
+          width={width}
+          itemSize={32}
+          itemCount={folderTypes.length}
+          itemData={{
+            resources: folderTypes,
+            selectedCategory: selectedCategory.value,
+            onClick: (resource: FolderType) => {
+              selectedCategory.set(resource.assetClass)
+              searchText.set('')
+            }
+          }}
+          itemKey={(index) => index}
+        >
+          {FolderItem}
+        </FixedSizeList>
+      )
+    },
+    [selectedCategory, categorizedStaticResources]
   )
 
   const ResourceItems = () => {
@@ -220,22 +289,35 @@ const SceneAssetsPanel = () => {
       )
     }
     if (searchText.value) {
-      if (staticResources.value)
+      if (searchedStaticResources.length > 0)
         return (
           <>
-            {searchedStaticResources.map((resource) => (
-              <ResourceFile key={resource.value.id} resource={resource.get(NO_PROXY)} />
-            ))}
+            {searchedStaticResources.map((resource) =>
+              'id' in resource.value ? (
+                <StaticResourceItem key={resource.value.id} resource={resource.get(NO_PROXY) as StaticResourceType} />
+              ) : (
+                <PrefabComponentItem
+                  key={resource.value.label}
+                  resource={resource.get(NO_PROXY) as PrefabricatedComponentsType}
+                />
+              )
+            )}
           </>
         )
       return <div>{t('editor:layout.scene-assets.no-search-results')}</div>
     }
     if (selectedCategory.value) {
+      // prettier-ignore
       return (
         <>
-          {categorizedStaticResources.value[selectedCategory.value!]?.map((resource) => (
-            <ResourceFile resource={resource} />
-          ))}
+          {categorizedStaticResources
+            .get(NO_PROXY)[selectedCategory.value!]?.map((resource) =>
+              'id' in resource ? (
+                <StaticResourceItem key={resource.id} resource={resource} />
+              ) : (
+                <PrefabComponentItem key={resource.label} resource={resource} />
+              )
+            )}
         </>
       )
     }
@@ -259,17 +341,28 @@ const SceneAssetsPanel = () => {
         <div className={styles.hideScrollbar} style={{ height: '100%', width: '50%' }}>
           <AutoSizer onResize={ResourceList}>{ResourceList}</AutoSizer>
         </div>
-        <div
-          style={{
-            width: '50%',
-            display: 'grid',
-            gap: '40px 10px',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(90px, 1fr))',
-            gridAutoRows: '60px',
-            overflow: 'auto'
-          }}
-        >
-          <ResourceItems />
+        <div style={{ width: '50%', overflow: 'auto' }}>
+          {selectedCategory.value && (
+            <div
+              style={{
+                textAlign: 'center',
+                fontStyle: 'italic',
+                marginBottom: '1.5rem'
+              }}
+            >
+              {t('editor:layout.scene-assets.info-drag-drop')}
+            </div>
+          )}
+          <div
+            style={{
+              display: 'grid',
+              gap: '40px 10px',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(90px, 1fr))',
+              gridAutoRows: '60px'
+            }}
+          >
+            <ResourceItems />
+          </div>
         </div>
       </div>
     </div>
