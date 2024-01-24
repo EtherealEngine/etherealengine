@@ -37,9 +37,12 @@ import {
   VSMShadowMap
 } from 'three'
 
-import { useComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
+import { getComponent, useComponent } from '@etherealengine/engine/src/ecs/functions/ComponentFunctions'
+import { useQuery } from '@etherealengine/engine/src/ecs/functions/QueryFunctions'
+import { DirectionalLightComponent } from '@etherealengine/engine/src/scene/components/DirectionalLightComponent'
+import { NameComponent } from '@etherealengine/engine/src/scene/components/NameComponent'
 import { RenderSettingsComponent } from '@etherealengine/engine/src/scene/components/RenderSettingsComponent'
-
+import { UUIDComponent } from '@etherealengine/engine/src/scene/components/UUIDComponent'
 import BooleanInput from '../inputs/BooleanInput'
 import CompoundNumericInput from '../inputs/CompoundNumericInput'
 import InputGroup from '../inputs/InputGroup'
@@ -107,11 +110,29 @@ export const RenderSettingsEditor: EditorComponentType = (props) => {
   const { t } = useTranslation()
   const rendererSettingsState = useComponent(props.entity, RenderSettingsComponent)
 
+  const directionalLightOptions = useQuery([DirectionalLightComponent]).map((entity) => {
+    return {
+      label: getComponent(entity, NameComponent),
+      value: getComponent(entity, UUIDComponent)
+    }
+  })
+
   return (
     <PropertyGroup
       name={t('editor:properties.renderSettings.name')}
       description={t('editor:properties.renderSettings.description')}
     >
+      <InputGroup
+        name="Primary Light"
+        label={t('editor:properties.renderSettings.lbl-primaryLight')}
+        info={t('editor:properties.renderSettings.info-primaryLight')}
+      >
+        <SelectInput
+          options={directionalLightOptions}
+          value={rendererSettingsState.primaryLight.value}
+          onChange={commitProperty(RenderSettingsComponent, 'primaryLight')}
+        />
+      </InputGroup>
       <InputGroup
         name="Use Cascading Shadow Maps"
         label={t('editor:properties.renderSettings.lbl-csm')}

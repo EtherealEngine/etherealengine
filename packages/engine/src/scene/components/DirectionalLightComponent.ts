@@ -121,6 +121,7 @@ export const DirectionalLightComponent = defineComponent({
       shadowBias: -0.00001,
       shadowRadius: 1,
       cameraFar: 200,
+      /** @deprecated CSM uses primary camera set in renderer settings [#9580](https://github.com/EtherealEngine/etherealengine/issues/9580) */
       useInCSM: true,
       helper: null as DirectionalLightHelper | null
     }

@@ -224,7 +224,8 @@
             "csm": true,
             "toneMapping": 1,
             "toneMappingExposure": 0.8,
-            "shadowMapType": 2
+            "shadowMapType": 2,
+            "primaryLight": "cb045cfd-8daf-4a2b-b764-35625be54a11"
           }
         },
         {

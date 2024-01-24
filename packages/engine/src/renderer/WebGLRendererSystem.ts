@@ -38,6 +38,7 @@ import {
 
 import { defineState, getMutableState, getState, useHookstate } from '@etherealengine/hyperflux'
 
+import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
 import { CameraComponent } from '../camera/components/CameraComponent'
 import { ExponentialMovingAverage } from '../common/classes/ExponentialAverageCurve'
 import { overrideOnBeforeCompile } from '../common/functions/OnBeforeCompilePlugin'
@@ -285,6 +286,7 @@ export class EngineRenderer {
 export const RenderSettingsState = defineState({
   name: 'RenderSettingsState',
   initial: {
+    primaryLight: '' as EntityUUID,
     csm: true,
     toneMapping: LinearToneMapping as ToneMapping,
     toneMappingExposure: 0.8,

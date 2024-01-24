@@ -678,6 +678,8 @@
       "info-usePostProcessing": "Enables post processing",
       "lbl-useShadows": "Use Shadows",
       "info-useShadows": "Enables shadows",
+      "lbl-primaryLight": "Primary Light",
+      "info-primaryLight": "Set the primary light for the scene",
       "lbl-csm": "Cascading Shadow Maps",
       "info-csm": "Enables cascading shadow maps.",
       "lbl-toneMapping": "Tone Mapping",
