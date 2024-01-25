@@ -30,6 +30,7 @@ import BehaveFlow from './BehaveFlow'
 import GraphIcon from '@mui/icons-material/AutoGraph'
 
 import { TabData } from 'rc-dock'
+import { useTranslation } from 'react-i18next'
 import { PanelDragContainer, PanelIcon, PanelTitle } from '../layout/Panel'
 import styles from '../styles.module.scss'
 
@@ -46,11 +47,12 @@ export const GraphPanel = () => {
 }
 
 export const GraphPanelTitle = () => {
+  const { t } = useTranslation()
   return (
     <div className={styles.dockableTab}>
       <PanelDragContainer>
         <PanelIcon as={GraphIcon} size={12} />
-        <PanelTitle>Graph</PanelTitle>
+        <PanelTitle>{t('editor:graphPanel.name')}</PanelTitle>
       </PanelDragContainer>
     </div>
   )

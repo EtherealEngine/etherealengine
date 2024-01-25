@@ -31,6 +31,7 @@ import { useComponent } from '@etherealengine/engine/src/ecs/functions/Component
 
 import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions'
 
+import BehaveFlow from '../graph/BehaveFlow'
 import BooleanInput from '../inputs/BooleanInput'
 import InputGroup from '../inputs/InputGroup'
 import NodeEditor from './NodeEditor'
@@ -49,16 +50,23 @@ export const BehaveGraphNodeEditor: EditorComponentType = (props) => {
   const behaveGraphComponent = useComponent(props.entity, BehaveGraphComponent)
 
   return (
-    <NodeEditor {...props} name={'Behave Graph Component'} description={' adds a visual script to the entity'}>
-      <InputGroup name="Disable Graph" label="Disable Graph">
+    <NodeEditor
+      {...props}
+      name={t('editor:properties.graph.name')}
+      description={t('editor:properties.graph.description')}
+    >
+      <InputGroup name="Disable Graph" label={t('editor:properties.graph.lbl-disable-graph')}>
         <BooleanInput
           value={behaveGraphComponent.disabled.value}
           onChange={commitProperty(BehaveGraphComponent, 'disabled')}
         />
       </InputGroup>
-      <InputGroup name="Play Graph" label="Play Graph">
+      <InputGroup name="Play Graph" label={t('editor:properties.graph.lbl-play-graph')}>
         <BooleanInput value={behaveGraphComponent.run.value} onChange={commitProperty(BehaveGraphComponent, 'run')} />
       </InputGroup>
+      <div style={{ height: '300px', width: '100%' }}>
+        <BehaveFlow />
+      </div>
     </NodeEditor>
   )
 }

@@ -23,7 +23,7 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { DockLayout, DockMode, LayoutData, PanelData, TabData } from 'rc-dock'
+import { DockLayout, PanelData, TabData } from 'rc-dock'
 
 import 'rc-dock/dist/rc-dock.css'
 
@@ -50,9 +50,11 @@ import { cmdOrCtrlString } from '../functions/utils'
 import { EditorErrorState } from '../services/EditorErrorServices'
 import { EditorState } from '../services/EditorServices'
 import './EditorContainer.css'
+import { COMPONENT_PROPERTIES_TAB, DockContainer, DockContainerProvider, defaultLayout } from './EditorDockContainer'
 import AssetDropZone from './assets/AssetDropZone'
 import { ProjectBrowserPanelTab } from './assets/ProjectBrowserPanel'
-import { SceneAssetsPanelTab } from './assets/SceneAssetsPanel'
+
+import { SelectionState } from '../services/SelectionServices'
 import { ScenePanelTab } from './assets/ScenesPanel'
 import { ControlText } from './controlText/ControlText'
 import { DialogState } from './dialogs/DialogState'
@@ -71,21 +73,6 @@ import * as styles from './styles.module.scss'
 import ToolBar from './toolbar/ToolBar'
 
 const logger = multiLogger.child({ component: 'editor:EditorContainer' })
-
-/**
- *component used as dock container.
- */
-export const DockContainer = ({ children, id = 'editor-dock', dividerAlpha = 0 }) => {
-  const dockContainerStyles = {
-    '--dividerAlpha': dividerAlpha
-  }
-
-  return (
-    <div id={id} className="dock-container" style={dockContainerStyles as React.CSSProperties}>
-      {children}
-    </div>
-  )
-}
 
 const SceneLoadingProgress = () => {
   const sceneAssetPendingTagQuery = useQuery([SceneAssetPendingTagComponent])
@@ -291,48 +278,6 @@ const generateToolbarMenu = () => {
 
 const toolbarMenu = generateToolbarMenu()
 
-//const defaultLayout: LayoutData = useHookstate(getMutableState(EditorState).panelLayout).value
-
-const defaultLayout: LayoutData = {
-  dockbox: {
-    mode: 'horizontal' as DockMode,
-    children: [
-      {
-        mode: 'vertical' as DockMode,
-        size: 3,
-        children: [
-          {
-            tabs: [ScenePanelTab, ProjectBrowserPanelTab, SceneAssetsPanelTab]
-          }
-        ]
-      },
-      {
-        mode: 'vertical' as DockMode,
-        size: 8,
-        children: [
-          {
-            id: '+5',
-            tabs: [ViewportPanelTab],
-            size: 1
-          }
-        ]
-      },
-      {
-        mode: 'vertical' as DockMode,
-        size: 2,
-        children: [
-          {
-            tabs: [HierarchyPanelTab, MaterialLibraryPanelTab]
-          },
-          {
-            tabs: [PropertiesPanelTab, GraphPanelTab]
-          }
-        ]
-      }
-    ]
-  }
-}
-
 const tabs = [
   HierarchyPanelTab,
   PropertiesPanelTab,
@@ -350,6 +295,7 @@ const EditorContainer = () => {
   const { sceneName, projectName, sceneID, sceneModified } = useHookstate(getMutableState(EditorState))
   const sceneLoaded = useHookstate(getMutableState(EngineState)).sceneLoaded
   const activeScene = useHookstate(getMutableState(SceneState).activeScene)
+  const entity = useHookstate(getMutableState(SelectionState).selectedEntities).value.at(-1)
 
   const sceneLoading = sceneID.value && !sceneLoaded.value
 
@@ -390,6 +336,21 @@ const EditorContainer = () => {
   useHotkeys(`${cmdOrCtrlString}+s`, () => onSaveScene() as any)
 
   useEffect(() => {
+    if (!dockPanelRef.current) return
+    const activePanel = sceneLoaded.value ? 'filesPanel' : 'scenePanel'
+    dockPanelRef.current.loadLayout(defaultLayout)
+    dockPanelRef.current.updateTab(activePanel, dockPanelRef.current.find(activePanel) as TabData, true)
+  }, [sceneLoaded])
+
+  useEffect(() => {
+    const componentPropertiesTab = dockPanelRef.current?.find(COMPONENT_PROPERTIES_TAB)
+    if (componentPropertiesTab) {
+      ;(componentPropertiesTab as PanelData).tabs = [PropertiesPanelTab]
+      dockPanelRef.current?.updateTab('propertiesPanel', PropertiesPanelTab, true)
+    }
+  }, [entity])
+
+  useEffect(() => {
     if (!sceneModified.value) return
     const onBeforeUnload = (e) => {
       alert('You have unsaved changes. Please save before leaving.')
@@ -398,7 +359,6 @@ const EditorContainer = () => {
     }
 
     window.addEventListener('beforeunload', onBeforeUnload)
-
     return () => {
       window.removeEventListener('beforeunload', onBeforeUnload)
     }
@@ -415,12 +375,6 @@ const EditorContainer = () => {
     sceneName.set(scene.metadata.name)
     projectName.set(scene.metadata.project)
   }, [activeScene])
-
-  useEffect(() => {
-    if (!dockPanelRef.current) return
-    const activePanel = sceneLoaded.value ? 'filesPanel' : 'scenePanel'
-    dockPanelRef.current.updateTab(activePanel, dockPanelRef.current.find(activePanel) as TabData, true)
-  }, [sceneLoaded])
 
   useEffect(() => {
     if (errorState.value) {
@@ -442,13 +396,15 @@ const EditorContainer = () => {
           {sceneLoading && <SceneLoadingProgress />}
           <div className={styles.workspaceContainer}>
             <AssetDropZone />
-            <DockContainer>
-              <DockLayout
-                ref={dockPanelRef}
-                defaultLayout={defaultLayout}
-                style={{ position: 'absolute', left: 5, top: 55, right: 5, bottom: 5 }}
-              />
-            </DockContainer>
+            <DockContainerProvider dockPanelRef={dockPanelRef}>
+              <DockContainer>
+                <DockLayout
+                  ref={dockPanelRef}
+                  defaultLayout={defaultLayout}
+                  style={{ position: 'absolute', left: 5, top: 55, right: 5, bottom: 5 }}
+                />
+              </DockContainer>
+            </DockContainerProvider>
           </div>
           <Dialog
             open={!!dialogComponent}

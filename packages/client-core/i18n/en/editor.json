@@ -194,6 +194,8 @@
     "lbl-dynamicLoad": "Load Children Dynamically",
     "lbl-dynamicLoadDistance": "Distance",
     "lbl-addComponent": "Add Component",
+    "lbl-openInNewPanel": "Open in New Panel",
+    "lbl-removeComponent": "Remove Component",
     "multipleNodeSelected": "Multiple Nodes of different types selected",
     "noNodeSelected": "No node selected",
     "ambientLight": {
@@ -331,6 +333,12 @@
       "lbl-color": "Color",
       "lbl-visible": "Visible",
       "info-visible": "Toggle the visibility of the ground plane. Setting to false will still allow shadows to be received, rather than setting the entity visibility."
+    },
+    "graph": {
+      "name": "Behave Graph Component",
+      "description": "Adds a visual script to the entity.",
+      "lbl-disable-graph": "Disable Graph",
+      "lbl-play-graph": "Play Graph"
     },
     "loopAnimation": {
       "title": "Loop Animation",
@@ -912,6 +920,7 @@
     }
   },
   "graphPanel":{
+    "name": "Graph",
     "addGraph" : "Add Behave Graph"
   },
   "layout": {
@@ -1174,6 +1183,7 @@
     "tooltip": "Use Cors Proxy Server"
   },
   "tabs": {
+    "file-browser": "Files",
     "scene-assets": "Assets",
     "project-assets": "Project Assets"
   }

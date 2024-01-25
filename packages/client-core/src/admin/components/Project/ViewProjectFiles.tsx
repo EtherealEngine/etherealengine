@@ -31,7 +31,7 @@ import {
   AssetsPreviewPanel
 } from '@etherealengine/editor/src/components/assets/AssetsPreviewPanel'
 import FileBrowserContentPanel from '@etherealengine/editor/src/components/assets/FileBrowser/FileBrowserContentPanel'
-import { DockContainer } from '@etherealengine/editor/src/components/EditorContainer'
+import { DockContainer } from '@etherealengine/editor/src/components/EditorDockContainer'
 
 import DrawerView from '../../common/DrawerView'
 

@@ -25,41 +25,68 @@ Ethereal Engine. All Rights Reserved.
 
 import React, { Fragment } from 'react'
 
-import CloseIcon from '@mui/icons-material/Close'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline'
 
+import Tooltip from '@etherealengine/ui/src/primitives/mui/Tooltip'
+import { useTranslation } from 'react-i18next'
+import CollapsibleBlock from '../layout/CollapsibleBlock'
 import './PropertyGroup.css'
 
-// Import the external CSS file
 interface Props {
   name?: string
   description?: string
+  openDetails?: boolean
   onClose?: () => void
+  onOpenInPanelClick?: () => void
   children?: React.ReactNode
   rest?: Record<string, unknown>
 }
 
-const PropertyGroup = ({ name, description, children, onClose, ...rest }: Props) => {
+const PropertyGroup = ({ name, description, openDetails, onClose, onOpenInPanelClick, children, ...rest }: Props) => {
+  const { t } = useTranslation()
   return (
     <div className="property-group" {...rest}>
-      <div className="property-group-header">
-        {name}
-        {onClose && (
-          <button className="property-close-button" onPointerUp={onClose}>
-            <CloseIcon fontSize="inherit" />
-          </button>
-        )}
-      </div>
-      {description && (
-        <div className="property-group-description">
-          {description.split('\\n').map((line, i) => (
-            <Fragment key={i}>
-              {line}
-              <br />
-            </Fragment>
-          ))}
+      <CollapsibleBlock
+        defaultOpen={openDetails}
+        label={
+          <>
+            <span style={{ cursor: 'default', userSelect: 'none' }} onDoubleClick={() => onOpenInPanelClick?.()}>
+              {name}
+            </span>
+            <div style={{ flexGrow: 1 }} />
+            {onOpenInPanelClick && (
+              <Tooltip title={t('editor:properties.lbl-openInNewPanel')}>
+                <button className="property-icon-button" onClick={onOpenInPanelClick}>
+                  <OpenInNewIcon fontSize="inherit" />
+                </button>
+              </Tooltip>
+            )}
+            {onClose && (
+              <Tooltip title={t('editor:properties.lbl-removeComponent')}>
+                <button className="property-icon-button" onPointerUp={onClose}>
+                  <RemoveCircleOutlineIcon fontSize="inherit" />
+                </button>
+              </Tooltip>
+            )}
+          </>
+        }
+      >
+        <div className="property-group-header" onClick={onOpenInPanelClick}>
+          {name}
         </div>
-      )}
-      <div className="property-group-content">{children}</div>
+        {description && (
+          <div className="property-group-description">
+            {description.split('\\n').map((line, i) => (
+              <Fragment key={i}>
+                {line}
+                <br />
+              </Fragment>
+            ))}
+          </div>
+        )}
+        <div className="property-group-content">{children}</div>
+      </CollapsibleBlock>
     </div>
   )
 }

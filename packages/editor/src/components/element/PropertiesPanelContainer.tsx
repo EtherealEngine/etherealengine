@@ -44,22 +44,11 @@ import { PropertiesPanelButton } from '../inputs/Button'
 import MaterialEditor from '../materials/MaterialEditor'
 import { MaterialSelectionState } from '../materials/MaterialLibraryState'
 import { CoreNodeEditor } from '../properties/CoreNodeEditor'
+import { EntityComponentEditor } from './ComponentTab'
 import ElementList from './ElementList'
 import { PopoverContext } from './PopoverContext'
 
-const EntityComponentEditor = (props: { entity; component; multiEdit }) => {
-  const { entity, component, multiEdit } = props
-  const componentMounted = useOptionalComponent(entity, component)
-  const Editor = EntityNodeEditor.get(component)!
-  if (!componentMounted) return null
-  // nodeEntity is used as key here to signal to React when the entity has changed,
-  // and to prevent state from being recycled between editor instances, which
-  // can cause hookstate to throw errors.
-  return <Editor key={`${entity}-${Editor.name}`} multiEdit={multiEdit} entity={entity} component={component} />
-}
-
-const EntityEditor = (props: { entity: Entity; multiEdit: boolean }) => {
-  const { entity, multiEdit } = props
+const EntityEditor = ({ entity }: { entity: Entity }) => {
   const anchorEl = useHookstate<HTMLButtonElement | null>(null)
   const { t } = useTranslation()
 
@@ -99,8 +88,8 @@ const EntityEditor = (props: { entity: Entity; multiEdit: boolean }) => {
         <ElementList />
       </Popover>
       <CoreNodeEditor entity={entity} key={uuid.value} />
-      {components.map((c, i) => (
-        <EntityComponentEditor key={`${uuid.value}-${c.name}`} multiEdit={multiEdit} entity={entity} component={c} />
+      {components.map((c) => (
+        <EntityComponentEditor key={`${uuid.value}-${c.name}`} entity={entity} component={c} />
       ))}
     </PopoverContext.Provider>
   )
@@ -113,14 +102,12 @@ export const PropertiesPanelContainer = () => {
   const selectionState = useHookstate(getMutableState(SelectionState))
   const editorState = useHookstate(getMutableState(EditorState))
   const entity = useHookstate<Entity>(UndefinedEntity)
-  const multiEdit = useHookstate<boolean>(false)
 
   const { t } = useTranslation()
 
   useEffect(() => {
     const selectedEntities = selectionState.selectedEntities.value
     const lockedNode = editorState.lockPropertiesPanel.value
-    multiEdit.set(selectedEntities.length > 1)
     entity.set(
       lockedNode
         ? UUIDComponent.getEntityByUUID(lockedNode) ?? lockedNode
@@ -140,7 +127,7 @@ export const PropertiesPanelContainer = () => {
       {materialID ? (
         <MaterialEditor materialID={materialID} />
       ) : entity.value ? (
-        <EntityEditor entity={entity.value} key={entity.value} multiEdit={multiEdit.value} />
+        <EntityEditor entity={entity.value} key={entity.value} />
       ) : (
         <div
           style={{

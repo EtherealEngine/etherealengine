@@ -42,7 +42,7 @@ import { StaticResourceType, staticResourcePath } from '@etherealengine/common/s
 import { AssetLoader } from '@etherealengine/engine/src/assets/classes/AssetLoader'
 import { AssetClass } from '@etherealengine/engine/src/assets/enum/AssetClass'
 import { Engine } from '@etherealengine/engine/src/ecs/classes/Engine'
-import { DockContainer } from '../EditorContainer'
+import { DockContainer } from '../EditorDockContainer'
 import StringInput from '../inputs/StringInput'
 import { PanelDragContainer, PanelIcon, PanelTitle } from '../layout/Panel'
 import ImageNodeEditor from '../properties/ImageNodeEditor'

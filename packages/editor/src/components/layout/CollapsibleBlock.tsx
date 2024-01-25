@@ -23,7 +23,7 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import React, { useState } from 'react'
+import React, { ReactNode, useState } from 'react'
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Collapse, Divider, Stack } from '@mui/material'
@@ -31,8 +31,18 @@ import { Box, Collapse, Divider, Stack } from '@mui/material'
 import ExpandMore from './ExpandMore'
 import styles from './styles.module.scss'
 
-export default function CollapsibleBlock({ label, children, ...rest }) {
-  const [expand, setExpand] = useState<boolean>(false)
+interface CollapsibleBlockProps {
+  label?: string | ReactNode
+  defaultOpen?: boolean
+  children: ReactNode
+}
+/**
+ * @param {object} props
+ * @param {string | ReactNode} props.label provide a string to generate an HTML label or ReactNode to render React elements
+ * @param {boolean} props.defaultOpen open the collapsible block on mount
+ */
+export default function CollapsibleBlock({ label, defaultOpen = false, children, ...rest }: CollapsibleBlockProps) {
+  const [expand, setExpand] = useState<boolean>(defaultOpen)
   function toggleExpand() {
     setExpand(!expand)
   }
@@ -40,10 +50,15 @@ export default function CollapsibleBlock({ label, children, ...rest }) {
     <div className={styles.contentContainer} {...rest}>
       <Box className="Box">
         <Stack className="Stack" spacing={1} direction="row">
-          <ExpandMore expand={expand} onClick={toggleExpand} aria-expanded={expand} aria-label={label}>
+          <ExpandMore
+            expand={expand}
+            onClick={toggleExpand}
+            aria-expanded={expand}
+            aria-label={typeof label === 'string' ? label : ''}
+          >
             <ExpandMoreIcon />
           </ExpandMore>
-          <label>{label}</label>
+          {typeof label === 'string' ? <label>{label}</label> : label}
         </Stack>
       </Box>
       <br />
