@@ -34,6 +34,7 @@ import {
   getComponent,
   hasComponent,
   serializeComponent,
+  setComponent,
   updateComponent
 } from '@etherealengine/ecs/src/ComponentFunctions'
 import { Engine } from '@etherealengine/ecs/src/Engine'
@@ -53,7 +54,6 @@ import {
 import { TransformComponent } from '@etherealengine/spatial/src/transform/components/TransformComponent'
 
 import { ComponentJsonType, SceneID } from '@etherealengine/common/src/schema.type.module'
-import { getNestedObject } from '@etherealengine/common/src/utils/getNestedProperty'
 import { SceneObjectComponent } from '@etherealengine/engine/src/scene/components/SceneObjectComponent'
 import { SourceComponent } from '@etherealengine/engine/src/scene/components/SourceComponent'
 import { RigidBodyComponent } from '@etherealengine/spatial/src/physics/components/RigidBodyComponent'
@@ -81,6 +81,9 @@ const addOrRemoveComponent = <C extends Component<any, any>>(entities: Entity[],
     const newSnapshot = SceneState.cloneCurrentSnapshot(sceneID as SceneID)
 
     for (const entity of entities) {
+      setComponent(entity, component, {
+        ...componentJsonDefaults(ComponentJSONIDMap.get(sceneComponentID)!)
+      })
       const entityUUID = getComponent(entity, UUIDComponent)
       let componentData = newSnapshot.data.entities[entityUUID].components
       if (add) {
@@ -134,21 +137,15 @@ const modifyProperty = <C extends Component<any, any>>(
 
   for (const [sceneID, entities] of Object.entries(scenes)) {
     const newSnapshot = SceneState.cloneCurrentSnapshot(sceneID as SceneID)
-
     for (const entity of entities) {
+      setComponent(entity, component, properties)
       const entityUUID = getComponent(entity, UUIDComponent)
-      const componentData = newSnapshot.data.entities[entityUUID].components.find((c) => c.name === component.jsonID)
-      if (!componentData) continue
-      if (typeof properties === 'string') {
-        componentData.props = properties
-      } else {
-        Object.entries(properties).map(([k, v]) => {
-          const { result, finalProp } = getNestedObject(componentData.props, k)
-          result[finalProp] = v
-        })
-      }
+      const componentSnapshot = newSnapshot.data.entities[entityUUID].components.find(
+        (c) => c.name === component.jsonID
+      )
+      if (!componentSnapshot) continue
+      componentSnapshot.props = { ...componentSnapshot.props, properties }
     }
-
     dispatchAction(SceneSnapshotAction.createSnapshot(newSnapshot))
   }
 }
@@ -586,7 +583,7 @@ const removeObject = (entities: Entity[]) => {
 
   newSnapshot.selectedEntities = []
 
-  dispatchAction(SceneSnapshotAction.createSnapshot(newSnapshot))
+  dispatchAction(SceneSnapshotAction.applySnapshot(newSnapshot))
 }
 
 const replaceSelection = (entities: Entity[]) => {

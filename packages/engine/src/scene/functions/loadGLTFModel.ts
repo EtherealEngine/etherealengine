@@ -26,7 +26,7 @@ Ethereal Engine. All Rights Reserved.
 import { AnimationMixer, Bone, InstancedMesh, Mesh, Object3D, Scene, SkinnedMesh } from 'three'
 
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
-import { ComponentJsonType, EntityJsonType } from '@etherealengine/common/src/schema.type.module'
+import { ComponentJsonType, EntityJsonType, SceneID } from '@etherealengine/common/src/schema.type.module'
 import {
   ComponentJSONIDMap,
   ComponentMap,
@@ -59,6 +59,15 @@ import { InstancingComponent } from '../components/InstancingComponent'
 import { MeshBVHComponent } from '../components/MeshBVHComponent'
 import { ModelComponent } from '../components/ModelComponent'
 import { SceneObjectComponent } from '../components/SceneObjectComponent'
+import { SourceComponent } from '../components/SourceComponent'
+import { serializeEntity } from './serializeWorld'
+
+//isProxified: used to check if an object is proxified
+declare module 'three/src/core/Object3D' {
+  export interface Object3D {
+    readonly isProxified: true | undefined
+  }
+}
 
 export const parseECSData = (data: [string, any][]): ComponentJsonType[] => {
   const components: { [key: string]: any } = {}
@@ -133,15 +142,15 @@ export const parseObjectComponentsFromGLTF = (
       name,
       components: []
     }
-    eJson.components.push(...createObjectEntityFromGLTF(mesh))
-
-    entityJson[uuid] = eJson
+    const generatedComponents = createObjectEntityFromGLTF(mesh)
+    eJson.components.push(...generatedComponents)
+    mesh.userData['componentJson'] = generatedComponents
   }
 
   return entityJson
 }
 
-export const parseGLTFModel = (entity: Entity, scene: Scene) => {
+export const parseGLTFModel = (entity: Entity, scene: Scene, src?: SceneID) => {
   const model = getComponent(entity, ModelComponent)
   setComponent(entity, MeshBVHComponent)
 
@@ -157,7 +166,7 @@ export const parseGLTFModel = (entity: Entity, scene: Scene) => {
     child.parent = model.scene
     iterateObject3D(child, (obj: Object3D) => {
       const uuid = obj.uuid as EntityUUID
-      const eJson = generateEntityJsonFromObject(entity, obj, entityJson[uuid])
+      const eJson = generateEntityJsonFromObject(entity, obj, entityJson[uuid], src)
       entityJson[uuid] = eJson
     })
   }
@@ -220,18 +229,22 @@ export const proxifyParentChildRelationships = (obj: Object3D) => {
   })
 }
 
-export const generateEntityJsonFromObject = (rootEntity: Entity, obj: Object3D, entityJson?: EntityJsonType) => {
+export const generateEntityJsonFromObject = (
+  rootEntity: Entity,
+  obj: Object3D,
+  entityJson?: EntityJsonType,
+  src?: SceneID
+): EntityJsonType => {
   // create entity outside of scene loading reactor since we need to access it before the reactor is guaranteed to have executed
   const objEntity = UUIDComponent.getOrCreateEntityByUUID(obj.uuid as EntityUUID)
   const parentEntity = obj.parent ? obj.parent.entity : rootEntity
   const uuid = obj.uuid as EntityUUID
   const name = obj.userData['xrengine.entity'] ?? obj.name
 
-  const eJson: EntityJsonType = entityJson ?? {
-    name,
-    components: []
+  if (src) {
+    setComponent(objEntity, SourceComponent, src)
   }
-  eJson.parent = getComponent(parentEntity, UUIDComponent)
+
   setComponent(objEntity, SceneObjectComponent)
   setComponent(objEntity, EntityTreeComponent, {
     parentEntity,
@@ -245,15 +258,6 @@ export const generateEntityJsonFromObject = (rootEntity: Entity, obj: Object3D, 
     scale: obj.scale.clone()
   })
   computeTransformMatrix(objEntity)
-  eJson.components.push({
-    name: TransformComponent.jsonID,
-    props: {
-      position: obj.position.clone(),
-      rotation: obj.quaternion.clone(),
-      scale: obj.scale.clone()
-    }
-  })
-
   addObjectToGroup(objEntity, obj)
   setComponent(objEntity, GLTFLoadedComponent, ['entity'])
 
@@ -283,10 +287,7 @@ export const generateEntityJsonFromObject = (rootEntity: Entity, obj: Object3D, 
     //if this object has a collider component attached to it, set visible to false
     !findColliderData(obj)
   ) {
-    eJson.components.push({
-      name: VisibleComponent.jsonID,
-      props: true
-    })
+    setComponent(objEntity, VisibleComponent)
   }
 
   const mesh = obj as Mesh
@@ -305,10 +306,16 @@ export const generateEntityJsonFromObject = (rootEntity: Entity, obj: Object3D, 
   const skinnedMesh = obj as SkinnedMesh
   if (skinnedMesh.isSkinnedMesh) setComponent(objEntity, SkinnedMeshComponent, skinnedMesh)
   else setComponent(objEntity, FrustumCullCameraComponent)
-
-  if (obj.userData['componentJson']) {
-    eJson.components.push(...obj.userData['componentJson'])
+  if (Array.isArray(obj.userData['componentJson']))
+    for (const componentJson of obj.userData['componentJson'] as ComponentJsonType[]) {
+      setComponent(objEntity, ComponentJSONIDMap.get(componentJson.name)!, componentJson.props)
+    }
+  const result: EntityJsonType = {
+    name,
+    components: serializeEntity(objEntity)
   }
-
-  return eJson
+  if (obj.parent) {
+    result.parent = obj.parent.uuid as EntityUUID
+  }
+  return result
 }

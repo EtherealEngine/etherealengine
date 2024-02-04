@@ -280,6 +280,13 @@ export class SceneSnapshotAction {
     selectedEntities: matches.array as Validator<unknown, Array<EntityUUID>>,
     data: matches.object as Validator<unknown, SceneJsonType>
   })
+
+  static applySnapshot = defineAction({
+    type: 'ee.scene.snapshot.APPLY_SNAPSHOT' as const,
+    sceneID: matches.string as Validator<unknown, SceneID>,
+    selectedEntities: matches.array as Validator<unknown, Array<EntityUUID>>,
+    data: matches.object as Validator<unknown, SceneJsonType>
+  })
 }
 
 export const EditorTopic = 'editor' as Topic
@@ -288,6 +295,7 @@ const undoQueue = defineActionQueue(SceneSnapshotAction.undo.matches)
 const redoQueue = defineActionQueue(SceneSnapshotAction.redo.matches)
 const clearHistoryQueue = defineActionQueue(SceneSnapshotAction.clearHistory.matches)
 const modifyQueue = defineActionQueue(SceneSnapshotAction.createSnapshot.matches)
+const applyQueue = defineActionQueue(SceneSnapshotAction.applySnapshot.matches)
 
 const execute = () => {
   const isEditing = getState(EngineState).isEditing
@@ -321,6 +329,16 @@ const execute = () => {
     state.snapshots.set([...state.snapshots.get(NO_PROXY).slice(0, state.index.value + 1), { data, selectedEntities }])
     state.index.set(state.index.value + 1)
     getMutableState(SceneState).sceneModified.set(true)
+  }
+
+  for (const action of applyQueue()) {
+    if (!isEditing) return
+    const scenes = getMutableState(SceneState).scenes
+    if (!scenes[action.sceneID]) return
+    const state = getMutableState(SceneState).scenes[action.sceneID]
+    const { data, selectedEntities } = action
+    state.snapshots.set([...state.snapshots.get(NO_PROXY).slice(0, state.index.value + 1), { data, selectedEntities }])
+    state.index.set(state.index.value + 1)
     SceneState.applyCurrentSnapshot(action.sceneID)
   }
 }

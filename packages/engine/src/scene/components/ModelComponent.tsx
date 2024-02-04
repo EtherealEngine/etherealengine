@@ -246,16 +246,16 @@ function ModelReactor(): JSX.Element {
     /**hotfix for gltf animations being stored in the root and not scene property */
     if (!asset.scene.animations.length && !(asset instanceof VRM)) asset.scene.animations = asset.animations
 
-    const loadedJsonHierarchy = parseGLTFModel(entity, asset.scene as Scene)
-    const uuid = getModelSceneID(entity)
+    const sceneID = getModelSceneID(entity)
+    const loadedJsonHierarchy = parseGLTFModel(entity, asset.scene as Scene, sceneID)
 
-    SceneState.loadScene(uuid, {
+    SceneState.loadScene(sceneID, {
       scene: {
         entities: loadedJsonHierarchy,
         root: getComponent(entity, UUIDComponent),
         version: 0
       },
-      scenePath: uuid,
+      scenePath: sceneID,
       name: '',
       project: '',
       thumbnailUrl: ''
@@ -268,7 +268,7 @@ function ModelReactor(): JSX.Element {
 
     return () => {
       if (!(asset instanceof VRM)) clearMaterials(src) // [TODO] Replace with hooks and refrence counting
-      getMutableState(SceneState).scenes[uuid].set(none)
+      getMutableState(SceneState).scenes[sceneID].set(none)
     }
   }, [modelComponent.scene])
 
