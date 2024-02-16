@@ -78,7 +78,7 @@ export const SkyboxComponent = defineComponent({
       equirectangularPath: component.equirectangularPath.value,
       cubemapPath: component.cubemapPath.value,
       backgroundType: component.backgroundType.value,
-      skyboxProps: component.skyboxProps.get({ noproxy: true }) as any
+      skyboxProps: component.skyboxProps.get(NO_PROXY) as any
     }
   },
 

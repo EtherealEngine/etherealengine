@@ -138,7 +138,7 @@ export const syncStateWithLocalStorage = (
           else
             localStorage.setItem(
               `${stateNamespaceKey}.${stateDefinition.name}.${key}`,
-              JSON.stringify(state[key].get({ noproxy: true }))
+              JSON.stringify(state[key].get(NO_PROXY))
             )
         }
       }

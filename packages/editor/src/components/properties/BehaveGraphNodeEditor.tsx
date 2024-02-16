@@ -23,7 +23,7 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useComponent } from '@etherealengine/ecs/src/ComponentFunctions'
@@ -31,11 +31,37 @@ import { BehaveGraphComponent } from '@etherealengine/engine/src/behave-graph/co
 
 import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions'
 
+import { GraphJSON } from '@behave-graph/core'
+import { uploadToFeathersService } from '@etherealengine/client-core/src/util/upload'
+import config from '@etherealengine/common/src/config'
+import { processFileName } from '@etherealengine/common/src/utils/processFileName'
+import { getFileDirectory, getFileName } from '@etherealengine/engine/src/assets/functions/pathResolver'
+
+import { fileBrowserUploadPath } from '@etherealengine/common/src/schema.type.module'
+import { NO_PROXY, getMutableState, useHookstate } from '@etherealengine/hyperflux'
+import { cleanStorageProviderURLs } from '@etherealengine/spatial/src/common/functions/parseSceneJSON'
+import { uniqueId } from 'lodash'
+import { ItemTypes } from '../../constants/AssetTypes'
+import { EditorState } from '../../services/EditorServices'
 import BooleanInput from '../inputs/BooleanInput'
+import GraphInput from '../inputs/GraphInput'
 import InputGroup from '../inputs/InputGroup'
 import NodeEditor from './NodeEditor'
-import { EditorComponentType, commitProperty } from './Util'
+import { EditorComponentType, commitProperty, updateProperty } from './Util'
 
+export const uploadGraphFilefromJson = async (fullURL: string, graph: GraphJSON) => {
+  const directoryPath = getFileDirectory(fullURL)
+  const fileName = getFileName(fullURL)
+  const data = cleanStorageProviderURLs(JSON.parse(JSON.stringify(graph)))
+  const blob = new Blob([JSON.stringify(data)], { type: ItemTypes.Graph[0] })
+  const file = new File([blob], fileName, { type: ItemTypes.Graph[0] })
+  const response = await uploadToFeathersService(fileBrowserUploadPath, [file], {
+    fileName: processFileName(file.name),
+    path: directoryPath,
+    contentType: file.type
+  }).promise
+  return
+}
 /**
  *
  * AmbientLightNodeEditor component used to customize the ambient light element on the scene
@@ -47,10 +73,33 @@ export const BehaveGraphNodeEditor: EditorComponentType = (props) => {
   const { t } = useTranslation()
 
   const behaveGraphComponent = useComponent(props.entity, BehaveGraphComponent)
+  const editorState = useHookstate(getMutableState(EditorState))
+  useEffect(() => {
+    if (behaveGraphComponent.filepath.value.length > 0) return // only set if there is no value already set
+
+    const relativePath = `projects/${editorState.projectName.value}/assets/graphs`
+    const fileName = `${uniqueId(`${editorState.sceneName.value}Graph`)}.graph.json`
+    ;(async () => {
+      await uploadGraphFilefromJson(behaveGraphComponent.filepath.value, behaveGraphComponent.graph.get(NO_PROXY))
+      //set the filepath after upload finishes so that file exists and reactors using the file dont break
+      behaveGraphComponent.filepath.set(`${config.client.fileServer}/${relativePath}/${fileName}`)
+    })()
+  }, [])
 
   return (
-    <NodeEditor {...props} name={'Behave Graph Component'} description={' adds a visual script to the entity'}>
-      <InputGroup name="Disable Graph" label="Disable Graph">
+    <NodeEditor
+      {...props}
+      name={t('editor:properties.graph.name')}
+      description={t('editor:properties.graph.description')}
+    >
+      <InputGroup name="Graph Url" label={t('editor:properties.graph.lbl-graphURL')}>
+        <GraphInput
+          value={behaveGraphComponent.filepath.value}
+          onChange={updateProperty(BehaveGraphComponent, 'filepath')}
+          onRelease={commitProperty(BehaveGraphComponent, 'filepath')}
+        />
+      </InputGroup>
+      <InputGroup name="Disable Graph" label={t('editor:properties.graph.lbl-disableGraph')}>
         <BooleanInput
           value={behaveGraphComponent.disabled.value}
           onChange={commitProperty(BehaveGraphComponent, 'disabled')}

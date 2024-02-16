@@ -120,7 +120,7 @@ export const LoadModal: React.FC<LoadModalProps> = ({ open = false, onClose, set
         value={selected}
       >
         <option disabled value="">
-          Select an example
+          Select a graph
         </option>
         {Object.keys(examples).map((key) => (
           <option key={key} value={key}>

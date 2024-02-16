@@ -26,6 +26,13 @@ Ethereal Engine. All Rights Reserved.
 import React, { useMemo, useRef, useState } from 'react'
 import { useEdges, useNodes } from 'reactflow'
 
+import { BehaveGraphComponent } from '@etherealengine/engine/src/behave-graph/components/BehaveGraphComponent'
+
+import { Entity, useComponent } from '@etherealengine/ecs'
+import { getMutableState } from '@etherealengine/hyperflux'
+import { useHookstate } from '@hookstate/core'
+import { SelectionState } from '../../../../../services/SelectionServices'
+import { uploadGraphFilefromJson } from '../../../../properties/BehaveGraphNodeEditor'
 import { NodeSpecGenerator } from '../../hooks/useNodeSpecGenerator'
 import { flowToBehave } from '../../transformers/flowToBehave'
 import { Modal } from './Modal'
@@ -46,6 +53,10 @@ export const SaveModal: React.FC<SaveModalProps> = ({ open = false, onClose, spe
   const flow = useMemo(() => flowToBehave(nodes, edges, specGenerator), [nodes, edges, specGenerator])
 
   const jsonString = JSON.stringify(flow, null, 2)
+  const selectionState = useHookstate(getMutableState(SelectionState))
+  const entities = selectionState.selectedEntities.value
+  const entity = entities[entities.length - 1]
+  const behaveGraphComponent = useComponent(entity as Entity, BehaveGraphComponent)
 
   const handleCopy = () => {
     ref.current?.select()
@@ -57,12 +68,16 @@ export const SaveModal: React.FC<SaveModalProps> = ({ open = false, onClose, spe
     }, 1000)
   }
 
+  const handleSave = async () => {
+    await uploadGraphFilefromJson(behaveGraphComponent.filepath.value, flow)
+  }
+
   return (
     <Modal
       title="Save Graph"
       actions={[
         { label: 'Cancel', onClick: onClose },
-        { label: copied ? 'Copied' : 'Copy', onClick: handleCopy }
+        { label: 'Save', onClick: handleSave }
       ]}
       open={open}
       onClose={onClose}

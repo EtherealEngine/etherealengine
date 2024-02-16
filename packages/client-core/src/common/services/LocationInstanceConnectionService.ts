@@ -28,7 +28,7 @@ import { none, State } from '@hookstate/core'
 import { useEffect } from 'react'
 
 import logger from '@etherealengine/common/src/logger'
-import { defineState, getMutableState, getState, useState } from '@etherealengine/hyperflux'
+import { defineState, getMutableState, getState, NO_PROXY, useState } from '@etherealengine/hyperflux'
 import { NetworkState, updateNetworkID } from '@etherealengine/spatial/src/networking/NetworkState'
 
 import {
@@ -206,7 +206,7 @@ export const LocationInstanceConnectionService = {
   },
   changeActiveConnectionID: (currentInstanceId: InstanceID, newInstanceId: InstanceID) => {
     const state = getMutableState(LocationInstanceState)
-    const currentNetwork = state.instances[currentInstanceId].get({ noproxy: true })
+    const currentNetwork = state.instances[currentInstanceId].get(NO_PROXY)
     const networkState = getMutableState(NetworkState)
     const currentNework = getState(NetworkState).networks[currentInstanceId]
     updateNetworkID(currentNework as SocketWebRTCClientNetwork, newInstanceId)

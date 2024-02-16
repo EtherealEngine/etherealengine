@@ -28,7 +28,7 @@ import { useTranslation } from 'react-i18next'
 import { CircleGeometry, Mesh, MeshBasicMaterial } from 'three'
 
 import { setComponent } from '@etherealengine/ecs/src/ComponentFunctions'
-import { createState, getMutableState, useHookstate } from '@etherealengine/hyperflux'
+import { NO_PROXY, createState, getMutableState, useHookstate } from '@etherealengine/hyperflux'
 import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
 import { WorldState } from '@etherealengine/spatial/src/networking/interfaces/WorldState'
 import { createXRUI } from '@etherealengine/spatial/src/xrui/functions/createXRUI'
@@ -61,7 +61,7 @@ const AvatarDetailView = () => {
   const user = NetworkState.worldNetworkState?.peers
     ? Object.values(NetworkState.worldNetwork.peers).find((peer) => peer.userId === detailState.id.value)
     : undefined
-  const worldState = useHookstate(getMutableState(WorldState)).get({ noproxy: true })
+  const worldState = useHookstate(getMutableState(WorldState)).get(NO_PROXY)
   const usersTypingState = useHookstate(getMutableState(AvatarUIState).usersTyping)
   const usersTyping = usersTypingState[detailState.id.value]?.value
   const username = worldState?.userNames && user ? worldState.userNames[user.userId] : 'A user'

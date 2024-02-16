@@ -42,7 +42,7 @@ import { useUserAvatarThumbnail } from '@etherealengine/client-core/src/user/fun
 import { PeerID } from '@etherealengine/common/src/interfaces/PeerID'
 import { UserName } from '@etherealengine/common/src/schema.type.module'
 import { Engine } from '@etherealengine/ecs/src/Engine'
-import { State, getMutableState, useHookstate } from '@etherealengine/hyperflux'
+import { NO_PROXY, State, getMutableState, useHookstate } from '@etherealengine/hyperflux'
 import { NetworkState } from '@etherealengine/spatial/src/networking/NetworkState'
 import { WorldState } from '@etherealengine/spatial/src/networking/interfaces/WorldState'
 import { t } from 'i18next'
@@ -71,7 +71,7 @@ export const UserMedia = (props: { peerID: PeerID; type: 'cam' | 'screen' }) => 
   const getUsername = () => {
     if (isSelf && !isScreen) return t('user:person.you')
     if (isSelf && isScreen) return t('user:person.yourScreen')
-    const username = userID ? usernames.get({ noproxy: true })[userID] : 'A User'
+    const username = userID ? usernames.get(NO_PROXY)[userID] : 'A User'
     if (!isSelf && isScreen) return username + "'s Screen"
     return username
   }
@@ -90,7 +90,7 @@ export const UserMedia = (props: { peerID: PeerID; type: 'cam' | 'screen' }) => 
     audioProducerGlobalMute,
     videoElement,
     audioElement
-  } = peerMediaChannelState.get({ noproxy: true })
+  } = peerMediaChannelState.get(NO_PROXY)
 
   const { videoStream: videoStreamState } = peerMediaChannelState
 

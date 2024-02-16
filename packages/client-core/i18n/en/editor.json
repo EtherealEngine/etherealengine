@@ -461,6 +461,13 @@
       "urls": "Interaction Urls",
       "models": "Interaction Models"
     },
+    "graph":{
+      "name": "Behave Graph Component",
+      "description": "adds a visual script to the entity",
+      "lbl-graphURL":"Graph URL",
+      "lbl-playGraph":"Play Graph",
+      "lbl-disableGraph":"Disable Graph"
+    },
     "group": {
       "name": "Group",
       "description": "A group of multiple objects that can be moved or duplicated together.\nDrag and drop objects into the Group in the Hierarchy."

@@ -27,7 +27,7 @@ import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import ConfirmDialog from '@etherealengine/client-core/src/common/components/ConfirmDialog'
-import { getMutableState, useHookstate } from '@etherealengine/hyperflux'
+import { getMutableState, NO_PROXY, useHookstate } from '@etherealengine/hyperflux'
 import Box from '@etherealengine/ui/src/primitives/mui/Box'
 
 import { StaticResourceType } from '@etherealengine/common/src/schema.type.module'
@@ -129,7 +129,7 @@ const ResourceTable = ({ className, search }: Props) => {
     }
   }
 
-  const rows = adminResources.get({ noproxy: true }).map((el) => {
+  const rows = adminResources.get(NO_PROXY).map((el) => {
     return createData(el)
   })
 

@@ -1,0 +1,41 @@
+{
+  "nodes": [
+    {
+      "id": "4bb99f89-11c4-471e-ba46-f507d86ffc93",
+      "type": "lifecycle/onTick",
+      "metadata": {
+        "positionX": "4.753700030301175",
+        "positionY": "-330.7364926607548"
+      }
+    },
+    {
+      "id": "0",
+      "type": "lifecycle/onStart",
+      "metadata": {
+        "positionX": "2.1104424778760915",
+        "positionY": "-501.2300884955752"
+      },
+      "flows": {
+        "flow": {
+          "nodeId": "6",
+          "socket": "flow"
+        }
+      }
+    },
+    {
+      "id": "6",
+      "type": "debug/log",
+      "metadata": {
+        "positionX": "270.5933446233562",
+        "positionY": "-504.0538689099578"
+      },
+      "parameters": {
+        "text": {
+          "value": "DEBUG hello"
+        }
+      }
+    }
+  ],
+  "variables": [],
+  "customEvents": []
+}

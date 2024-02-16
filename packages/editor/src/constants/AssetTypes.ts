@@ -54,6 +54,7 @@ export const ItemTypes = {
   Volumetrics: ['manifest'],
   Text: [AssetType.PlainText, 'txt'],
   ECS: ['scene.json'],
+  Graph: ['graph.json'],
   Node: 'Node',
   Material: 'Material',
   Component: 'Component'
@@ -66,6 +67,7 @@ export const SupportedFileTypes = [
   ...ItemTypes.Volumetrics,
   ...ItemTypes.Models,
   ...ItemTypes.Scripts,
+  ...ItemTypes.Graph,
   ItemTypes.Folder,
   ItemTypes.File
 ]

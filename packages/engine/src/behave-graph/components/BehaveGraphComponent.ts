@@ -29,13 +29,10 @@ import { GraphJSON } from '@behave-graph/core'
 
 import { defineComponent, useComponent } from '@etherealengine/ecs/src/ComponentFunctions'
 import { useEntityContext } from '@etherealengine/ecs/src/EntityFunctions'
-import { getMutableState, useHookstate } from '@etherealengine/hyperflux'
-import {
-  cleanStorageProviderURLs,
-  parseStorageProviderURLs
-} from '@etherealengine/spatial/src/common/functions/parseSceneJSON'
+import { NO_PROXY, getMutableState, useHookstate } from '@etherealengine/hyperflux'
+import { parseStorageProviderURLs } from '@etherealengine/spatial/src/common/functions/parseSceneJSON'
 import { useEffect } from 'react'
-import { useGraphRunner } from '../functions/useGraphRunner'
+import { fetchBehaviorGraphJson, useGraphRunner } from '../functions/useGraphRunner'
 import DefaultGraph from '../graph/default-graph.json'
 import { BehaveGraphState } from '../state/BehaveGraphState'
 
@@ -48,10 +45,10 @@ export const BehaveGraphComponent = defineComponent({
   jsonID: 'BehaveGraph',
 
   onInit: (entity) => {
-    const domain = BehaveGraphDomain.ECS
     const graph = parseStorageProviderURLs(DefaultGraph) as unknown as GraphJSON
     return {
-      domain: domain,
+      filepath: '',
+      domain: BehaveGraphDomain.ECS,
       graph: graph,
       run: false,
       disabled: false
@@ -59,16 +56,21 @@ export const BehaveGraphComponent = defineComponent({
   },
 
   toJSON: (entity, component) => {
+    // save the graph json into file and not in scene
     return {
+      filepath: component.filepath.value,
       domain: component.domain.value,
-      graph: cleanStorageProviderURLs(JSON.parse(JSON.stringify(component.graph.get({ noproxy: true })))),
       run: false,
-      disabled: component.disabled.value
+      disabled: component.disabled.value,
+      graph: null! as GraphJSON
+      // we dont want to save the graph json in scene but we need this to define the state map :/ better solution is welcome!!
     }
   },
 
   onSet: (entity, component, json) => {
+    // if filepath exists and is valid, use that to load the graph json
     if (!json) return
+    if (typeof json.filepath === 'string' && json.filepath.endsWith('graph.json')) component.filepath.set(json.filepath)
     if (typeof json.disabled === 'boolean') component.disabled.set(json.disabled)
     if (typeof json.run === 'boolean') component.run.set(json.run)
     const domainValidator = matches.string as Validator<unknown, BehaveGraphDomain>
@@ -84,22 +86,32 @@ export const BehaveGraphComponent = defineComponent({
   // we make reactor for each component handle the engine
   reactor: () => {
     const entity = useEntityContext()
-    const graph = useComponent(entity, BehaveGraphComponent)
-    const behaveGraph = useHookstate(getMutableState(BehaveGraphState))
+    const graphComponent = useComponent(entity, BehaveGraphComponent)
+    const behaveGraphState = useHookstate(getMutableState(BehaveGraphState))
 
-    const canPlay = graph.run && !graph.disabled
-    const registry = behaveGraph.registries[graph.domain.value].get({ noproxy: true })
-    const graphRunner = useGraphRunner({ graphJson: graph.graph.get({ noproxy: true }), autoRun: canPlay, registry })
-
-    useEffect(() => {
-      if (graph.disabled.value) return
-      graph.run.value ? graphRunner.play() : graphRunner.pause()
-    }, [graph.run])
+    const canPlay = graphComponent.run && !graphComponent.disabled
+    const registry = behaveGraphState.registries[graphComponent.domain.value].get(NO_PROXY)
+    const graphRunner = useGraphRunner({ graphJson: graphComponent.graph.get(NO_PROXY), autoRun: canPlay, registry })
 
     useEffect(() => {
-      if (!graph.disabled.value) return
-      graph.run.set(false)
-    }, [graph.disabled])
+      if (graphComponent.filepath.value.split('.').slice(-2, -1)[0] !== 'graph')
+        return // dont set if json not of type graph
+      ;(async () => {
+        const graphJson = await fetchBehaviorGraphJson(graphComponent.filepath.value)
+
+        graphComponent.graph.set(parseStorageProviderURLs(graphJson)!)
+      })()
+    }, [graphComponent.filepath])
+
+    useEffect(() => {
+      if (graphComponent.disabled.value) return
+      graphComponent.run.value ? graphRunner.play() : graphRunner.pause()
+    }, [graphComponent.run])
+
+    useEffect(() => {
+      if (!graphComponent.disabled.value) return
+      graphComponent.run.set(false)
+    }, [graphComponent.disabled])
 
     return null
   }

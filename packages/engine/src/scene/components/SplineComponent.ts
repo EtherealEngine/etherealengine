@@ -42,7 +42,7 @@ import { useEffect } from 'react'
 import { defineComponent, setComponent, useComponent } from '@etherealengine/ecs/src/ComponentFunctions'
 import { Entity } from '@etherealengine/ecs/src/Entity'
 import { createEntity, removeEntity, useEntityContext } from '@etherealengine/ecs/src/EntityFunctions'
-import { getMutableState, useHookstate } from '@etherealengine/hyperflux'
+import { NO_PROXY, getMutableState, useHookstate } from '@etherealengine/hyperflux'
 import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
 import { V_010 } from '@etherealengine/spatial/src/common/constants/MathConstants'
 import { RendererState } from '@etherealengine/spatial/src/renderer/RendererState'
@@ -98,7 +98,7 @@ export const SplineComponent = defineComponent({
   },
 
   toJSON: (entity, component) => {
-    return { elements: component.elements.get({ noproxy: true }) }
+    return { elements: component.elements.get(NO_PROXY) }
   },
 
   reactor: () => {

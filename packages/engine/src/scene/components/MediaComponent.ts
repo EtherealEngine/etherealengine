@@ -102,12 +102,12 @@ export const MediaElementComponent = defineComponent({
 
   onSet: (entity, component, json) => {
     if (!json) return
-    if (typeof json.element === 'object' && json.element !== component.element.get({ noproxy: true }))
+    if (typeof json.element === 'object' && json.element !== component.element.get(NO_PROXY))
       component.element.set(json.element as HTMLMediaElement)
   },
 
   onRemove: (entity, component) => {
-    const element = component.element.get({ noproxy: true })
+    const element = component.element.get(NO_PROXY)
     component.hls.value?.destroy()
     component.hls.set(none)
     const audioNodeGroup = AudioNodeGroups.get(element)
@@ -470,7 +470,7 @@ export function MediaReactor() {
   useEffect(
     function updateMixbus() {
       if (!mediaElement?.value) return
-      const element = mediaElement.element.get({ noproxy: true })
+      const element = mediaElement.element.get(NO_PROXY)
       const audioNodes = AudioNodeGroups.get(element)
       if (audioNodes) {
         audioNodes.gain.disconnect(audioNodes.mixbus)

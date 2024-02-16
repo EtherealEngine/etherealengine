@@ -32,7 +32,7 @@ import {
   getCurrentTheme
 } from '@etherealengine/common/src/constants/DefaultThemeSettings'
 import { ClientThemeOptionsType } from '@etherealengine/common/src/schema.type.module'
-import { getMutableState, useHookstate } from '@etherealengine/hyperflux'
+import { NO_PROXY, getMutableState, useHookstate } from '@etherealengine/hyperflux'
 import Button from '@etherealengine/ui/src/primitives/mui/Button'
 
 import { AuthState } from '../../../../user/services/AuthService'
@@ -48,7 +48,7 @@ const ClientTheme = () => {
 
   const selfUser = useHookstate(getMutableState(AuthState).user)
   const clientSettingState = useHookstate(getMutableState(AdminClientSettingsState))
-  const [clientSetting] = clientSettingState?.client?.get({ noproxy: true }) || []
+  const [clientSetting] = clientSettingState?.client?.get(NO_PROXY) || []
   const id = clientSetting?.id
 
   const themeSettings = useHookstate<Record<string, ClientThemeOptionsType>>({

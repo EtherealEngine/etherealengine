@@ -26,6 +26,8 @@ Ethereal Engine. All Rights Reserved.
 import { Engine, GraphJSON, GraphNodes, ILifecycleEventEmitter, IRegistry, readGraphFromJSON } from '@behave-graph/core'
 import { useCallback, useEffect, useState } from 'react'
 
+export const fetchBehaviorGraphJson = async (url: string) => (await (await fetch(url)).json()) as GraphJSON
+
 /** Runs the behavior graph by building the execution
  * engine and triggering start on the lifecycle event emitter.
  */

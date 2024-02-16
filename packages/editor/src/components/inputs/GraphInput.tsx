@@ -23,33 +23,30 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-export function pathResolver() {
-  //const cacheRe = new RegExp(`(https://[^\\/]+)/projects/([^/]+)/(.*$)`)
-  const cacheRe = new RegExp(`.*/(?:projects|static-resources)/([^/]*)/((?:assets/|).*)`)
-  //                          1: project name -- 2: internal path
-  return cacheRe
+import React from 'react'
+
+import { GraphFileTypes } from '@etherealengine/engine/src/assets/constants/fileTypes'
+
+import { ItemTypes } from '../../constants/AssetTypes'
+import FileBrowserInput from './FileBrowserInput'
+import { StringInputProps } from './StringInput'
+
+/**
+ * ScriptInput used to render component view for script inputs.
+ *
+ * @param       {function} onChange
+ * @param       {any} rest
+ * @constructor
+ */
+export function GraphInput({ onChange, ...rest }: StringInputProps) {
+  return (
+    <FileBrowserInput
+      acceptFileTypes={GraphFileTypes}
+      acceptDropItems={ItemTypes.Graph}
+      onChange={onChange}
+      {...rest}
+    />
+  )
 }
 
-export function getFileName(path: string) {
-  return /[^\\/]+$/.exec(path)?.[0] ?? ''
-}
-
-export function getRelativeURI(path: string) {
-  return pathResolver().exec(path)?.[2] ?? ''
-}
-
-export function getProjectName(path: string) {
-  return pathResolver().exec(path)?.[1] ?? ''
-}
-
-export function getFileDirectory(path: string) {
-  return /^https:\/\/[^/]+\/[^/]+\/(.+?)\/[^/]+\.*$/.exec(path)?.[1] ?? ''
-}
-
-export function getDomainURL(path: string) {
-  return pathResolver().exec(path)?.[0] ?? ''
-}
-
-export function modelResourcesPath(modelName: string) {
-  return `model-resources/${modelName.split('.').at(-2)!}`
-}
+export default GraphInput

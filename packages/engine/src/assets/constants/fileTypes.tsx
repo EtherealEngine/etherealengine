@@ -45,6 +45,7 @@ export const ModelFileTypes = ['.glb', '.gltf', 'model/gltf-binary', 'model/gltf
 export const VolumetricFileTypes = ['.manifest']
 //array containing custom script type.
 export const CustomScriptFileTypes = ['.tsx', '.ts', '.js', '.jsx']
+export const GraphFileTypes = ['.json']
 export const BinaryFileTypes = ['.bin']
 //array contains arrays of all files types.
 export const AllFileTypes = [
@@ -54,7 +55,8 @@ export const AllFileTypes = [
   ...ModelFileTypes,
   ...VolumetricFileTypes,
   ...CustomScriptFileTypes,
-  ...BinaryFileTypes
+  ...BinaryFileTypes,
+  ...GraphFileTypes
 ]
 
 //creating comma separated string contains all file types

@@ -35,7 +35,7 @@ import Text from '@etherealengine/client-core/src/common/components/Text'
 import commonStyles from '@etherealengine/client-core/src/common/components/common.module.scss'
 import { ChannelID, ChannelType, UserID, UserName, channelPath } from '@etherealengine/common/src/schema.type.module'
 import { Engine } from '@etherealengine/ecs/src/Engine'
-import { getMutableState } from '@etherealengine/hyperflux'
+import { NO_PROXY, getMutableState } from '@etherealengine/hyperflux'
 import { useFind } from '@etherealengine/spatial/src/common/functions/FeathersHooks'
 import { NetworkState } from '@etherealengine/spatial/src/networking/NetworkState'
 import { WorldState } from '@etherealengine/spatial/src/networking/interfaces/WorldState'
@@ -93,7 +93,7 @@ const FriendsMenu = ({ defaultSelectedTab }: Props): JSX.Element => {
   const friendState = useHookstate(getMutableState(FriendState))
   const selfUser = useHookstate(getMutableState(AuthState).user)
   const userId = selfUser.id.value
-  const userNames = worldState.userNames.get({ noproxy: true })
+  const userNames = worldState.userNames.get(NO_PROXY)
 
   const privateChannels = channels.data.filter((channel) => !channel.instanceId)
 
