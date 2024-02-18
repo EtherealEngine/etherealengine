@@ -55,6 +55,9 @@ const config: ProjectConfigInterface = {
     },
     '/chat': {
       component: () => import('@etherealengine/client/src/pages/chat/chat')
+    },
+    '/home': {
+      component: () => import('@etherealengine/client/src/pages/home/home')
     }
   }
 }
