@@ -31,6 +31,7 @@
     "saveScene": "Save Scene",
     "saveAs": "Save As",
     "importAsset": "Import Asset",
+    "importSettings": "Import Settings",
     "exportGLB": "Export as binary glTF (.glb) ...",
     "importScene": "Import scene",
     "exportScene": "Export scene",
@@ -912,8 +913,8 @@
       "lbl-newProject": "New Project"
     }
   },
-  "graphPanel":{
-    "addGraph" : "Add Behave Graph"
+  "graphPanel": {
+    "addGraph": "Add Behave Graph"
   },
   "layout": {
     "assetGrid": {
@@ -1006,7 +1007,7 @@
     "scene-assets": {
       "no-category": "No category selected",
       "search-placeholder": "Search for an asset ...",
-      "preview" : "Preview"
+      "preview": "Preview"
     }
   },
   "hierarchy": {

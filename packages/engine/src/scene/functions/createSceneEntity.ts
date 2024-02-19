@@ -41,6 +41,7 @@ import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
 import { SceneID } from '@etherealengine/common/src/schema.type.module'
 import { proxifyParentChildRelationships } from '@etherealengine/engine/src/scene/functions/loadGLTFModel'
 import { addObjectToGroup } from '@etherealengine/spatial/src/renderer/components/GroupComponent'
+import { Object3DComponent } from '@etherealengine/spatial/src/renderer/components/Object3DComponent'
 import { Group } from 'three'
 
 export const createSceneEntity = (name: string, parentEntity: Entity = UndefinedEntity, sceneID?: SceneID): Entity => {
@@ -67,6 +68,7 @@ export const createSceneEntity = (name: string, parentEntity: Entity = Undefined
   obj3d.entity = entity
   addObjectToGroup(entity, obj3d)
   proxifyParentChildRelationships(obj3d)
+  setComponent(entity, Object3DComponent, obj3d)
 
   return entity
 }

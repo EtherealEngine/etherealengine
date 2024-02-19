@@ -30,6 +30,11 @@ export function pathResolver() {
   return cacheRe
 }
 
+export function getBasePath(path: string) {
+  const regex = new RegExp(`(.*/(?:projects|static-resources)/[^/]*)`)
+  return regex.exec(path)![0]
+}
+
 export function getFileName(path: string) {
   return /[^\\/]+$/.exec(path)?.[0] ?? ''
 }

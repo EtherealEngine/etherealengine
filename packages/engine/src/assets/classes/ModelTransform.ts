@@ -93,6 +93,8 @@ export type ResourceTransforms = {
   images: ImageTransformParameters[]
 }
 
+export type ModelFormat = 'glb' | 'gltf' | 'vrm'
+
 export type ModelTransformParameters = ExtractedImageTransformParameters & {
   src: string
   dst: string
@@ -131,7 +133,7 @@ export type ModelTransformParameters = ExtractedImageTransformParameters & {
     options: DracoOptions
   }
 
-  modelFormat: 'glb' | 'gltf' | 'vrm'
+  modelFormat: ModelFormat
 
   resources: ResourceTransforms
 }

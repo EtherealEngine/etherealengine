@@ -31,11 +31,14 @@ import {
   uploadToFeathersService
 } from '@etherealengine/client-core/src/util/upload'
 import multiLogger from '@etherealengine/common/src/logger'
-import { processFileName } from '@etherealengine/common/src/utils/processFileName'
-import { Engine } from '@etherealengine/ecs/src/Engine'
-import { modelResourcesPath } from '@etherealengine/engine/src/assets/functions/pathResolver'
-
 import { assetLibraryPath, fileBrowserPath, fileBrowserUploadPath } from '@etherealengine/common/src/schema.type.module'
+import { processFileName } from '@etherealengine/common/src/utils/processFileName'
+import { Engine } from '@etherealengine/ecs'
+import { ModelFormat } from '@etherealengine/engine/src/assets/classes/ModelTransform'
+import { getBasePath, modelResourcesPath } from '@etherealengine/engine/src/assets/functions/pathResolver'
+import { getState } from '@etherealengine/hyperflux'
+import { ImportSettingsState } from '../components/assets/ImportSettingsPanel'
+import { createLODVariants } from '../components/assets/ModelCompressionPanel'
 
 const logger = multiLogger.child({ component: 'editor:assetFunctions' })
 
@@ -65,6 +68,27 @@ export const inputFileWithAddToScene = async ({
         const files = Array.from(el.files)
         if (projectName) {
           uploadedURLs = (await Promise.all(uploadProjectFiles(projectName, files, true).promises)).map((url) => url[0])
+          for (const url of uploadedURLs) {
+            if (url.endsWith('.gltf') || url.endsWith('.glb') || url.endsWith('.wrm')) {
+              const importSettings = getState(ImportSettingsState)
+              if (importSettings.LODsEnabled) {
+                const LODSettings = [...importSettings.selectedLODS]
+                for (const lod of LODSettings) {
+                  const fileName = url.match(/\/([^\/]+)\.\w+$/)!
+                  const fileType = url.match(/\.(\w+)$/)!
+                  const dst = fileName[1] + '-' + lod.suffix + `.${fileType[1]}`
+                  const newDst = dst.replace(/\s/g, '').toLowerCase()
+                  lod.params.src = url
+
+                  const path = `${getBasePath(url)}${importSettings.LODFolder}${newDst}`
+                  lod.params.dst = path
+
+                  lod.params.modelFormat = fileType[1] as ModelFormat
+                }
+                await createLODVariants(LODSettings, true, 'DEVICE', true)
+              }
+            }
+          }
         } else if (directoryPath) {
           uploadedURLs = await Promise.all(
             files.map(
@@ -96,9 +120,13 @@ export const inputFileWithAddToScene = async ({
 
 export const uploadProjectFiles = (projectName: string, files: File[], isAsset = false, onProgress?) => {
   const promises: CancelableUploadPromiseReturnType<string>[] = []
+  const importSettings = getState(ImportSettingsState)
 
   for (const file of files) {
-    const path = `projects/${projectName}${isAsset ? '/assets' : ''}`
+    const path = `projects/${projectName}${isAsset ? importSettings.importFolder : ''}`
+    // if (importSettings.LODsEnabled) {
+    //   path = `projects/${projectName}${isAsset ? importSettings.LODFolder : ''}`
+    // }
     promises.push(
       uploadToFeathersService(fileBrowserUploadPath, [file], { fileName: file.name, path, contentType: '' }, onProgress)
     )
