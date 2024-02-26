@@ -26,7 +26,7 @@ Ethereal Engine. All Rights Reserved.
 import { useEffect } from 'react'
 
 import config from '@etherealengine/common/src/config'
-import { dispatchAction, getMutableState, getState, useHookstate } from '@etherealengine/hyperflux'
+import { dispatchAction, getMutableState, getState, getStateUnsafe, useHookstate } from '@etherealengine/hyperflux'
 
 import { getComponent } from '@etherealengine/ecs/src/ComponentFunctions'
 import { Engine } from '@etherealengine/ecs/src/Engine'
@@ -339,7 +339,7 @@ const revertXRSessionFunctions = () => {
 const execute = () => {
   if (!XR8) return
 
-  getState(XRState).xrFrame = new XRFrameProxy() as any as XRFrame
+  getStateUnsafe(XRState).xrFrame = new XRFrameProxy() as any as XRFrame
 }
 
 const reactor = () => {

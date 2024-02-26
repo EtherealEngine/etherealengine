@@ -193,12 +193,12 @@ export const addClientInputListeners = (canvas = EngineRenderer.instance.rendere
 
   /** Mouse events */
   const onWheelEvent = (event: WheelEvent) => {
-    const pointerState = getState(InputState).pointerState
+    const pointerState = getMutableState(InputState).pointerState
     const normalizedValues = normalizeWheel(event)
     const x = Math.sign(normalizedValues.spinX + Math.random() * 0.000001)
     const y = Math.sign(normalizedValues.spinY + Math.random() * 0.000001)
-    pointerState.scroll.x += x
-    pointerState.scroll.y += y
+    pointerState.scroll.x.set((curr_x) => curr_x + x)
+    pointerState.scroll.y.set((curr_y) => curr_y + y)
   }
   canvas.addEventListener('wheel', onWheelEvent, { passive: true, capture: true })
 

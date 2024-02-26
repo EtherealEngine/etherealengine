@@ -27,7 +27,7 @@ import { ColliderDesc, RigidBodyDesc, RigidBodyType, ShapeType } from '@dimforge
 import { useEffect } from 'react'
 import { Quaternion, Vector3 } from 'three'
 
-import { NO_PROXY, getState, useHookstate } from '@etherealengine/hyperflux'
+import { NO_PROXY, getState, getStateUnsafe, useHookstate } from '@etherealengine/hyperflux'
 
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
 import {
@@ -172,7 +172,7 @@ export const ColliderComponent = defineComponent({
       SceneAssetPendingTagComponent.removeResource(entity, ColliderComponent.jsonID)
 
       const isMeshCollider = [ShapeType.TriMesh, ShapeType.ConvexPolyhedron].includes(colliderComponent.shapeType.value)
-      const physicsWorld = getState(PhysicsState).physicsWorld
+      const physicsWorld = getStateUnsafe(PhysicsState).physicsWorld
 
       if (isLoadedFromGLTF?.value || isMeshCollider) {
         const colliderComponent = getComponent(entity, ColliderComponent)

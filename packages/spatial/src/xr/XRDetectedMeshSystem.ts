@@ -25,7 +25,7 @@ Ethereal Engine. All Rights Reserved.
 
 import { useEffect } from 'react'
 
-import { getMutableState, getState, useHookstate } from '@etherealengine/hyperflux'
+import { getMutableState, getStateUnsafe, useHookstate } from '@etherealengine/hyperflux'
 
 import { getComponent } from '@etherealengine/ecs/src/ComponentFunctions'
 import { removeEntity } from '@etherealengine/ecs/src/EntityFunctions'
@@ -96,9 +96,8 @@ const handleDetectedMeshes = (frame: XRFrame) => {
     XRDetectedMeshComponent.updateMeshPose(entity, mesh)
   }
 }
-
 const execute = () => {
-  const frame = getState(XRState).xrFrame
+  const frame = getStateUnsafe(XRState).xrFrame
   if (!frame?.session || frame.session.environmentBlendMode === 'opaque' || !ReferenceSpace.localFloor) return
 
   handleDetectedPlanes(frame)

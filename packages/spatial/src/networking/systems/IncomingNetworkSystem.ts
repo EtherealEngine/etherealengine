@@ -26,7 +26,7 @@ Ethereal Engine. All Rights Reserved.
 import { useEffect } from 'react'
 
 import { PeerID } from '@etherealengine/common/src/interfaces/PeerID'
-import { defineState, getState } from '@etherealengine/hyperflux'
+import { defineState, getState, getStateUnsafe } from '@etherealengine/hyperflux'
 
 import { DataChannelType } from '@etherealengine/common/src/interfaces/DataChannelType'
 import { ECSState } from '@etherealengine/ecs/src/ECSState'
@@ -85,7 +85,7 @@ const execute = () => {
   const ecsState = getState(ECSState)
 
   const { jitterBufferTaskList, jitterBufferDelay, incomingMessageQueueUnreliable, incomingMessageQueueUnreliableIDs } =
-    getState(IncomingNetworkState)
+    getStateUnsafe(IncomingNetworkState)
 
   const network = NetworkState.worldNetwork
   if (!network) return

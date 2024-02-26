@@ -33,6 +33,7 @@ import {
   defineState,
   getMutableState,
   getState,
+  getStateUnsafe,
   none,
   useHookstate
 } from '@etherealengine/hyperflux'
@@ -170,7 +171,7 @@ export const SceneState = defineState({
   // Snapshots
   resetHistory: (sceneID: SceneID) => {
     if (!getState(SceneState).scenes[sceneID]) throw new Error(`Scene ${sceneID} does not exist.`)
-    const scene = getState(SceneState).scenes[sceneID]
+    const scene = getStateUnsafe(SceneState).scenes[sceneID]
     const data = scene.snapshots[0].data
     getMutableState(SceneState).scenes[sceneID].set({
       metadata: scene.metadata,

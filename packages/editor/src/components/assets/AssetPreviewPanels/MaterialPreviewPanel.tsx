@@ -32,7 +32,7 @@ import {
   PreviewPanelRendererState,
   useRender3DPanelSystem
 } from '@etherealengine/client-core/src/user/components/Panel3D/useRender3DPanelSystem'
-import { getMutableState, getState, useHookstate } from '@etherealengine/hyperflux'
+import { getMutableState, getStateUnsafe, useHookstate } from '@etherealengine/hyperflux'
 
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
 import { createEntity, getMutableComponent, removeEntity, setComponent } from '@etherealengine/ecs'
@@ -86,7 +86,7 @@ export const MaterialPreviewPanel = (props) => {
     const uuid = MathUtils.generateUUID() as EntityUUID
     setComponent(entity, UUIDComponent, uuid)
     setComponent(entity, VisibleComponent, true)
-    const material = getState(MaterialLibraryState).materials[selectedMaterial.value].material
+    const material = getStateUnsafe(MaterialLibraryState).materials[selectedMaterial.value].material
     if (!material) return
     addObjectToGroup(entity, new Mesh(new SphereGeometry(5, 32, 32), material))
     setComponent(entity, EnvmapComponent, { type: 'Skybox', envMapIntensity: 2 })

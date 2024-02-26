@@ -33,7 +33,7 @@ import {
   setComponent
 } from '@etherealengine/ecs/src/ComponentFunctions'
 import { Entity } from '@etherealengine/ecs/src/Entity'
-import { getState } from '@etherealengine/hyperflux'
+import { getState, getStateUnsafe } from '@etherealengine/hyperflux'
 import { proxifyQuaternion, proxifyVector3 } from '../../common/proxies/createThreejsProxy'
 import { Physics } from '../classes/Physics'
 import { PhysicsState } from '../state/PhysicsState'
@@ -106,8 +106,7 @@ export const RigidBodyComponent = defineComponent({
             rigidBodyDesc = RigidBodyDesc.kinematicPositionBased()
             break
         }
-
-        const world = getState(PhysicsState).physicsWorld
+        const world = getStateUnsafe(PhysicsState).physicsWorld
         Physics.createRigidBody(entity, world, rigidBodyDesc)
       }
     }

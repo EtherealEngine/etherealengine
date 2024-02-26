@@ -33,6 +33,7 @@ import {
   dispatchAction,
   getMutableState,
   getState,
+  getStateUnsafe,
   useHookstate
 } from '@etherealengine/hyperflux'
 import { SystemImportType, getSystemsFromSceneData } from '@etherealengine/projects/loadSystemInjection'
@@ -166,7 +167,7 @@ const SceneReactor = (props: { sceneID: SceneID }) => {
   const isActiveScene = useHookstate(getMutableState(SceneState).activeScene).value === props.sceneID
 
   useEffect(() => {
-    const scene = getState(SceneState).scenes[props.sceneID]
+    const scene = getStateUnsafe(SceneState).scenes[props.sceneID]
     const { project } = scene.metadata
     const data = scene.snapshots[scene.index].data
     getSystemsFromSceneData(project, data).then((systems) => {

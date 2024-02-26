@@ -25,7 +25,7 @@ Ethereal Engine. All Rights Reserved.
 
 import { DataChannelType } from '@etherealengine/common/src/interfaces/DataChannelType'
 import { PeerID } from '@etherealengine/common/src/interfaces/PeerID'
-import { defineState, getMutableState, getState, none } from '@etherealengine/hyperflux'
+import { NO_PROXY_STEALTH, defineState, getMutableState, getState, none } from '@etherealengine/hyperflux'
 import { Network } from '../classes/Network'
 
 type RegistryFunction = (network: Network, dataChannel: DataChannelType, fromPeerID: PeerID, message: any) => void
@@ -39,7 +39,7 @@ export const addDataChannelHandler = (dataChannelType: DataChannelType, handler:
   if (!getState(DataChannelRegistryState)[dataChannelType]) {
     getMutableState(DataChannelRegistryState).merge({ [dataChannelType]: [] })
   }
-  getState(DataChannelRegistryState)[dataChannelType].push(handler)
+  getMutableState(DataChannelRegistryState)[dataChannelType].merge([handler])
 }
 
 export const removeDataChannelHandler = (dataChannelType: DataChannelType, handler: RegistryFunction) => {
@@ -48,7 +48,7 @@ export const removeDataChannelHandler = (dataChannelType: DataChannelType, handl
   const index = getState(DataChannelRegistryState)[dataChannelType].indexOf(handler)
   if (index === -1) return
 
-  getState(DataChannelRegistryState)[dataChannelType].splice(index, 1)
+  getMutableState(DataChannelRegistryState)[dataChannelType].get(NO_PROXY_STEALTH).splice(index, 1)
 
   if (getState(DataChannelRegistryState)[dataChannelType].length === 0) {
     getMutableState(DataChannelRegistryState)[dataChannelType].set(none)

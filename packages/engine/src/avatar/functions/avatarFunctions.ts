@@ -26,7 +26,7 @@ Ethereal Engine. All Rights Reserved.
 import { VRM, VRM1Meta, VRMHumanBone, VRMHumanoid } from '@pixiv/three-vrm'
 import { AnimationClip, AnimationMixer, Box3, Vector3 } from 'three'
 
-import { getMutableState, getState } from '@etherealengine/hyperflux'
+import { getMutableState, getState, getStateUnsafe } from '@etherealengine/hyperflux'
 
 import {
   getComponent,
@@ -195,7 +195,7 @@ export const setupAvatarForUser = (entity: Entity, model: VRM) => {
 
 export const retargetAvatarAnimations = (entity: Entity) => {
   const rigComponent = getComponent(entity, AvatarRigComponent)
-  const manager = getState(AnimationState)
+  const manager = getStateUnsafe(AnimationState)
   const animations = [] as AnimationClip[]
   for (const key in manager.loadedAnimations) {
     for (const animation of manager.loadedAnimations[key].animations)
@@ -213,7 +213,7 @@ export const retargetAvatarAnimations = (entity: Entity) => {
  * given avatar's locomotion animations
  */
 export const setAvatarSpeedFromRootMotion = () => {
-  const manager = getState(AnimationState)
+  const manager = getStateUnsafe(AnimationState)
   const run = manager.loadedAnimations[preloadedAnimations.locomotion].animations[4] ?? [new AnimationClip()]
   const walk = manager.loadedAnimations[preloadedAnimations.locomotion].animations[6] ?? [new AnimationClip()]
   const movement = getMutableState(AvatarMovementSettingsState)

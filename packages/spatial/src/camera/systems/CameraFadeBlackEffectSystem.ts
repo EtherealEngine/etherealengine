@@ -25,7 +25,7 @@ Ethereal Engine. All Rights Reserved.
 
 import { Color, DoubleSide, Mesh, MeshBasicMaterial, SphereGeometry } from 'three'
 
-import { defineActionQueue, defineState, getMutableState, getState } from '@etherealengine/hyperflux'
+import { NO_PROXY_STEALTH, defineActionQueue, defineState, getMutableState, getState } from '@etherealengine/hyperflux'
 
 import { getComponent, removeComponent, setComponent } from '@etherealengine/ecs/src/ComponentFunctions'
 import { ECSState } from '@etherealengine/ecs/src/ECSState'
@@ -60,28 +60,28 @@ const CameraFadeBlackEffectSystemState = defineState({
 })
 
 const execute = () => {
-  const { transition, mesh, entity } = getState(CameraFadeBlackEffectSystemState)
-  if (!entity) return
+  const { transition, mesh, entity } = getMutableState(CameraFadeBlackEffectSystemState)
+  if (!entity.value) return
 
   for (const action of fadeToBlackQueue()) {
-    transition.setState(action.in ? 'IN' : 'OUT')
+    transition.get(NO_PROXY_STEALTH).setState(action.in ? 'IN' : 'OUT')
     if (action.in) {
-      setComputedTransformComponent(entity, Engine.instance.cameraEntity, () => {
-        getComponent(entity, TransformComponent).position.copy(
+      setComputedTransformComponent(entity.get(NO_PROXY_STEALTH), Engine.instance.cameraEntity, () => {
+        getComponent(entity.get(NO_PROXY_STEALTH), TransformComponent).position.copy(
           getComponent(Engine.instance.cameraEntity, TransformComponent).position
         )
       })
-    } else removeComponent(entity, ComputedTransformComponent)
+    } else removeComponent(entity.get(NO_PROXY_STEALTH), ComputedTransformComponent)
 
-    mesh.material.color = new Color('black')
-    mesh.material.map = null
-    mesh.material.needsUpdate = true
+    mesh.material.color.set(new Color('black'))
+    mesh.material.map.set(null)
+    mesh.material.needsUpdate.set(true)
   }
 
   const deltaSeconds = getState(ECSState).deltaSeconds
-  transition.update(deltaSeconds, (alpha) => {
-    mesh.material.opacity = alpha
-    setVisibleComponent(entity, alpha > 0)
+  transition.get(NO_PROXY_STEALTH).update(deltaSeconds, (alpha) => {
+    mesh.material.opacity.set(alpha)
+    setVisibleComponent(entity.get(NO_PROXY_STEALTH), alpha > 0)
   })
 }
 

@@ -27,7 +27,7 @@ import { Collider, ColliderDesc, RigidBody, RigidBodyDesc } from '@dimforge/rapi
 import { AnimationClip, AnimationMixer, Object3D, Vector3 } from 'three'
 
 import { EntityUUID } from '@etherealengine/common/src/interfaces/EntityUUID'
-import { getState } from '@etherealengine/hyperflux'
+import { getState, getStateUnsafe } from '@etherealengine/hyperflux'
 
 import { getComponent, hasComponent, setComponent } from '@etherealengine/ecs/src/ComponentFunctions'
 import { Engine } from '@etherealengine/ecs/src/Engine'
@@ -135,7 +135,7 @@ export const createAvatarCollider = (entity: Entity): Collider => {
   bodyColliderDesc.setTranslation(0, halfHeight + 0.25, 0)
 
   return Physics.createColliderAndAttachToRigidBody(
-    getState(PhysicsState).physicsWorld,
+    getStateUnsafe(PhysicsState).physicsWorld,
     bodyColliderDesc,
     rigidBody.body
   )
@@ -143,7 +143,7 @@ export const createAvatarCollider = (entity: Entity): Collider => {
 
 const createAvatarRigidBody = (entity: Entity): RigidBody => {
   const rigidBodyDesc = RigidBodyDesc.kinematicPositionBased()
-  const rigidBody = Physics.createRigidBody(entity, getState(PhysicsState).physicsWorld, rigidBodyDesc, [])
+  const rigidBody = Physics.createRigidBody(entity, getStateUnsafe(PhysicsState).physicsWorld, rigidBodyDesc, [])
   rigidBody.lockRotations(true, false)
   rigidBody.setEnabledRotations(false, true, false, false)
 
@@ -171,7 +171,7 @@ export const createAvatarController = (entity: Entity) => {
 
   setComponent(entity, AvatarControllerComponent, {
     bodyCollider: createAvatarCollider(entity),
-    controller: Physics.createCharacterController(getState(PhysicsState).physicsWorld, {})
+    controller: Physics.createCharacterController(getStateUnsafe(PhysicsState).physicsWorld, {})
   })
 
   setComponent(entity, CollisionComponent)

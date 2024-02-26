@@ -26,7 +26,7 @@ Ethereal Engine. All Rights Reserved.
 import { createState, SetInitialStateAction, State, useHookstate } from '@hookstate/core'
 import type { Object as _Object, Function, String } from 'ts-toolbelt'
 
-import { DeepReadonly } from '@etherealengine/common/src/DeepReadonly'
+import { Immutable } from '@etherealengine/common/src/Immutability'
 import multiLogger from '@etherealengine/common/src/logger'
 import { isClient } from '@etherealengine/common/src/utils/getEnvironment'
 import { resolveObject } from '@etherealengine/common/src/utils/resolveObject'
@@ -82,9 +82,20 @@ export function getMutableState<S, R extends ReceptorMap>(StateDefinition: State
   return HyperFlux.store.stateMap[StateDefinition.name] as State<S>
 }
 
+/**
+ * Returns the given state as an Immutable type which does not allow mutation
+ */
 export function getState<S, R extends ReceptorMap>(StateDefinition: StateDefinition<S, R>) {
   if (!HyperFlux.store.stateMap[StateDefinition.name]) setInitialState(StateDefinition)
-  return HyperFlux.store.stateMap[StateDefinition.name].get(NO_PROXY_STEALTH) as DeepReadonly<S>
+  return HyperFlux.store.stateMap[StateDefinition.name].get(NO_PROXY_STEALTH) as Immutable<S>
+}
+/**
+ * @internal
+ * Will return original type of state without readonly protections
+ * @param {StateDefinition} stateDefinition */
+export function getStateUnsafe<S, R extends ReceptorMap>(StateDefinition: StateDefinition<S, R>) {
+  if (!HyperFlux.store.stateMap[StateDefinition.name]) setInitialState(StateDefinition)
+  return HyperFlux.store.stateMap[StateDefinition.name].get(NO_PROXY_STEALTH)
 }
 
 export function useMutableState<S, R extends ReceptorMap, P extends string>(

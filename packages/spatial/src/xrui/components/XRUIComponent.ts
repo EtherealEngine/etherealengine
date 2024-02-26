@@ -23,7 +23,7 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { getState } from '@etherealengine/hyperflux'
+import { getStateUnsafe } from '@etherealengine/hyperflux'
 import type { WebContainer3D } from '@etherealengine/xrui'
 
 import { defineComponent } from '@etherealengine/ecs/src/ComponentFunctions'
@@ -38,8 +38,8 @@ export const XRUIComponent = defineComponent({
 
   onSet: (entity, component, json: WebContainer3D) => {
     if (typeof json !== 'undefined') {
+      json.interactionRays = getStateUnsafe(XRUIState).interactionRays
       component.set(json)
-      json.interactionRays = getState(XRUIState).interactionRays
     }
   },
 

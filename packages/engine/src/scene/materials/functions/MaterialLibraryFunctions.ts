@@ -25,7 +25,7 @@ Ethereal Engine. All Rights Reserved.
 
 import { Color, Material, Texture } from 'three'
 
-import { getMutableState, getState, none } from '@etherealengine/hyperflux'
+import { getMutableState, getState, getStateUnsafe, none } from '@etherealengine/hyperflux'
 
 import { Entity } from '@etherealengine/ecs'
 import { getOptionalComponent } from '@etherealengine/ecs/src/ComponentFunctions'
@@ -94,14 +94,14 @@ export function materialIsRegistered(material: Material): boolean {
 }
 
 export function materialFromId(matId: string): MaterialComponentType {
-  const materialLibrary = getState(MaterialLibraryState)
+  const materialLibrary = getStateUnsafe(MaterialLibraryState)
   const material = materialLibrary.materials[matId]
   if (!material) throw new MaterialNotFoundError('could not find Material with ID ' + matId)
   return material
 }
 
 export function prototypeFromId(protoId: string): MaterialPrototypeComponentType {
-  const materialLibrary = getState(MaterialLibraryState)
+  const materialLibrary = getStateUnsafe(MaterialLibraryState)
   const prototype = materialLibrary.prototypes[protoId]
   if (!prototype) throw new PrototypeNotFoundError('could not find Material Prototype for ID ' + protoId)
   return prototype
@@ -163,7 +163,7 @@ export function addMaterialSource(src: MaterialSource): boolean {
 }
 
 export function getSourceItems(src: MaterialSource): string[] | undefined {
-  const materialLibrary = getState(MaterialLibraryState)
+  const materialLibrary = getStateUnsafe(MaterialLibraryState)
   return materialLibrary.sources[hashMaterialSource(src)]?.entries
 }
 

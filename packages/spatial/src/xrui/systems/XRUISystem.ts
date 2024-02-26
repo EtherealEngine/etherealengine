@@ -26,7 +26,7 @@ Ethereal Engine. All Rights Reserved.
 import { useEffect } from 'react'
 import { Color } from 'three'
 
-import { getMutableState, getState } from '@etherealengine/hyperflux'
+import { NO_PROXY_STEALTH, getMutableState, getState } from '@etherealengine/hyperflux'
 import { WebContainer3D } from '@etherealengine/xrui'
 
 import { getComponent, getMutableComponent, hasComponent } from '@etherealengine/ecs/src/ComponentFunctions'
@@ -129,16 +129,16 @@ const updateClickEventsForController = (entity: Entity) => {
 }
 
 const execute = () => {
-  const xruiState = getState(XRUIState)
+  const xruiState = getMutableState(XRUIState)
   const xrFrame = getState(XRState).xrFrame
 
   /** Update the objects to use for intersection tests */
   const pointerScreenRaycaster = getState(InputState).pointerScreenRaycaster
-  if (xrFrame && xruiState.interactionRays[0] === pointerScreenRaycaster.ray)
-    xruiState.interactionRays = [...PointerComponent.getPointers(), pointerScreenRaycaster.ray] // todo, replace pointerScreenRaycaster with input sources
+  if (xrFrame && xruiState.interactionRays[0].get(NO_PROXY_STEALTH) === pointerScreenRaycaster.ray)
+    xruiState.interactionRays.set([...PointerComponent.getPointers(), pointerScreenRaycaster.ray]) // todo, replace pointerScreenRaycaster with input sources
 
-  if (!xrFrame && xruiState.interactionRays[0] !== pointerScreenRaycaster.ray)
-    xruiState.interactionRays = [pointerScreenRaycaster.ray]
+  if (!xrFrame && xruiState.interactionRays[0].get(NO_PROXY_STEALTH) !== pointerScreenRaycaster.ray)
+    xruiState.interactionRays.set([pointerScreenRaycaster.ray])
 
   const interactableXRUIEntities = visibleInteractableXRUIQuery()
 

@@ -23,7 +23,7 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { DeepReadonly } from '@etherealengine/common/src/DeepReadonly'
+import { Immutable } from '@etherealengine/common/src/Immutability'
 
 import { insertionSort } from '@etherealengine/common/src/utils/insertionSort'
 import { Entity } from '@etherealengine/ecs/src/Entity'
@@ -45,7 +45,7 @@ export const createPriorityQueue = (args: { accumulationBudget: number }) => {
   let totalAccumulation = 0
 
   const queue = {
-    accumulatingPriorities: accumulatingPriorities as DeepReadonly<typeof accumulatingPriorities>,
+    accumulatingPriorities: accumulatingPriorities as Immutable<typeof accumulatingPriorities>,
     removeEntity: (entity: Entity) => {
       accumulatingPriorities.delete(entity)
     },

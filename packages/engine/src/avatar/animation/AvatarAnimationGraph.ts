@@ -26,7 +26,7 @@ Ethereal Engine. All Rights Reserved.
 import { clamp } from 'lodash'
 import { AnimationClip, AnimationMixer, LoopOnce, LoopRepeat, Object3D, Vector3 } from 'three'
 
-import { defineActionQueue, getState } from '@etherealengine/hyperflux'
+import { defineActionQueue, getState, getStateUnsafe } from '@etherealengine/hyperflux'
 
 import { getComponent, getMutableComponent, hasComponent } from '@etherealengine/ecs/src/ComponentFunctions'
 import { ECSState } from '@etherealengine/ecs/src/ECSState'
@@ -44,7 +44,7 @@ import { preloadedAnimations } from './Util'
 const animationQueue = defineActionQueue(AvatarNetworkAction.setAnimationState.matches)
 
 export const getAnimationAction = (name: string, mixer: AnimationMixer, animations?: AnimationClip[]) => {
-  const manager = getState(AnimationState)
+  const manager = getStateUnsafe(AnimationState)
   const clip = AnimationClip.findByName(
     animations ?? manager.loadedAnimations[preloadedAnimations.locomotion]!.animations,
     name
@@ -67,7 +67,7 @@ export const updateAnimationGraph = (avatarEntities: Entity[]) => {
       )
       continue
     }
-    const animationState = getState(AnimationState)
+    const animationState = getStateUnsafe(AnimationState)
     const animationAsset = animationState.loadedAnimations[newAnimation.animationAsset]
     if (!animationAsset) {
       console.warn(

@@ -34,6 +34,7 @@ import {
   dispatchAction,
   getMutableState,
   getState,
+  getStateUnsafe,
   none,
   useHookstate
 } from '@etherealengine/hyperflux'
@@ -237,11 +238,11 @@ export const MediasoupMediaProducerConsumerState = defineState({
       const mediatag = producerState.mediaTag.value
 
       const { globalMute, paused } = action
-      const network = getState(NetworkState).networks[networkID]
+      const network = getMutableState(NetworkState).networks[networkID]
       const media = network.peers[peerID]?.media
       if (media && media[mediatag]) {
-        media[mediatag].paused = paused
-        media[mediatag].globalMute = globalMute
+        media[mediatag].paused.set(paused)
+        media[mediatag].globalMute.set(globalMute)
       }
     }),
 
@@ -325,7 +326,7 @@ export const NetworkProducer = (props: { networkID: InstanceID; producerID: stri
 
       producer.close()
 
-      const network = getState(NetworkState).networks[networkID]
+      const network = getStateUnsafe(NetworkState).networks[networkID]
 
       if (!network) return
 

@@ -25,7 +25,7 @@ Ethereal Engine. All Rights Reserved.
 
 import { ArrayCamera, PerspectiveCamera, Vector2, Vector3, Vector4 } from 'three'
 
-import { defineActionQueue, getMutableState, getState } from '@etherealengine/hyperflux'
+import { defineActionQueue, getMutableState, getState, getStateUnsafe } from '@etherealengine/hyperflux'
 
 import { AnimationSystemGroup } from '@etherealengine/ecs'
 import { getComponent } from '@etherealengine/ecs/src/ComponentFunctions'
@@ -130,11 +130,11 @@ function updateCameraFromXRViewerPose() {
 
   if (pose) {
     const views = pose.views
-    const xrRendererState = getState(XRRendererState)
-    const glBaseLayer = xrRendererState.glBaseLayer
-    const glBinding = xrRendererState.glBinding
-    const glProjLayer = xrRendererState.glProjLayer
-    const newRenderTarget = xrRendererState.newRenderTarget
+    const xrRendererState = getStateUnsafe(XRRendererState)
+    const glBaseLayer = xrRendererState.glBaseLayer!
+    const glBinding = xrRendererState.glBinding!
+    const glProjLayer = xrRendererState.glProjLayer!
+    const newRenderTarget = xrRendererState.newRenderTarget!
 
     if (glBaseLayer !== null) {
       // @ts-ignore setRenderTargetFramebuffer is not in the type definition

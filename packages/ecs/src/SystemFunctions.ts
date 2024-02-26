@@ -29,7 +29,7 @@ import { FC, useEffect } from 'react'
 
 import { OpaqueType } from '@etherealengine/common/src/interfaces/OpaqueType'
 import multiLogger from '@etherealengine/common/src/logger'
-import { getMutableState, getState, startReactor } from '@etherealengine/hyperflux'
+import { getMutableState, getState, getStateUnsafe, startReactor } from '@etherealengine/hyperflux'
 
 import { MathUtils } from 'three'
 import { SystemState } from './SystemState'
@@ -94,7 +94,7 @@ export function executeSystem(systemUUID: SystemUUID) {
 
   if (system.reactor && !getState(SystemState).activeSystemReactors.has(system.uuid)) {
     const reactor = startReactor(system.reactor)
-    getState(SystemState).activeSystemReactors.set(system.uuid, reactor)
+    getStateUnsafe(SystemState).activeSystemReactors.set(system.uuid, reactor)
   }
 
   const startTime = nowMilliseconds()
@@ -199,7 +199,7 @@ export const destroySystem = (systemUUID: SystemUUID) => {
 
   const reactor = getState(SystemState).activeSystemReactors.get(system.uuid as SystemUUID)!
   if (reactor) {
-    getState(SystemState).activeSystemReactors.delete(system.uuid as SystemUUID)
+    getStateUnsafe(SystemState).activeSystemReactors.delete(system.uuid as SystemUUID)
     reactor.stop()
   }
 

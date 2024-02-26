@@ -40,7 +40,7 @@ import {
 import { VelocityDepthNormalPass } from 'realism-effects'
 import { DepthTexture, NearestFilter, PerspectiveCamera, RGBAFormat, UnsignedIntType, WebGLRenderTarget } from 'three'
 
-import { getState } from '@etherealengine/hyperflux'
+import { getState, getStateUnsafe } from '@etherealengine/hyperflux'
 
 import { getComponent } from '@etherealengine/ecs/src/ComponentFunctions'
 import { Engine } from '@etherealengine/ecs/src/Engine'
@@ -90,7 +90,7 @@ export const configureEffectComposer = (
   })
   composer.SMAAEffect = smaaEffect
 
-  const outlineEffect = new OutlineEffect(scene, camera, getState(HighlightState))
+  const outlineEffect = new OutlineEffect(scene, camera, getStateUnsafe(HighlightState))
   outlineEffect.selectionLayer = ObjectLayers.HighlightEffect
   composer.HighlightEffect = outlineEffect
 

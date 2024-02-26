@@ -26,7 +26,7 @@ Ethereal Engine. All Rights Reserved.
 import { useEffect } from 'react'
 import { Color, CubeTexture, LightProbe, Vector3, WebGLCubeRenderTarget } from 'three'
 
-import { defineState, getMutableState, getState, useHookstate } from '@etherealengine/hyperflux'
+import { NO_PROXY_STEALTH, defineState, getMutableState, getState, useHookstate } from '@etherealengine/hyperflux'
 
 import { getComponent, getMutableComponent, setComponent } from '@etherealengine/ecs/src/ComponentFunctions'
 import { Entity } from '@etherealengine/ecs/src/Entity'
@@ -77,17 +77,19 @@ export const XRLightProbeState = defineState({
 })
 
 const updateReflection = () => {
-  const xrLightProbeState = getState(XRLightProbeState)
+  const xrLightProbeState = getMutableState(XRLightProbeState)
 
   if (!xrLightProbeState.environment || !xrLightProbeState.xrWebGLBinding || !xrLightProbeState.probe) return
 
   const textureProperties = EngineRenderer.instance.renderer.properties.get(xrLightProbeState.environment)
 
   if (textureProperties) {
-    const cubeMap = xrLightProbeState.xrWebGLBinding!.getReflectionCubeMap?.(xrLightProbeState.probe)
+    const cubeMap = xrLightProbeState.xrWebGLBinding
+      .get(NO_PROXY_STEALTH)
+      ?.getReflectionCubeMap?.(xrLightProbeState.probe.get(NO_PROXY_STEALTH)!)
     if (cubeMap) {
       textureProperties.__webglTexture = cubeMap
-      xrLightProbeState.environment.needsPMREMUpdate = true
+      xrLightProbeState.environment.ornull?.needsPMREMUpdate.set(true)
     }
   }
 }
@@ -96,7 +98,7 @@ const updateReflection = () => {
  * https://github.com/mrdoob/three.js/blob/master/examples/webxr_ar_lighting.html
  */
 const execute = () => {
-  const xrLightProbeState = getState(XRLightProbeState)
+  const xrLightProbeState = getMutableState(XRLightProbeState)
 
   const xrFrame = getState(XRState).xrFrame
   if (!xrFrame) return
@@ -105,14 +107,14 @@ const execute = () => {
 
   if (!('getLightEstimate' in xrFrame)) return
 
-  const lightEstimate = xrFrame.getLightEstimate?.(xrLightProbeState.probe)
+  const lightEstimate = xrFrame.getLightEstimate?.(xrLightProbeState.probe.get(NO_PROXY_STEALTH)!)
   if (lightEstimate) {
     if (!xrLightProbeState.isEstimatingLight) getMutableState(XRLightProbeState).isEstimatingLight.set(true)
     if (!xrLightProbeState.directionalLightEntity) return
 
     // We can copy the estimate's spherical harmonics array directly into the light probe.
-    xrLightProbeState.lightProbe.sh.fromArray(lightEstimate.sphericalHarmonicsCoefficients)
-    xrLightProbeState.lightProbe.intensity = 1.0
+    xrLightProbeState.lightProbe.sh.get(NO_PROXY_STEALTH).fromArray(lightEstimate.sphericalHarmonicsCoefficients)
+    xrLightProbeState.lightProbe.intensity.set(1.0)
 
     // For the directional light we have to normalize the color and set the scalar as the
     // intensity, since WebXR can return color values that exceed 1.0.
@@ -125,7 +127,7 @@ const execute = () => {
     )
 
     const directionalLightState = getMutableComponent(
-      xrLightProbeState.directionalLightEntity,
+      xrLightProbeState.directionalLightEntity.get(NO_PROXY_STEALTH)!,
       DirectionalLightComponent
     )
 
@@ -138,10 +140,10 @@ const execute = () => {
     )
     directionalLightState.intensity.set(intensityScalar)
 
-    getComponent(xrLightProbeState.directionalLightEntity, TransformComponent).rotation.setFromUnitVectors(
-      V_000,
-      lightEstimate.primaryLightDirection as any as Vector3
-    )
+    getComponent(
+      xrLightProbeState.directionalLightEntity.get(NO_PROXY_STEALTH)!,
+      TransformComponent
+    ).rotation.setFromUnitVectors(V_000, lightEstimate.primaryLightDirection as any as Vector3)
   }
 }
 
@@ -150,8 +152,7 @@ const reactor = () => {
   const xrLightProbeState = useHookstate(getMutableState(XRLightProbeState))
 
   useEffect(() => {
-    const xrLightProbeState = getState(XRLightProbeState)
-    xrLightProbeState.lightProbe.intensity = 0
+    xrLightProbeState.lightProbe.intensity.set(0)
   }, [])
 
   useEffect(() => {

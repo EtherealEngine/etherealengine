@@ -28,7 +28,7 @@ import { useEffect } from 'react'
 import { Quaternion, Vector3 } from 'three'
 
 import { smootheLerpAlpha } from '@etherealengine/common/src/utils/smootheLerpAlpha'
-import { getMutableState, getState, none } from '@etherealengine/hyperflux'
+import { NO_PROXY_STEALTH, getMutableState, getState, none } from '@etherealengine/hyperflux'
 
 import { getComponent, removeComponent } from '@etherealengine/ecs/src/ComponentFunctions'
 import { ECSState } from '@etherealengine/ecs/src/ECSState'
@@ -115,8 +115,8 @@ let drainCollisions: ReturnType<typeof Physics.drainCollisionEventQueue>
 let drainContacts: ReturnType<typeof Physics.drainContactEventQueue>
 
 const execute = () => {
-  const { physicsWorld, physicsCollisionEventQueue } = getState(PhysicsState)
-  if (!physicsWorld) return
+  const { physicsWorld, physicsCollisionEventQueue } = getMutableState(PhysicsState)
+  if (!physicsWorld.get(NO_PROXY_STEALTH)) return
 
   const allRigidBodies = allRigidBodyQuery()
 
@@ -151,7 +151,7 @@ const execute = () => {
 
   // step physics world
   const timestep = simulationTimestep / 1000 / physicsSubsteps
-  physicsWorld.timestep = timestep
+  physicsWorld.timestep.set(timestep)
   // const smoothnessMultiplier = 50
   // const smoothAlpha = smoothnessMultiplier * timestep
   const kinematicPositionEntities = kinematicPositionBodyQuery()
@@ -161,9 +161,9 @@ const execute = () => {
     const substep = (i + 1) / physicsSubsteps
     for (const entity of kinematicPositionEntities) smoothPositionBasedKinematicBody(entity, timestep, substep)
     for (const entity of kinematicVelocityEntities) smoothVelocityBasedKinematicBody(entity, timestep, substep)
-    physicsWorld.step(physicsCollisionEventQueue)
-    physicsCollisionEventQueue.drainCollisionEvents(drainCollisions)
-    physicsCollisionEventQueue.drainContactForceEvents(drainContacts)
+    physicsWorld.get(NO_PROXY_STEALTH).step(physicsCollisionEventQueue.get(NO_PROXY_STEALTH))
+    physicsCollisionEventQueue.get(NO_PROXY_STEALTH).drainCollisionEvents(drainCollisions)
+    physicsCollisionEventQueue.get(NO_PROXY_STEALTH).drainContactForceEvents(drainContacts)
   }
 
   /** process collisions */

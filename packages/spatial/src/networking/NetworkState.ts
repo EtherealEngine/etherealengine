@@ -26,7 +26,7 @@ Ethereal Engine. All Rights Reserved.
 import { DataChannelType } from '@etherealengine/common/src/interfaces/DataChannelType'
 import { PeerID, PeersUpdateType } from '@etherealengine/common/src/interfaces/PeerID'
 import { ChannelID, InstanceID, LocationID, RoomCode, UserID } from '@etherealengine/common/src/schema.type.module'
-import { defineAction, defineState, getMutableState, getState, none } from '@etherealengine/hyperflux'
+import { defineAction, defineState, getMutableState, getState, getStateUnsafe, none } from '@etherealengine/hyperflux'
 import { Validator, matches } from '../common/functions/MatchesUtils'
 import { Network } from './classes/Network'
 import { SerializationSchema } from './serialization/Utils'
@@ -70,7 +70,7 @@ export const NetworkState = defineState({
   },
 
   get worldNetwork() {
-    const state = getState(NetworkState)
+    const state = getStateUnsafe(NetworkState)
     return state.networks[state.hostIds.world!]!
   },
 

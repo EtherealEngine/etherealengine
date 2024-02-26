@@ -25,7 +25,7 @@ Ethereal Engine. All Rights Reserved.
 
 import type { UserID } from '@etherealengine/common/src/schema.type.module'
 import * as Hyperflux from '@etherealengine/hyperflux'
-import { createHyperStore, getState } from '@etherealengine/hyperflux'
+import { createHyperStore, getState, getStateUnsafe } from '@etherealengine/hyperflux'
 import { HyperFlux, HyperStore, disposeStore } from '@etherealengine/hyperflux/functions/StoreFunctions'
 import * as bitECS from 'bitecs'
 
@@ -65,7 +65,8 @@ export class Engine {
   store = createHyperStore({
     getDispatchId: () => Engine.instance.userID,
     getDispatchTime: () => getState(ECSState).simulationTime,
-    getCurrentReactorRoot: () => getState(SystemState).activeSystemReactors.get(getState(SystemState).currentSystemUUID)
+    getCurrentReactorRoot: () =>
+      getStateUnsafe(SystemState).activeSystemReactors.get(getState(SystemState).currentSystemUUID)
   }) as HyperStore
 
   engineTimer = null! as ReturnType<typeof Timer>

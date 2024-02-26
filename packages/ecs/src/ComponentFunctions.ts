@@ -33,7 +33,7 @@ import type from 'react/experimental'
 import React, { startTransition, use } from 'react'
 
 import config from '@etherealengine/common/src/config'
-import { DeepReadonly } from '@etherealengine/common/src/DeepReadonly'
+import { Immutable } from '@etherealengine/common/src/Immutability'
 import { HookableFunction } from '@etherealengine/common/src/utils/createHookableFunction'
 import { getNestedObject } from '@etherealengine/common/src/utils/getNestedProperty'
 import { HyperFlux, ReactorRoot, startReactor } from '@etherealengine/hyperflux'
@@ -88,7 +88,7 @@ export interface ComponentPartial<
   ComponentType = any,
   Schema extends bitECS.ISchema = Record<string, any>,
   JSON = ComponentType,
-  SetJSON = PartialIfObject<DeepReadonly<JSON>>,
+  SetJSON = PartialIfObject<Readonly<JSON>>,
   ErrorTypes = never
 > {
   /** @description Human readable label for the component. Displayed in the editor and debugging tools. */
@@ -149,7 +149,7 @@ export interface Component<
   ComponentType = any,
   Schema extends bitECS.ISchema = Record<string, any>,
   JSON = ComponentType,
-  SetJSON = PartialIfObject<DeepReadonly<JSON>>,
+  SetJSON = PartialIfObject<Immutable<JSON>>,
   ErrorTypes = string
 > {
   isComponent: true
@@ -215,7 +215,7 @@ export const defineComponent = <
   Schema extends bitECS.ISchema = Record<string, any>,
   JSON = ComponentType,
   ComponentExtras = unknown,
-  SetJSON = PartialIfObject<DeepReadonly<JSON>>,
+  SetJSON = PartialIfObject<Readonly<JSON>>,
   Error extends StringLiteral<Error> = ''
 >(
   def: ComponentPartial<ComponentType, Schema, JSON, SetJSON, Error> & ComponentExtras

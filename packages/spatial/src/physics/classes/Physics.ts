@@ -50,6 +50,7 @@ import {
   Vector3
 } from 'three'
 
+import { Immutable } from '@etherealengine/common/src/Immutability'
 import {
   getComponent,
   getMutableComponent,
@@ -409,7 +410,11 @@ export type RaycastArgs = {
   excludeRigidBody?: RigidBody
 }
 
-function castRay(world: World, raycastQuery: RaycastArgs, filterPredicate?: (collider: Collider) => boolean) {
+function castRay(
+  world: Immutable<World>,
+  raycastQuery: RaycastArgs,
+  filterPredicate?: (collider: Collider) => boolean
+) {
   const ray = new Ray(raycastQuery.origin, raycastQuery.direction)
   const maxToi = raycastQuery.maxDistance
   const solid = true // TODO: Add option for this in args
@@ -445,7 +450,7 @@ function castRay(world: World, raycastQuery: RaycastArgs, filterPredicate?: (col
 function castRayFromCamera(
   camera: PerspectiveCamera | OrthographicCamera,
   coords: Vector2,
-  world: World,
+  world: Immutable<World>,
   raycastQuery: RaycastArgs,
   filterPredicate?: (collider: Collider) => boolean
 ) {
