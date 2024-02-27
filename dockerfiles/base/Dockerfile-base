@@ -1,0 +1,23 @@
+FROM node:18-buster-slim as builder
+
+RUN apt update
+# Create app directory
+WORKDIR /app
+
+RUN apt install -y build-essential meson python3-testresources python3-venv python3-pip git
+
+# to make use of caching, copy only package files and install dependencies
+COPY patches/ ./patches/
+COPY package.json .
+COPY packages/common/package.json ./packages/common/
+COPY packages/engine/package.json ./packages/engine/
+COPY packages/hyperflux/package.json ./packages/hyperflux/
+COPY packages/matchmaking/package.json ./packages/matchmaking/
+COPY packages/projects/package.json ./packages/projects/
+COPY packages/server/package.json ./packages/server/
+COPY packages/server-core/package.json ./packages/server-core/
+COPY packages/xrui/package.json ./packages/xrui/
+COPY project-package-jsons ./
+
+ARG NODE_ENV
+RUN npm install --loglevel notice --legacy-peer-deps

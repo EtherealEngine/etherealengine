@@ -20,6 +20,12 @@ else
   aws ecr-public describe-repositories --repository-names $REPO_NAME-builder --region us-east-1 || aws ecr-public create-repository --repository-name $REPO_NAME-builder --region us-east-1
 fi
 
+#Building the base image that will be used by both the builder and the root (Later on)
+docker buildx build \
+    --load \
+    -t ee-base1:latest \
+    -f dockerfiles/base/Dockerfile-base .
+
 if [ $PUBLISH_DOCKERHUB == 'true' ]
 then
   echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
