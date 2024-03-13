@@ -27,8 +27,13 @@ import { Paginated } from '@feathersjs/feathers/lib'
 
 import { defineState, getMutableState } from '@etherealengine/hyperflux'
 
-import { FileBrowserContentType, fileBrowserPath } from '@etherealengine/common/src/schema.type.module'
+import {
+  FileBrowserContentType,
+  fileBrowserPath,
+  staticResourcePath
+} from '@etherealengine/common/src/schema.type.module'
 import { Engine } from '@etherealengine/ecs/src/Engine'
+import { FileThumbnailJobState, extensionCanHaveThumbnail } from './FileThumbnailJobState'
 import { NotificationService } from './NotificationService'
 
 export const FILES_PAGE_LIMIT = 100
@@ -48,6 +53,8 @@ export const FileBrowserState = defineState({
 
 let _lastDir = null! as string
 
+const seenThumbnails = new Set<string>()
+
 export const FileBrowserService = {
   fetchFiles: async (directory: string = _lastDir, skip = 0) => {
     const fileBrowserState = getMutableState(FileBrowserState)
@@ -64,6 +71,40 @@ export const FileBrowserService = {
           directory
         }
       })) as Paginated<FileBrowserContentType>
+
+      Promise.all(
+        files.data
+          .filter((file) => extensionCanHaveThumbnail(file.key.split('.').pop() ?? ''))
+          .map(async (file) => {
+            const { key, url } = file
+
+            if (seenThumbnails.has(key)) {
+              return
+            }
+
+            seenThumbnails.add(key)
+
+            const resources = await Engine.instance.api.service(staticResourcePath).find({
+              query: { key }
+            })
+
+            if (resources.data.length === 0) {
+              return
+            }
+            const resource = resources.data[0]
+            if (resource.thumbnailURL != null) {
+              return
+            }
+            getMutableState(FileThumbnailJobState)[url].set({
+              key: url,
+              project: resource.project,
+              id: resource.id
+            })
+
+            // TODO: cache pending thumbnail promises by static resource key
+          })
+      )
+
       fileBrowserState.merge({
         files: files.data,
         skip: files.skip,

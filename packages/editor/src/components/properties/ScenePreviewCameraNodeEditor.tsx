@@ -67,6 +67,7 @@ export const ScenePreviewCameraNodeEditor: EditorComponentType = (props) => {
       512 / 2,
       320 / 2,
       0.9,
+      'jpeg',
       getComponent(props.entity, ScenePreviewCameraComponent).camera
     ))!
     const url = URL.createObjectURL(imageBlob)

@@ -41,10 +41,10 @@ export const isValidHttpUrl = (urlString) => {
   return url.protocol === 'http:' || url.protocol === 'https:'
 }
 
-export const getCanvasBlob = (canvas: HTMLCanvasElement): Promise<Blob | null> => {
-  return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      resolve(blob)
-    })
-  })
+export const getCanvasBlob = (
+  canvas: HTMLCanvasElement,
+  fileType = 'image/png',
+  quality = 0.9
+): Promise<Blob | null> => {
+  return new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, fileType, quality))
 }
