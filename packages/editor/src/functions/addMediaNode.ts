@@ -33,6 +33,7 @@ import { VideoComponent } from '@etherealengine/engine/src/scene/components/Vide
 import { VolumetricComponent } from '@etherealengine/engine/src/scene/components/VolumetricComponent'
 
 import { ComponentJsonType } from '@etherealengine/common/src/schema.type.module'
+import { removeEntity } from '@etherealengine/ecs'
 import { getComponent } from '@etherealengine/ecs/src/ComponentFunctions'
 import { Engine } from '@etherealengine/ecs/src/Engine'
 import { defineQuery } from '@etherealengine/ecs/src/QueryFunctions'
@@ -53,7 +54,7 @@ import iterateObject3D from '@etherealengine/spatial/src/common/functions/iterat
 import { GroupComponent } from '@etherealengine/spatial/src/renderer/components/GroupComponent'
 import { ObjectLayerComponents } from '@etherealengine/spatial/src/renderer/components/ObjectLayerComponent'
 import { ObjectLayers } from '@etherealengine/spatial/src/renderer/constants/ObjectLayers'
-import { Material, Mesh, Raycaster, Vector2 } from 'three'
+import { Material, Mesh, Object3D, Raycaster, Vector2 } from 'three'
 import { EditorControlFunctions } from './EditorControlFunctions'
 
 /**
@@ -101,6 +102,11 @@ export async function addMediaNode(
           (mesh: Mesh) => mesh?.isMesh
         )[0]
         if (!material) return
+        const withFlatShading: Material & { flatShading?: boolean } = material
+        if (withFlatShading.flatShading) {
+          withFlatShading.flatShading = false
+          withFlatShading.needsUpdate = true
+        }
         if (materialIsRegistered(material)) material = materialFromId(material.uuid).material
         iterateObject3D(intersected.object, (mesh: Mesh) => {
           if (!mesh?.isMesh) return
@@ -113,6 +119,17 @@ export async function addMediaNode(
           }
           mesh.material = material
         })
+        const entities: Entity[] = []
+        iterateObject3D(gltf.scene, (obj: Object3D) => {
+          if (obj.entity) entities.push(obj.entity)
+          const mesh = obj as Mesh
+          if (mesh.isMesh) {
+            unregisterMaterialInstance(mesh.material as Material, mesh.entity)
+          }
+        })
+        for (const entity of entities) {
+          removeEntity(entity)
+        }
       })
     } else {
       EditorControlFunctions.createObjectFromSceneElement(

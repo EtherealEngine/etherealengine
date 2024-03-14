@@ -85,7 +85,7 @@ export default class BasisuExporterExtension extends ExporterExtension implement
     if (!_texture?.isCompressedTexture) return
     const writer = this.writer
     //if we're not embedding images and this image already has a src, just use that
-    if (!writer.options.embedImages && _texture.userData.src) {
+    if (!writer.options.embedImages && (_texture.userData.src || _texture.source.data.src)) {
       textureDef.extensions[this.name] = { source: textureDef.source }
       writer.extensionsUsed[this.name] = true
       delete textureDef.source

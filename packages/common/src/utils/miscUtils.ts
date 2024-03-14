@@ -112,13 +112,15 @@ export function baseName(path: string): string {
 }
 
 export function relativePathTo(src: string, dst: string): string {
-  const normalizePath = (path: string) => path.split('/').filter(Boolean)
+  const normalizePath = (path: string) => {
+    const trimmedPath = path.replace(/^\.\//, '').replace(/\/$/, '')
+    return trimmedPath.split('/').filter(Boolean)
+  }
 
   const srcSegments = normalizePath(src)
   const dstSegments = normalizePath(dst)
   let commonIndex = 0
 
-  // Find common path segments
   while (
     srcSegments[commonIndex] === dstSegments[commonIndex] &&
     commonIndex < Math.min(srcSegments.length, dstSegments.length)
@@ -126,16 +128,13 @@ export function relativePathTo(src: string, dst: string): string {
     commonIndex++
   }
 
-  // Calculate the number of '../' needed
   let relativePathArray: string[] = []
   for (let i = commonIndex; i < srcSegments.length; i++) {
     relativePathArray.push('..')
   }
 
-  // Append the destination path
   relativePathArray = relativePathArray.concat(dstSegments.slice(commonIndex))
 
-  // Handle the special case where src and dst are the same directory
   if (relativePathArray.length === 0) {
     return '.'
   }

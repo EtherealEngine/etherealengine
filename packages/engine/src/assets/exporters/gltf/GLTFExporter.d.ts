@@ -79,6 +79,8 @@ export interface GLTFExporterOptions {
 
     resourceURI?: string;
 
+    projectName?: string;
+
     flipY?: boolean;
 
     srcEntity?: Entity;

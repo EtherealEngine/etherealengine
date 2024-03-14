@@ -44,8 +44,13 @@ export default class ImageRoutingExtension extends ExporterExtension implements 
     if (!materialComponent) return
     const src = materialComponent.src
     const resolvedPath = pathResolver().exec(src.path)!
-    let relativeSrc = resolvedPath[2]
-    relativeSrc = relativeSrc.replace(/\/[^\/]*$/, '')
+    let projectSrc = this.writer.options.projectName!
+    let relativeSrc = './assets/'
+    if (resolvedPath) {
+      projectSrc = resolvedPath[1]
+      relativeSrc = resolvedPath[2]
+      relativeSrc = relativeSrc.replace(/\/[^\/]*$/, '')
+    }
     const dst = this.writer.options.relativePath!.replace(/\/[^\/]*$/, '')
     const relativeBridge = relativePathTo(dst, relativeSrc)
 
@@ -57,8 +62,15 @@ export default class ImageRoutingExtension extends ExporterExtension implements 
         let oldURI = texture.userData.src
         if (!oldURI) {
           const resolved = pathResolver().exec(texture.image.src)!
+          const oldProject = resolved[1]
           const relativeOldURL = resolved[2]
-          oldURI = relativePathTo(relativeSrc, relativeOldURL)
+          if (oldProject !== projectSrc) {
+            const srcWithProject = pathJoin(projectSrc, relativeSrc)
+            const dstWithProject = pathJoin(oldProject, relativeOldURL)
+            oldURI = relativePathTo(srcWithProject, dstWithProject)
+          } else {
+            oldURI = relativePathTo(relativeSrc, relativeOldURL)
+          }
         }
         const newURI = pathJoin(relativeBridge, oldURI)
         if (!texture.image.src) {

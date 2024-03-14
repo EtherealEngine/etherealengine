@@ -179,7 +179,8 @@ export default function MaterialLibraryPanel() {
                 const relativePath = pathJoin('assets', libraryName)
                 const gltf = (await exportMaterialsGLTF(materials, {
                   binary: false,
-                  relativePath
+                  relativePath,
+                  projectName
                 })!) as /*ArrayBuffer*/ { [key: string]: any }
 
                 const blob = [JSON.stringify(gltf)]
