@@ -27,8 +27,8 @@ import { isClient } from '@etherealengine/common/src/utils/getEnvironment'
 import { usePrevious } from '@etherealengine/common/src/utils/usePrevious'
 import {
   defineComponent,
+  getComponent,
   getMutableComponent,
-  getOptionalComponent,
   hasComponent,
   removeComponent,
   setComponent,
@@ -232,7 +232,7 @@ export const UVOL2Component = defineComponent({
         targets: [] as string[],
         userTarget: -1, // -1 implies 'auto'
         currentTarget: 0,
-        buffered: [] as TimeRange[],
+        buffered: new BufferData([], MAX_TOLERABLE_GAP),
         pendingRequests: 0
       },
       textureInfo: {
@@ -241,35 +241,35 @@ export const UVOL2Component = defineComponent({
           targets: [] as string[],
           userTarget: -1,
           currentTarget: 0,
-          buffered: [] as TimeRange[],
+          buffered: new BufferData([], MAX_TOLERABLE_GAP),
           pendingRequests: 0
         },
         normal: {
           targets: [] as string[],
           userTarget: -1,
           currentTarget: 0,
-          buffered: [] as TimeRange[],
+          buffered: new BufferData([], MAX_TOLERABLE_GAP),
           pendingRequests: 0
         },
         metallicRoughness: {
           targets: [] as string[],
           userTarget: -1,
           currentTarget: 0,
-          buffered: [] as TimeRange[],
+          buffered: new BufferData([], MAX_TOLERABLE_GAP),
           pendingRequests: 0
         },
         emissive: {
           targets: [] as string[],
           userTarget: -1,
           currentTarget: 0,
-          buffered: [] as TimeRange[],
+          buffered: new BufferData([], MAX_TOLERABLE_GAP),
           pendingRequests: 0
         },
         occlusion: {
           targets: [] as string[],
           userTarget: -1,
           currentTarget: 0,
-          buffered: [] as TimeRange[],
+          buffered: new BufferData([], MAX_TOLERABLE_GAP),
           pendingRequests: 0
         }
       },
@@ -302,41 +302,53 @@ export const UVOL2Component = defineComponent({
     })
   },
 
-  canPlayThrough: (entity: Entity, start: number, end: number) => {
-    const component = getOptionalComponent(entity, UVOL2Component)
-    if (!component) return false
-    end = Math.min(end, component.data.duration)
-
-    const checkBuffered = (buffered: TimeRange[], start: number, end: number) => {
-      let gap = 0,
-        previousEnd = -1
-      if (buffered.length === 0) return false
-      if (buffered[0].start > start) return false
-      if (buffered[buffered.length - 1].end < end) return false
-      for (const el of buffered) {
-        if (el.start <= start) {
-          if (el.end >= end) {
-            return true
-          } else {
-            previousEnd = el.end
+  canPlayThrough: (entity: Entity, startTime: number, endTime: number) => {
+    const checkBuffered = (buffered: BufferData, startTime: number, endTime: number) => {
+      const startPosition = buffered.lower_bound(startTime)
+      if (startPosition === buffered._data.length) {
+        return false
+      }
+      const endPosition = buffered.upper_bound(endTime)
+      for (let i = startPosition; i < endPosition; i++) {
+        if (i + 1 < buffered._data.length) {
+          const gap = buffered._data[i + 1].start - buffered._data[i].end
+          if (gap > MAX_TOLERABLE_GAP) {
+            return false
           }
-        } else {
-          gap += el.start - previousEnd
-          if (gap > MAX_TOLERABLE_GAP) return false
-          previousEnd = el.end
         }
       }
       return true
     }
 
-    if (!checkBuffered(component.geometryInfo.buffered, start, end)) return false
-
-    if (!component.useVideoTexture) {
-      for (const textureType of component.textureInfo.textureTypes)
-        if (!checkBuffered(component.textureInfo[textureType].buffered, start, end)) return false
+    const component = getComponent(entity, UVOL2Component)
+    if (!checkBuffered(component.geometryInfo.buffered, startTime, endTime)) return false
+    const textureTypes = component.textureInfo.textureTypes
+    for (let i = 0; i < textureTypes.length; i++) {
+      const textureType = textureTypes[i]
+      if (!checkBuffered(component.textureInfo[textureType].buffered, startTime, endTime)) {
+        return false
+      }
     }
 
     return true
+  },
+
+  maxPlayableTimeWithoutBuffering: (buffered: BufferData, from: number, includePending: boolean) => {
+    const startPosition = buffered.lower_bound(from)
+    if (startPosition === buffered._data.length) {
+      return -1
+    }
+    if (buffered._data[startPosition].pending && !includePending) {
+      return from
+    }
+    let endPosition = startPosition
+    while (endPosition < buffered._data.length) {
+      if (!includePending && buffered._data[endPosition].pending) {
+        break
+      }
+      endPosition++
+    }
+    return buffered._data[endPosition - 1].end
   },
 
   reactor: UVOL2Reactor
