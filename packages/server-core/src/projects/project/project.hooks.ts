@@ -126,9 +126,10 @@ export const checkEnabled = async (context: HookContext) => {
  * @returns
  */
 const ensurePushStatus = async (context: HookContext<ProjectService>) => {
-  console.log('started ensurePushStatus at', new Date().toJSON())
+  console.log('started ensurePushStatus at', new Date().toJSON(), context.params.user!.id)
   context.projectPushIds = []
   if (context.params?.query?.allowed) {
+    console.log('checking which projects user', context.params.user!.id, 'has push access to', new Date().toJSON())
     // See if the user has a GitHub identity-provider, and if they do, also determine which GitHub repos they personally
     // can push to.
 
@@ -140,6 +141,8 @@ const ensurePushStatus = async (context: HookContext<ProjectService>) => {
       }
     })) as Paginated<IdentityProviderType>
 
+    console.log('got github identity provider at', new Date().toJSON())
+
     // Get all of the projects that this user has permissions for, then calculate push status by whether the user
     // can push to it. This will make sure no one tries to push to a repo that they do not have write access to.
     const knexClient: Knex = context.app.get('knexClient')
@@ -149,6 +152,8 @@ const ensurePushStatus = async (context: HookContext<ProjectService>) => {
       .where(`${projectPermissionPath}.userId`, context.params.user!.id)
       .select()
       .options({ nestTables: true })
+
+    console.log('got projetPermissions', new Date().toJSON())
 
     const allowedProjects = projectPermissions.map((permission) => permission.project)
     const repoAccess =
@@ -160,6 +165,7 @@ const ensurePushStatus = async (context: HookContext<ProjectService>) => {
             paginate: false
           })) as GithubRepoAccessType[])
         : []
+    console.log('got repoAccess', new Date().toJSON())
     const pushRepoPaths = repoAccess.filter((repo) => repo.hasWriteAccess).map((item) => item.repo.toLowerCase())
     let allowedProjectGithubRepos = allowedProjects.filter((project) => project.repositoryPath != null)
     allowedProjectGithubRepos = await Promise.all(
@@ -171,6 +177,7 @@ const ensurePushStatus = async (context: HookContext<ProjectService>) => {
         return project
       })
     )
+    console.log('got allowedProjectGithubRepos', new Date().toJSON())
     const pushableAllowedProjects = allowedProjectGithubRepos.filter(
       (project) => pushRepoPaths.indexOf(project.repositoryPath.toLowerCase().replace(/.git$/, '')) > -1
     )
@@ -199,6 +206,8 @@ const ensurePushStatus = async (context: HookContext<ProjectService>) => {
         },
         paginate: false
       })) as ProjectType[]
+
+      console.log('got matchingAllowedRepos at', new Date().toJSON())
 
       context.projectPushIds = context.projectPushIds.concat(matchingAllowedRepos.map((repo) => repo.id))
     }
