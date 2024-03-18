@@ -126,10 +126,10 @@ export const checkEnabled = async (context: HookContext) => {
  * @returns
  */
 const ensurePushStatus = async (context: HookContext<ProjectService>) => {
-  console.log('started ensurePushStatus at', new Date().toJSON(), context.params.user!.id)
+  console.log('started ensurePushStatus at', new Date().toJSON(), context.params.user?.id)
   context.projectPushIds = []
   if (context.params?.query?.allowed) {
-    console.log('checking which projects user', context.params.user!.id, 'has push access to', new Date().toJSON())
+    console.log('checking which projects user', context.params.user?.id, 'has push access to', new Date().toJSON())
     // See if the user has a GitHub identity-provider, and if they do, also determine which GitHub repos they personally
     // can push to.
 
