@@ -214,6 +214,8 @@ const ensurePushStatus = async (context: HookContext<ProjectService>) => {
 
     if (!(await checkScope(context.params.user!, 'projects', 'read')))
       context.params.query.id = { $in: [...new Set(allowedProjects.map((project) => project.id))] }
+
+    context.skipProjectPermissions = true
   }
   console.log('finished ensurePushStatus at', new Date().toJSON())
 }
