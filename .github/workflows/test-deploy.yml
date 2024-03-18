@@ -1,0 +1,93 @@
+name: test-deploy
+
+on:
+  push:
+    branches:
+      [debug]
+jobs:
+  secrets-gate-run:
+    runs-on: ubuntu-latest
+    outputs:
+      ok: ${{ steps.check-secrets-run.outputs.ok }}
+    steps:
+      - name: check for secrets needed to run workflows
+        id: check-secrets-run
+        run: |
+          if [ ${{ secrets.DEPLOYMENTS_ENABLED }} == 'true' ]; then
+            echo "ok=enabled" >> $GITHUB_OUTPUT
+          fi
+  secrets-gate-webhook:
+    runs-on: ubuntu-latest
+    outputs:
+      ok: ${{ steps.check-secrets-webhook.outputs.ok }}
+    steps:
+      - name: check for secrets needed to run workflows
+        id: check-secrets-webhook
+        run: |
+          if [ ${{ secrets.SEND_FINISHED_WEBHOOK }} == 'true' ]; then
+            echo "ok=enabled" >> $GITHUB_OUTPUT
+          fi
+  test-deploy:
+    needs:
+      - secrets-gate-run
+    if: ${{ needs.secrets-gate-run.outputs.ok == 'enabled' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Setup Helm
+        run: scripts/setup_helm_builder.sh
+      - name: Setup AWS
+        run: scripts/setup_aws_builder.sh $EKS_AWS_ACCESS_KEY_ID $EKS_AWS_ACCESS_KEY_SECRET $AWS_REGION $CLUSTER_NAME
+        env:
+          EKS_AWS_ACCESS_KEY_ID: ${{ secrets.EKS_AWS_ACCESS_KEY_ID }}
+          EKS_AWS_ACCESS_KEY_SECRET: ${{ secrets.EKS_AWS_ACCESS_KEY_SECRET }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
+      - name: Space debug
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+      - name: move package.json
+        run: mv package.json package.jsonmoved
+      - name: npm-install 'cli', @aws-sdk/client-ecr(-public), and @kubernetes/client-node
+        run: npm install cli @aws-sdk/client-ecr @aws-sdk/client-ecr-public @kubernetes/client-node
+      - name: restore package.json
+        run: mv package.jsonmoved package.json
+      - name: Expose GitHub Runtime
+        uses: crazy-max/ghaction-github-runtime@v2
+      - name: Build and Push Docker Image
+        run: bash scripts/build_docker_builder.sh dev $GITHUB_SHA $DOCKER_LABEL $AWS_REGION $PRIVATE_ECR
+        env:
+          STORAGE_AWS_ACCESS_KEY_ID: ${{ secrets.STORAGE_AWS_ACCESS_KEY_ID }}
+          STORAGE_AWS_ACCESS_KEY_SECRET: ${{ secrets.STORAGE_AWS_ACCESS_KEY_SECRET }}
+          DOCKER_LABEL: ${{ secrets.DOCKER_LABEL }}
+          REPO_NAME: ${{ secrets.DEV_REPO_NAME }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          ECR_URL: ${{ secrets.ECR_URL }}
+          PRIVATE_ECR: ${{ secrets.PRIVATE_ECR }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          PUBLISH_DOCKERHUB: ${{ secrets.PUBLISH_DOCKERHUB }}
+      - name: Deploy to EKS
+        run: bash scripts/deploy_builder.sh dev $GITHUB_SHA
+      - name: Job succeeded
+        if: ${{ needs.secrets-gate-webhook.outputs.ok == 'enabled' }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6 # Not needed with a .ruby-version file
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+        env:
+          JOB_STATUS: ${{ job.status }}
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+          HOOK_OS_NAME: ${{ runner.os }}
+          WORKFLOW_NAME: ${{ github.workflow }}
+          run: |
+            git clone https://github.com/DiscordHooks/github-actions-discord-webhook.git webhook
+            bash webhook/send.sh $JOB_STATUS $WEBHOOK_URL
+          shell: bash

@@ -126,6 +126,7 @@ export const checkEnabled = async (context: HookContext) => {
  * @returns
  */
 const ensurePushStatus = async (context: HookContext<ProjectService>) => {
+  console.log('started ensurePushStatus at', new Date().toJSON())
   context.projectPushIds = []
   if (context.params?.query?.allowed) {
     // See if the user has a GitHub identity-provider, and if they do, also determine which GitHub repos they personally
@@ -205,6 +206,7 @@ const ensurePushStatus = async (context: HookContext<ProjectService>) => {
     if (!(await checkScope(context.params.user!, 'projects', 'read')))
       context.params.query.id = { $in: [...new Set(allowedProjects.map((project) => project.id))] }
   }
+  console.log('finished ensurePushStatus at', new Date().toJSON())
 }
 
 /**
@@ -213,12 +215,14 @@ const ensurePushStatus = async (context: HookContext<ProjectService>) => {
  * @returns
  */
 const addLimitToParams = async (context: HookContext<ProjectService>) => {
+  console.log('started addLimitToParams at', new Date().toJSON())
   context.params.query = {
     ...context.params.query,
     $limit: context.params?.query?.$limit || 1000,
     $sort: context.params?.query?.$sort || { name: 1 }
   }
   if (context.params?.query?.allowed) delete context.params.query.allowed
+  console.log('finished addLimitToParams at', new Date().toJSON())
 }
 
 /**
@@ -227,6 +231,7 @@ const addLimitToParams = async (context: HookContext<ProjectService>) => {
  * @returns
  */
 const addDataToProjectResult = async (context: HookContext<ProjectService>) => {
+  console.log('started addDataToProjectResult at', new Date().toJSON())
   const data: ProjectType[] = context.result!['data'] ? context.result!['data'] : context.result
   for (const item of data) {
     try {
@@ -251,6 +256,7 @@ const addDataToProjectResult = async (context: HookContext<ProjectService>) => {
           limit: context.params?.query?.$limit || 1000,
           skip: context.params?.query?.$skip || 0
         }
+  console.log('finished addDataToProjectResult at', new Date().toJSON())
 }
 
 /**

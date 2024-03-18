@@ -32,6 +32,7 @@ import { Application } from '../../declarations'
  */
 export default () => {
   return async (context: HookContext<Application>) => {
+    console.log('started enable-client-pagination at', new Date().toJSON())
     if (
       context.params.query &&
       (context.params.query.$paginate === 'false' || context.params.query.$paginate === false)
@@ -46,6 +47,7 @@ export default () => {
       delete context.params.query.paginate
     }
 
+    console.log('ended enable-client-pagination at', new Date().toJSON())
     return context
   }
 }
