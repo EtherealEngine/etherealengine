@@ -126,6 +126,8 @@ export const checkEnabled = async (context: HookContext) => {
  * @returns
  */
 const ensurePushStatus = async (context: HookContext<ProjectService>) => {
+  if (context.params.query.skipProjectPermissions)
+    context.params.skipProjectPermissions = context.params.query.skipProjectPermissions
   console.log('started ensurePushStatus at', new Date().toJSON(), context.params.user?.id)
   context.projectPushIds = []
   if (context.params?.query?.allowed) {
@@ -153,7 +155,7 @@ const ensurePushStatus = async (context: HookContext<ProjectService>) => {
       .select()
       .options({ nestTables: true })
 
-    console.log('got projetPermissions', new Date().toJSON())
+    console.log('got projectPermissions', new Date().toJSON())
 
     const allowedProjects = projectPermissions.map((permission) => permission.project)
     const repoAccess =
@@ -204,6 +206,7 @@ const ensurePushStatus = async (context: HookContext<ProjectService>) => {
           action: 'admin',
           repositoryPath: { $in: repositoryPaths }
         },
+        skipProjectPermissions: true,
         paginate: false
       })) as ProjectType[]
 
@@ -214,8 +217,6 @@ const ensurePushStatus = async (context: HookContext<ProjectService>) => {
 
     if (!(await checkScope(context.params.user!, 'projects', 'read')))
       context.params.query.id = { $in: [...new Set(allowedProjects.map((project) => project.id))] }
-
-    context.skipProjectPermissions = true
   }
   console.log('finished ensurePushStatus at', new Date().toJSON())
 }
@@ -603,6 +604,7 @@ export default createSkippableHooks(
         iffElse(isAction('admin'), [], filterDisabledProjects),
         discardQuery('action'),
         ensurePushStatus,
+        discardQuery('skipProjectPermissions'),
         addLimitToParams
       ],
       get: [],

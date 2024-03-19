@@ -70,7 +70,7 @@ export const projectResolver = resolve<ProjectType, HookContext>(
   {
     projectPermissions: virtual(async (project, context) => {
       console.log('resolving projectPermissions in projectResolver at', new Date().toJSON(), 'for project', project.id)
-      const returned = context.skipProjectPermissions ? [] : (await context.app.service(projectPermissionPath).find({
+      const returned = context.params.skipProjectPermissions ? [] : (await context.app.service(projectPermissionPath).find({
         query: {
           projectId: project.id
         },

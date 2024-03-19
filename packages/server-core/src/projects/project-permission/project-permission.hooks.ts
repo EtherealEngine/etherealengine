@@ -142,6 +142,7 @@ const checkExistingPermissions = async (context: HookContext<ProjectPermissionSe
  * @returns
  */
 const checkUserScopes = async (context: HookContext<ProjectPermissionService>) => {
+  console.log('started project-permission.find at', new Date().toString())
   if (!context.params.user) return false
   return checkScope(context.params.user, 'projects', 'read')
 }
@@ -153,6 +154,7 @@ const checkUserScopes = async (context: HookContext<ProjectPermissionService>) =
  */
 const checkPermissionStatus = async (context: HookContext<ProjectPermissionService>) => {
   if (context.params.query?.projectId) {
+    console.log('started checkPermissionStatus at', new Date().toString())
     const permissionStatus = (await context.service._find({
       query: {
         projectId: context.params.query.projectId,
@@ -162,6 +164,7 @@ const checkPermissionStatus = async (context: HookContext<ProjectPermissionServi
     })) as Paginated<ProjectPermissionType>
     if (permissionStatus.data.length === 0)
       context.params.query = { ...context.params.query, userId: context.params.user!.id }
+    console.log('ended checkPermissionStatus at', new Date().toString())
   }
 }
 
@@ -235,7 +238,9 @@ export default {
 
   after: {
     all: [],
-    find: [],
+    find: [() => {
+      console.log('Finished with project-permission.find at', new Date().toString())
+    }],
     get: [ensureOwnership],
     create: [],
     update: [],

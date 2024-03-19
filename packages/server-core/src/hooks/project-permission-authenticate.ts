@@ -59,7 +59,8 @@ export default (writeAccess) => {
           action: 'admin',
           name: projectName,
           $limit: 1
-        }
+        },
+        skipProjectPermissions: true
       })) as Paginated<ProjectType>
 
       if (project.data.length > 0) {

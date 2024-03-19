@@ -30,7 +30,7 @@ import { loadConfigForProject } from './loadConfigForProject'
 export const loadEngineInjection = async () => {
   const projects = (await Engine.instance.api
     .service(projectPath)
-    .find({ query: { paginate: false } })) as any as ProjectType[]
+    .find({ query: { paginate: false, skipProjectPermissions: true } })) as any as ProjectType[]
   return Promise.all(
     projects.map(async (project) => {
       try {
