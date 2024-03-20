@@ -140,7 +140,7 @@ function VariantReactor(): ReactElement {
       src = variantComponent.levels[currentLevel].src && variantComponent.levels[currentLevel].src.value
     }
 
-    if (src && modelComponent && modelComponent.src.value !== src) modelComponent.src.set(src)
+    if (src && modelComponent && modelComponent.src.value !== src) setComponent(entity, ModelComponent, { src })
   }, [variantComponent.currentLevel])
 
   useEffect(() => {

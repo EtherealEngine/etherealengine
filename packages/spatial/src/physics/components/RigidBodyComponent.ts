@@ -26,9 +26,10 @@ Ethereal Engine. All Rights Reserved.
 import { RigidBody, RigidBodyDesc } from '@dimforge/rapier3d-compat'
 import { Types } from 'bitecs'
 
-import { useEntityContext } from '@etherealengine/ecs'
+import { Entity, useEntityContext } from '@etherealengine/ecs'
 import {
   defineComponent,
+  getMutableComponent,
   removeComponent,
   setComponent,
   useComponent
@@ -99,37 +100,21 @@ export const RigidBodyComponent = defineComponent({
     }
   },
 
+  onRemove(entity, component) {
+    if (!component.body.value) return
+    const rigidBody = getMutableComponent(entity, RigidBodyComponent).body
+    const world = getState(PhysicsState).physicsWorld
+    if (world.bodies.contains(rigidBody.value.handle)) {
+      world.removeRigidBody(rigidBody.value)
+    }
+  },
+
   reactor: function () {
     const entity = useEntityContext()
     const component = useComponent(entity, RigidBodyComponent)
 
     useLayoutEffect(() => {
-      let rigidBodyDesc: RigidBodyDesc = undefined!
-      switch (component.type.value) {
-        case 'fixed':
-        default:
-          rigidBodyDesc = RigidBodyDesc.fixed()
-          break
-
-        case 'dynamic':
-          rigidBodyDesc = RigidBodyDesc.dynamic()
-          break
-
-        case 'kinematic':
-          rigidBodyDesc = RigidBodyDesc.kinematicPositionBased()
-          break
-      }
-
-      const world = getState(PhysicsState).physicsWorld
-      const rigidBody = Physics.createRigidBody(entity, world, rigidBodyDesc)
-      component.body.set(rigidBody)
-
-      return () => {
-        const world = getState(PhysicsState).physicsWorld
-        if (world.bodies.contains(rigidBody.handle)) {
-          world.removeRigidBody(rigidBody)
-        }
-      }
+      addRigidbody(entity)
     }, [])
 
     useLayoutEffect(() => {
@@ -183,4 +168,29 @@ export const getTagComponentForRigidBody = (type: Body): RigidBodyTypes => {
     case BodyTypes.Kinematic:
       return RigidBodyKinematicTagComponent
   }
+}
+
+export const addRigidbody = (entity: Entity) => {
+  const component = getMutableComponent(entity, RigidBodyComponent)
+  if (component.body.value) return
+
+  let rigidBodyDesc: RigidBodyDesc = undefined!
+  switch (component.type.value) {
+    case 'fixed':
+    default:
+      rigidBodyDesc = RigidBodyDesc.fixed()
+      break
+
+    case 'dynamic':
+      rigidBodyDesc = RigidBodyDesc.dynamic()
+      break
+
+    case 'kinematic':
+      rigidBodyDesc = RigidBodyDesc.kinematicPositionBased()
+      break
+  }
+
+  const world = getState(PhysicsState).physicsWorld
+  const rigidBody = Physics.createRigidBody(entity, world, rigidBodyDesc)
+  component.body.set(rigidBody)
 }

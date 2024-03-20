@@ -23,13 +23,13 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { Entity, UndefinedEntity } from '@etherealengine/ecs'
+import { Entity, UUIDComponent, UndefinedEntity, getOptionalComponent } from '@etherealengine/ecs'
 import { State, useHookstate } from '@etherealengine/hyperflux'
 import { useEffect } from 'react'
 import { MathUtils, Texture } from 'three'
 import { LoadingArgs } from '../classes/AssetLoader'
 import { GLTF } from '../loaders/gltf/GLTFLoader'
-import { AssetType, ResourceManager, ResourceType } from '../state/ResourceState'
+import { AssetType, ResourceManager, ResourceProgressState, ResourceType } from '../state/ResourceState'
 
 function useLoader<T extends AssetType>(
   url: string,
@@ -64,6 +64,13 @@ function useLoader<T extends AssetType>(
     }
 
     if (!url) return
+
+    if (entity) {
+      const uuid = getOptionalComponent(entity, UUIDComponent)
+      if (uuid) {
+        ResourceProgressState.addResource(uuid, url)
+      }
+    }
     let completed = false
 
     ResourceManager.load<T>(
@@ -74,15 +81,27 @@ function useLoader<T extends AssetType>(
       (response) => {
         completed = true
         value.set(response)
+        if (entity) {
+          const uuid = getOptionalComponent(entity, UUIDComponent)
+          if (uuid) ResourceProgressState.removeResource(uuid, url)
+        }
       },
       (request) => {
         progress.set(request)
+        if (entity) {
+          const uuid = getOptionalComponent(entity, UUIDComponent)
+          if (uuid) ResourceProgressState.updateResource(uuid, url, request.loaded, request.total)
+        }
       },
       (err) => {
         // Effect was unmounted, can't set error state safely
         if (controller.signal.aborted) return
         completed = true
         error.set(err)
+        if (entity) {
+          const uuid = getOptionalComponent(entity, UUIDComponent)
+          if (uuid) ResourceProgressState.removeResource(uuid, url)
+        }
       },
       controller.signal,
       uuid.value

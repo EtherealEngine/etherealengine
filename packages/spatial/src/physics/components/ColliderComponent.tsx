@@ -28,12 +28,12 @@ import {
   Entity,
   UndefinedEntity,
   defineComponent,
-  entityExists,
   getComponent,
+  getMutableComponent,
+  getOptionalComponent,
   hasComponent,
   useComponent,
-  useEntityContext,
-  useOptionalComponent
+  useEntityContext
 } from '@etherealengine/ecs'
 import { getState, useHookstate } from '@etherealengine/hyperflux'
 import React, { useLayoutEffect } from 'react'
@@ -45,7 +45,6 @@ import { CollisionGroups, DefaultCollisionMask } from '../enums/CollisionGroups'
 import { PhysicsState } from '../state/PhysicsState'
 import { Shape, Shapes } from '../types/PhysicsTypes'
 import { RigidBodyComponent } from './RigidBodyComponent'
-import { TriggerComponent } from './TriggerComponent'
 
 export const ColliderComponent = defineComponent({
   name: 'ColliderComponent',
@@ -90,6 +89,12 @@ export const ColliderComponent = defineComponent({
     }
   },
 
+  onRemove(entity, component) {
+    if (!component.collider.value) return
+    const physicsWorld = getState(PhysicsState).physicsWorld
+    Physics.removeCollider(physicsWorld, component.collider.value)
+  },
+
   reactor: ColliderComponentReactor
 })
 
@@ -132,39 +137,47 @@ function ColliderComponentReactor() {
 
 function ColliderComponentRigidbodyReactor(props: { entity: Entity; rigidbodyEntity: Entity }) {
   const rigidbodyComponent = useComponent(props.rigidbodyEntity, RigidBodyComponent)
-  const isTrigger = !!useOptionalComponent(props.entity, TriggerComponent)
-  const colliderComponent = useComponent(props.entity, ColliderComponent)
   const transformComponent = useComponent(props.entity, TransformComponent)
 
   useLayoutEffect(() => {
     if (!rigidbodyComponent.body.value) return
-
-    const colliderDesc = Physics.createColliderDesc(
-      props.entity,
-      props.rigidbodyEntity,
-      getComponent(props.entity, ColliderComponent)
-    )
-    const rigidbody = rigidbodyComponent.body.value
-
-    const physicsWorld = getState(PhysicsState).physicsWorld
-    const collider = Physics.attachCollider(physicsWorld, colliderDesc, rigidbody)
-    colliderComponent.collider.set(collider)
-
-    return () => {
-      if (entityExists(props.entity) && hasComponent(props.entity, ColliderComponent)) {
-        colliderComponent.collider.set(null)
-      }
-      Physics.removeCollider(physicsWorld, collider)
-    }
+    addCollider(props.entity, props.rigidbodyEntity)
   }, [rigidbodyComponent.body, transformComponent.scale])
 
-  useLayoutEffect(() => {
-    if (!colliderComponent.collider.value) return
-
-    const collider = colliderComponent.collider.value
-
-    collider.setSensor(isTrigger)
-  }, [colliderComponent.collider, isTrigger])
-
   return null
+}
+
+export const addCollider = (entity: Entity, parentRigidbodyEntity = UndefinedEntity) => {
+  const component = getMutableComponent(entity, ColliderComponent)
+  if (component.collider.value) return
+
+  if (!parentRigidbodyEntity) {
+    if (hasComponent(entity, RigidBodyComponent)) {
+      parentRigidbodyEntity = entity
+    }
+    traverseEntityNodeParent(entity, (parentEntity) => {
+      if (hasComponent(parentEntity, RigidBodyComponent)) {
+        parentRigidbodyEntity = parentEntity
+      }
+    })
+  }
+
+  if (!parentRigidbodyEntity) return
+
+  const rigidbodyComponent = getComponent(parentRigidbodyEntity, RigidBodyComponent)
+
+  const colliderDesc = Physics.createColliderDesc(
+    entity,
+    parentRigidbodyEntity,
+    getComponent(entity, ColliderComponent)
+  )
+  const rigidbody = rigidbodyComponent.body
+
+  const physicsWorld = getState(PhysicsState).physicsWorld
+  const collider = Physics.attachCollider(physicsWorld, colliderDesc, rigidbody)
+  getMutableComponent(entity, ColliderComponent).collider.set(collider)
+}
+
+export const changeTrigger = (entity: Entity, isTrigger: boolean) => {
+  getOptionalComponent(entity, ColliderComponent)?.collider?.setSensor(isTrigger)
 }

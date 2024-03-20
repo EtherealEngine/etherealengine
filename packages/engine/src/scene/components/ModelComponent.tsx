@@ -26,7 +26,7 @@ Ethereal Engine. All Rights Reserved.
 import { FC, useEffect } from 'react'
 import { AnimationMixer, BoxGeometry, CapsuleGeometry, CylinderGeometry, Group, Scene, SphereGeometry } from 'three'
 
-import { NO_PROXY, getState, useHookstate } from '@etherealengine/hyperflux'
+import { NO_PROXY, useHookstate } from '@etherealengine/hyperflux'
 
 import { QueryReactor, UUIDComponent } from '@etherealengine/ecs'
 import {
@@ -101,18 +101,9 @@ export const ModelComponent = defineComponent({
       component.cameraOcclusion.set(!(json as any).avoidCameraOcclusion)
     if (typeof json.cameraOcclusion === 'boolean') component.cameraOcclusion.set(json.cameraOcclusion)
     if (typeof json.convertToVRM === 'boolean') component.convertToVRM.set(json.convertToVRM)
-
-    /**
-     * Add SceneAssetPendingTagComponent to tell scene loading system we should wait for this asset to load
-     */
-    if (
-      !getState(SceneState).sceneLoaded &&
-      hasComponent(entity, SceneComponent) &&
-      component.src.value &&
-      !component.asset.value
-    )
-      SceneAssetPendingTagComponent.addResource(entity, ModelComponent.jsonID)
   },
+
+  resources: ['src'],
 
   errors: ['LOADING_ERROR', 'INVALID_SOURCE'],
 
@@ -122,7 +113,6 @@ export const ModelComponent = defineComponent({
 function ModelReactor(): JSX.Element {
   const entity = useEntityContext()
   const modelComponent = useComponent(entity, ModelComponent)
-  const uuidComponent = useOptionalComponent(entity, UUIDComponent)
 
   const [gltf, unload, error, progress] = useGLTF(modelComponent.src.value, entity, {
     forceAssetType: modelComponent.assetTypeOverride.value,
@@ -212,6 +202,7 @@ function ModelReactor(): JSX.Element {
     /**hotfix for gltf animations being stored in the root and not scene property */
     if (!asset.scene.animations.length && !(asset instanceof VRM)) asset.scene.animations = asset.animations
 
+    console.log('loaded gltf', asset)
     const loadedJsonHierarchy = parseGLTFModel(entity, asset.scene as Scene)
     const uuid = getModelSceneID(entity)
 

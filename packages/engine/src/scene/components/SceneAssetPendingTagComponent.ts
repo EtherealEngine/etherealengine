@@ -73,3 +73,9 @@ export const SceneAssetPendingTagComponent = defineComponent({
     >
   )
 })
+
+/**
+ * - We need to move this component's functionality into Component.resources and ResourceState and handle inside of our useLoader hooks.
+ * - Map all loaded scene entities to EntityUUID => ResourceID => Resource, and collapse into list of Resources.
+ * - Scene loading percentage is derived from the sum of all loaded resources / total resources.
+ */

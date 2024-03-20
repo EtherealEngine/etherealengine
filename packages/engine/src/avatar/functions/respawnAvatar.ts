@@ -23,11 +23,9 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { getState } from '@etherealengine/hyperflux'
-
-import { UUIDComponent } from '@etherealengine/ecs'
-import { getComponent } from '@etherealengine/ecs/src/ComponentFunctions'
+import { getComponent, UUIDComponent } from '@etherealengine/ecs'
 import { Entity } from '@etherealengine/ecs/src/Entity'
+import { getState } from '@etherealengine/hyperflux'
 import { SpawnPoseState } from '@etherealengine/spatial'
 import { AvatarControllerComponent } from '../components/AvatarControllerComponent'
 import { teleportAvatar } from './moveAvatar'

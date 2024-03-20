@@ -40,12 +40,15 @@ import { NetworkState } from '@etherealengine/network'
 import { TransformComponent } from '../../transform/components/TransformComponent'
 import { PhysicsSerialization } from '../PhysicsSerialization'
 import { Physics } from '../classes/Physics'
+import { ColliderComponent, addCollider, changeTrigger } from '../components/ColliderComponent'
 import { CollisionComponent } from '../components/CollisionComponent'
 import {
   RigidBodyComponent,
   RigidBodyFixedTagComponent,
-  RigidBodyKinematicTagComponent
+  RigidBodyKinematicTagComponent,
+  addRigidbody
 } from '../components/RigidBodyComponent'
+import { TriggerComponent } from '../components/TriggerComponent'
 import { PhysicsState } from '../state/PhysicsState'
 import { ColliderHitEvent, CollisionEvents } from '../types/PhysicsTypes'
 
@@ -75,6 +78,10 @@ export function smoothKinematicBody(entity: Entity, dt: number, substep: number)
 const allRigidBodyQuery = defineQuery([RigidBodyComponent, Not(RigidBodyFixedTagComponent)])
 const collisionQuery = defineQuery([CollisionComponent])
 
+const colliderQuery = defineQuery([ColliderComponent])
+const rigidbodyQuery = defineQuery([RigidBodyComponent])
+const triggerQuery = defineQuery([ColliderComponent, TriggerComponent])
+
 const kinematicQuery = defineQuery([RigidBodyComponent, RigidBodyKinematicTagComponent, TransformComponent])
 
 let drainCollisions: ReturnType<typeof Physics.drainCollisionEventQueue>
@@ -83,6 +90,11 @@ let drainContacts: ReturnType<typeof Physics.drainContactEventQueue>
 const execute = () => {
   const { physicsWorld, physicsCollisionEventQueue } = getState(PhysicsState)
   if (!physicsWorld) return
+
+  for (const entity of rigidbodyQuery.enter()) addRigidbody(entity)
+  for (const entity of colliderQuery.enter()) addCollider(entity)
+  for (const entity of triggerQuery.enter()) changeTrigger(entity, true)
+  for (const entity of triggerQuery.exit()) changeTrigger(entity, false)
 
   const allRigidBodies = allRigidBodyQuery()
 

@@ -24,7 +24,7 @@ Ethereal Engine. All Rights Reserved.
 */
 
 import { SceneID } from '@etherealengine/common/src/schema.type.module'
-import { Engine, Entity, getOptionalComponent } from '@etherealengine/ecs'
+import { Engine, Entity, EntityUUID, getOptionalComponent } from '@etherealengine/ecs'
 import { NO_PROXY, State, defineState, getMutableState, getState, none } from '@etherealengine/hyperflux'
 import iterateObject3D from '@etherealengine/spatial/src/common/functions/iterateObject3D'
 import { PerformanceState } from '@etherealengine/spatial/src/renderer/PerformanceState'
@@ -122,6 +122,60 @@ export const ResourceState = defineState({
     totalVertexCount: 0,
     totalBufferCount: 0
   })
+})
+
+export type ResourceProgressType = Record<
+  string,
+  {
+    loadedAmount: number
+    totalAmount: number
+  }
+>
+
+export const ResourceProgressState = defineState({
+  name: 'ResourceEntityUUIDState',
+  initial: {} as Record<EntityUUID, ResourceProgressType>,
+
+  addResource: (entityUUID: EntityUUID, url: string) => {
+    if (getState(ResourceProgressState)[entityUUID]) {
+      if (!getMutableState(ResourceProgressState)[entityUUID].keys.includes(url))
+        getMutableState(ResourceProgressState)[entityUUID].merge({
+          [url]: {
+            loadedAmount: -1,
+            totalAmount: 0
+          }
+        })
+    } else {
+      getMutableState(ResourceProgressState).merge({
+        [entityUUID]: {
+          [url]: {
+            loadedAmount: -1,
+            totalAmount: 0
+          }
+        }
+      })
+    }
+  },
+
+  updateResource: (entityUUID: EntityUUID, url: string, loaded: number, total: number) => {
+    if (!getState(ResourceProgressState)[entityUUID]) return
+    if (!getMutableState(ResourceProgressState)[entityUUID].keys.includes(url)) return
+    // console.log('scene resources updateResource, entityUUID:', entityUUID, 'url:', url, 'loaded:', loaded, 'total:', total)
+    getMutableState(ResourceProgressState)[entityUUID].merge({
+      [url]: {
+        loadedAmount: loaded,
+        totalAmount: total
+      }
+    })
+  },
+
+  removeResource: (entityUUID: EntityUUID, url: string) => {
+    if (!getState(ResourceProgressState)[entityUUID]) return
+    if (!getMutableState(ResourceProgressState)[entityUUID].keys.includes(url)) return
+    getMutableState(ResourceProgressState)[entityUUID][url].loadedAmount.set(
+      getState(ResourceProgressState)[entityUUID][url].totalAmount
+    )
+  }
 })
 
 const setDefaultLoadingManager = (
