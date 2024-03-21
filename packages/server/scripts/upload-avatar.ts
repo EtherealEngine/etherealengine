@@ -28,7 +28,13 @@ const dotenv = require('dotenv')
 const fs = require('fs')
 const knex = require('knex')
 const { staticResourcePath } = require('@etherealengine/engine/src/media/static-resource.schema')
-const { projectPublicRegex, projectRegex } = require('@etherealengine/common/src/constants/ProjectKeyConstants')
+const {
+  assetsRegex,
+  projectPublicRegex,
+  projectRegex,
+  rootImageRegex,
+  rootSceneJsonRegex
+} = require('@etherealengine/common/src/constants/ProjectKeyConstants')
 const { ObjectCannedACL, S3Client } = require('@aws-sdk/client-s3')
 const { nanoid } = require('nanoid')
 const { v4 } = require('uuid')
@@ -100,7 +106,11 @@ const uploadFile = (Key, Body) => {
               Bucket: BUCKET,
               Key,
               ACL:
-                projectRegex.test(Key) && !projectPublicRegex.test(Key)
+                projectRegex.test(Key) &&
+                !projectPublicRegex.test(Key) &&
+                !assetsRegex.test(Key) &&
+                !rootImageRegex.test(Key) &&
+                !rootSceneJsonRegex.test(Key)
                   ? ObjectCannedACL.private
                   : ObjectCannedACL.public_read
             },

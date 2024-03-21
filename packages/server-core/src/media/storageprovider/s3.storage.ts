@@ -67,7 +67,13 @@ import S3BlobStore from 's3-blob-store'
 import { PassThrough, Readable } from 'stream'
 
 import { MULTIPART_CHUNK_SIZE, MULTIPART_CUTOFF_SIZE } from '@etherealengine/common/src/constants/FileSizeConstants'
-import { projectPublicRegex, projectRegex } from '@etherealengine/common/src/constants/ProjectKeyConstants'
+import {
+  assetsRegex,
+  projectPublicRegex,
+  projectRegex,
+  rootImageRegex,
+  rootSceneJsonRegex
+} from '@etherealengine/common/src/constants/ProjectKeyConstants'
 import { Client } from 'minio'
 
 import { FileBrowserContentType } from '@etherealengine/common/src/schemas/media/file-browser.schema'
@@ -305,7 +311,11 @@ export class S3Provider implements StorageProviderInterface {
     const args = params.isDirectory
       ? {
           ACL:
-            projectRegex.test(key) && !projectPublicRegex.test(key)
+            projectRegex.test(key) &&
+            !projectPublicRegex.test(key) &&
+            !assetsRegex.test(key) &&
+            !rootImageRegex.test(key) &&
+            !rootSceneJsonRegex.test(key)
               ? ObjectCannedACL.private
               : ObjectCannedACL.public_read,
           Body: Buffer.alloc(0),
@@ -315,7 +325,11 @@ export class S3Provider implements StorageProviderInterface {
         }
       : {
           ACL:
-            projectRegex.test(key) && !projectPublicRegex.test(key)
+            projectRegex.test(key) &&
+            !projectPublicRegex.test(key) &&
+            !assetsRegex.test(key) &&
+            !rootImageRegex.test(key) &&
+            !rootSceneJsonRegex.test(key)
               ? ObjectCannedACL.private
               : ObjectCannedACL.public_read,
           Body: data.Body,
@@ -346,14 +360,17 @@ export class S3Provider implements StorageProviderInterface {
         reject(err)
       }
     } else if (config.aws.s3.s3DevMode === 'local') {
-      const response = await this.minioClient?.putObject(args.Bucket, args.Key, args.Body, {
+      return await this.minioClient?.putObject(args.Bucket, args.Key, args.Body, {
         'Content-Type': args.ContentType
       })
-      return response
     } else if (data.Body?.length > MULTIPART_CUTOFF_SIZE) {
       const multiPartStartArgs = {
         ACL:
-          projectRegex.test(key) && !projectPublicRegex.test(key)
+          projectRegex.test(key) &&
+          !projectPublicRegex.test(key) &&
+          !assetsRegex.test(key) &&
+          !rootImageRegex.test(key) &&
+          !rootSceneJsonRegex.test(key)
             ? ObjectCannedACL.private
             : ObjectCannedACL.public_read,
         Bucket: this.bucket,
@@ -734,7 +751,11 @@ export class S3Provider implements StorageProviderInterface {
         const key = path.join(newFilePath, file.Key.replace(oldFilePath, ''))
         const input = {
           ACL:
-            projectRegex.test(key) && !projectPublicRegex.test(key)
+            projectRegex.test(key) &&
+            !projectPublicRegex.test(key) &&
+            !assetsRegex.test(key) &&
+            !rootImageRegex.test(key) &&
+            !rootSceneJsonRegex.test(key)
               ? ObjectCannedACL.private
               : ObjectCannedACL.public_read,
           Bucket: this.bucket,

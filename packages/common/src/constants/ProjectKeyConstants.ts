@@ -23,5 +23,12 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
+//FIXME: Legacy location of public assets, should be deleted and all files' use of this removed once all existing
+//projects have had their public assets moved to the /public folder
+export const assetsRegex = /projects\/[a-zA-Z0-9-_]+\/assets\//
 export const projectRegex = /projects\/[a-zA-Z0-9-_]+/
 export const projectPublicRegex = /projects\/[a-zA-Z0-9-_]+\/public\//
+//FIXME: These should be removed once scenes and their assets like envmaps, loading screens, and thumbnails
+//are moved to the /public folder
+export const rootImageRegex = /projects\/[a-zA-Z0-9-_]+\/[a-zA-Z0-9-_.]+.(jpg|jpeg|ktx2|png)/
+export const rootSceneJsonRegex = /projects\/[a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+.scene.json/
