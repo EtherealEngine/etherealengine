@@ -28,6 +28,7 @@ import { useTranslation } from 'react-i18next'
 import { MdClose } from 'react-icons/md'
 import { twMerge } from 'tailwind-merge'
 import Button from '../Button'
+import LoadingCircle from '../LoadingCircle'
 import Text from '../Text'
 
 export interface ModalProps {
@@ -35,6 +36,7 @@ export interface ModalProps {
   hideFooter?: boolean
   className?: string
   children: ReactNode
+  loading?: boolean
   onClose?: () => void
   onSubmit?: () => void
 }
@@ -69,14 +71,20 @@ export const ModalFooter = ({ onCancel, onSubmit }: { onCancel?: () => void; onS
   )
 }
 
-const Modal = ({ title, onClose, onSubmit, hideFooter, children, className }: ModalProps) => {
+const Modal = ({ title, onClose, onSubmit, hideFooter, children, className, loading }: ModalProps) => {
   const twClassName = twMerge('relative max-h-full w-full max-w-2xl p-4', className)
+  const loadingStyle = !loading ? 'w-max' : ''
   return (
     <div className={twClassName}>
-      <div className="bg-theme-primary relative rounded-lg shadow">
+      <div className={`bg-theme-primary relative rounded-lg shadow ${loadingStyle}`}>
         {onClose && <ModalHeader title={title} onClose={onClose} />}
-        <div className="w-full px-10 py-6">{children}</div>
-        {!hideFooter && <ModalFooter onCancel={onClose} onSubmit={onSubmit} />}
+        {loading && (
+          <div className="h-full w-full px-10 py-6">
+            <LoadingCircle className="h-8 w-8" />
+          </div>
+        )}
+        {!loading && <div className="w-full px-10 py-6">{children}</div>}
+        {!loading && !hideFooter && <ModalFooter onCancel={onClose} onSubmit={onSubmit} />}
       </div>
     </div>
   )
