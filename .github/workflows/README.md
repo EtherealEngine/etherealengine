@@ -65,7 +65,7 @@ There is one secret controlling this action:
 
 ## prod-deploy.yml
 This action builds the codebase builder Docker image, pushes that to a specified Docker repo, and then
-deploys it to a prod Kubernetes cluster using kubectl and Helm. It assumes that `master` is the stable,
+deploys it to a prod Kubernetes cluster using kubectl and Helm. It assumes that `main` is the stable,
 production-ready branch and that anything pushed to `prod` should be deployed to a prod deployment. 
 In particular, this action:
 

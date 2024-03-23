@@ -75,11 +75,11 @@ jobs:
           git clone git@github.com:etherealengine/etherealengine-docs.git docs
           echo "Starting to remove commit history for gh-pages branch"
           cd docs
-          latestMasterCommit=$(git rev-parse HEAD)
+          latestMainCommit=$(git rev-parse HEAD)
           git checkout gh-pages
           git checkout --orphan temp-gh-pages
           git add -A
-          git commit -m "Deploy website - based on ${latestMasterCommit}"
+          git commit -m "Deploy website - based on ${latestMainCommit}"
           git checkout gh-pages
           git reset --hard temp-gh-pages
           git push origin gh-pages --force

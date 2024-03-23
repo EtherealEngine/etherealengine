@@ -75,7 +75,7 @@
     "migrate:rollback": "cd packages/server-core && npm run migrate:rollback",
     "migrate:unlock": "cd packages/server-core && npm run migrate:unlock",
     "postinstall": "patch-package --exclude ./node_modules/@mui/",
-    "precommit": "no-master-commits -b master",
+    "precommit": "no-master-commits -b main",
     "prepare-database": "cross-env APP_ENV=production PREPARE_DATABASE=true EXIT_ON_DB_INIT=true ts-node --swc packages/server/src/index.ts",
     "publish": "lerna publish from-package --yes --registry https://registry.npmjs.org",
     "publish-npm": "lerna publish from-package --yes --no-verify-access --ignore-scripts --registry https://registry.npmjs.org",

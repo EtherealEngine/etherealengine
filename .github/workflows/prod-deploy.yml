@@ -2,7 +2,7 @@ name: prod-deploy
 on:
   push:
     branches:
-      [master]
+      [main]
 jobs:
   secrets-gate-run:
     runs-on: ubuntu-latest

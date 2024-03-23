@@ -21,9 +21,9 @@ jobs:
     if: ${{ needs.secrets-gate.outputs.ok == 'enabled' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@main
       - name: Merge dev into deps branch
-        uses: devmasx/merge-branch@master
+        uses: devmasx/merge-branch@main
         with:
           type: now
           from_branch: dev
