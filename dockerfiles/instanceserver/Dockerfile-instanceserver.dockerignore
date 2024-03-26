@@ -7,7 +7,6 @@ kubectl
 lib/
 packages/client/dist
 packages/native-plugin-example
-packages/ops
 readme/
 tests/
 vendor/
@@ -23,6 +22,13 @@ packages/server
 packages/taskserver
 packages/test
 packages/ui
+packages/projects/projects/*/public
+packages/projects/projects/*/assets
+packages/projects/projects/*/*.png
+packages/projects/projects/*/*.jpg
+packages/projects/projects/*/*.jpeg
+packages/projects/projects/*/*.ktx2
+packages/projects/projects/*/*.scene.json
 
 
 kubernetes/**
