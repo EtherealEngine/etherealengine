@@ -98,7 +98,7 @@ export const defaultThemeSettings = {
     dropdownMenuHoverBackground: 'rgba(88,88,88,1)',
     dropdownMenuSelectedBackground: 'rgba(95,95,95,1)',
     drawerBackground: 'rgba(66,66,66,1)',
-    popupBackground: 'rgba(90,90,90,1)',
+    popupBackground: 'rgba(120,120,120,1)',
     tableHeaderBackground: 'rgba(76,76,76,1)',
     tableCellBackground: 'rgba(104,104,104,1)',
     tableFooterBackground: 'rgba(71,71,71,1)',

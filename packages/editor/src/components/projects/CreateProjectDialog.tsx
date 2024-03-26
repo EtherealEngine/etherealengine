@@ -26,17 +26,25 @@ Ethereal Engine. All Rights Reserved.
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import ProjectFields from '@etherealengine/client-core/src/admin/components/Project/ProjectFields'
+
+import { useHookstate } from '@hookstate/core'
+
 import { Dialog, DialogContent, DialogTitle, TextField } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
 import Fade from '@mui/material/Fade'
 import FormControl from '@mui/material/FormControl'
 
+import { ProjectUpdateState } from '@etherealengine/client-core/src/admin/services/ProjectUpdateService'
+import { DefaultUpdateSchedule } from '@etherealengine/common/src/interfaces/ProjectPackageJsonType'
+import { ProjectType } from '@etherealengine/common/src/schemas/projects/project.schema'
+import { getMutableState } from '@etherealengine/hyperflux'
 import { Button } from '../inputs/Button'
 import styles from './styles.module.scss'
 
 interface Props {
   open: boolean
-  onSuccess: (name: string) => Promise<void>
+  onSuccess: (name: string, repositoryPath?: string) => Promise<void>
   onClose: () => void
 }
 
@@ -47,12 +55,26 @@ export const CreateProjectDialog = ({ open, onSuccess, onClose }: Props): any =>
   const [error, setError] = useState('')
   const [projectName, setProjectName] = useState('')
 
+  const project = {
+    id: '',
+    name: 'tempProject',
+    thumbnail: '',
+    repositoryPath: '',
+    needsRebuild: false,
+    updateType: 'none' as ProjectType['updateType'],
+    updateSchedule: DefaultUpdateSchedule,
+    commitSHA: '',
+    commitDate: new Date()
+  }
+
+  const projectUpdateStatus = useHookstate(getMutableState(ProjectUpdateState)[project.name]).value
+
   const handleCreateProject = async () => {
     if (!projectName) return
 
     setProcessing(true)
     try {
-      await onSuccess(projectName)
+      await onSuccess(projectName, projectUpdateStatus?.destinationURL)
       closeDialog()
     } catch (err) {
       setError(err.message)
@@ -107,7 +129,12 @@ export const CreateProjectDialog = ({ open, onSuccess, onClose }: Props): any =>
               onKeyDown={handleSubmitOnEnter}
             />
             {error && error.length > 0 && <h2 className={styles.errorMessage}>{error}</h2>}
-            <Button onClick={handleCreateProject} className={styles.btn} disabled={!projectName}>
+            <ProjectFields inputProject={null} createProject={true} processing={processing} />
+            <Button
+              onClick={handleCreateProject}
+              className={styles.btn}
+              disabled={!projectName || projectUpdateStatus?.submitDisabled}
+            >
               {t('editor.projects.lbl-createProject')}
             </Button>
           </FormControl>

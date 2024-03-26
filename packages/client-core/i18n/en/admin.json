@@ -193,7 +193,7 @@
       "branchProcessing": "Fetching branches of project",
       "commitsProcessing": "Fetching commits of project",
       "mismatchedProjectWarning": "This version of this project does not match the installed version of Ethereal Engine. There may be compilation or runtime errors if this project is installed.",
-      "needsGithubProvider": "You must connect your account with GitHub in order to add or update projects from GitHub",
+      "needsGithubProvider": "You must connect your account with GitHub in order to create new projects, or add or update projects from GitHub",
       "sourceProjectName": "Project in source repo",
       "destinationProjectName": "Project in destination repo",
       "destinationRepoEmpty": "The destination repo is empty",

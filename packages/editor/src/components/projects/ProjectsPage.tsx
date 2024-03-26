@@ -265,8 +265,8 @@ const ProjectsPage = () => {
     }
   }
 
-  const onCreateProject = async (name: string) => {
-    projectCreateQuery({ name }, { query: { action: 'studio' } })
+  const onCreateProject = async (name: string, repositoryPath?: string) => {
+    projectCreateQuery({ name, repositoryPath }, { query: { action: 'studio' } })
   }
 
   const onCreatePermission = async (userInviteCode: InviteCode, projectId: string) => {

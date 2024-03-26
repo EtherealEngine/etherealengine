@@ -53,10 +53,17 @@ interface Props {
   inputProject?: ProjectType | null | undefined
   existingProject?: boolean | undefined
   changeDestination?: boolean | undefined
+  createProject?: boolean | undefined
   processing: boolean
 }
 
-const ProjectFields = ({ inputProject, existingProject = false, changeDestination = false, processing }: Props) => {
+const ProjectFields = ({
+  inputProject,
+  existingProject = false,
+  changeDestination = false,
+  createProject = false,
+  processing
+}: Props) => {
   const { t } = useTranslation()
 
   const project =
@@ -149,7 +156,8 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
           ProjectUpdateService.setDestinationError(project.name, destinationResponse.text!)
         } else {
           if (destinationResponse.destinationValid) {
-            if (existingProject && changeDestination) ProjectUpdateService.setSubmitDisabled(project.name, false)
+            if ((existingProject && changeDestination) || createProject)
+              ProjectUpdateService.setSubmitDisabled(project.name, false)
             ProjectUpdateService.setDestinationValid(project.name, destinationResponse.destinationValid)
             if (destinationResponse.projectName)
               ProjectUpdateService.setDestinationProjectName(project.name, destinationResponse.projectName)
@@ -310,7 +318,11 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
         }
       })
     } else {
-      if (!projectUpdateStatus?.value?.sourceVsDestinationChecked && !(existingProject && changeDestination)) {
+      if (
+        !projectUpdateStatus?.value?.sourceVsDestinationChecked &&
+        !(existingProject && changeDestination) &&
+        !createProject
+      ) {
         ProjectUpdateService.setSourceVsDestinationProcessing(project.name, false)
         ProjectUpdateService.setSourceVsDestinationChecked(project.name, false)
         ProjectUpdateService.setProjectName(project.name, '')
@@ -368,6 +380,8 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
               ? t('admin:components.project.updateProject')
               : existingProject && changeDestination
               ? t('admin:components.project.changeDestination')
+              : createProject
+              ? null
               : t('admin:components.project.addProject')}
           </DialogTitle>
 
@@ -415,7 +429,7 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
             />
           )}
 
-          {!changeDestination && (
+          {!changeDestination && !createProject && (
             <DialogTitle
               className={classNames({
                 [styles.textAlign]: true,
@@ -426,7 +440,7 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
             </DialogTitle>
           )}
 
-          {!changeDestination && (
+          {!changeDestination && !createProject && (
             <div>
               {hasGithubProvider ? (
                 <div className={styles.sourceContainer}>
@@ -548,7 +562,7 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
             {t('admin:components.project.destinationURLValid')}
           </div>
 
-          {!(existingProject && changeDestination) && (
+          {!(existingProject && changeDestination) && !createProject && (
             <div
               className={classNames({
                 [styles.validContainer]: true,
@@ -563,7 +577,7 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
             </div>
           )}
 
-          {!(existingProject && changeDestination) && (
+          {!(existingProject && changeDestination) && !createProject && (
             <div
               className={classNames({
                 [styles.validContainer]: true,
@@ -578,7 +592,7 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
             </div>
           )}
 
-          {!changeDestination && (
+          {!changeDestination && !createProject && (
             <>
               <DialogTitle
                 className={classNames({
