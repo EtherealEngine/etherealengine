@@ -82,10 +82,12 @@ import { SDFComponent } from '@etherealengine/engine/src/scene/components/SDFCom
 import { SceneSettingsComponent } from '@etherealengine/engine/src/scene/components/SceneSettingsComponent'
 import { TextComponent } from '@etherealengine/engine/src/scene/components/TextComponent'
 import { defineState } from '@etherealengine/hyperflux'
+import { CameraComponent } from '@etherealengine/spatial/src/camera/components/CameraComponent'
 import { ColliderComponent } from '@etherealengine/spatial/src/physics/components/ColliderComponent'
 import { RigidBodyComponent } from '@etherealengine/spatial/src/physics/components/RigidBodyComponent'
 import { TriggerComponent } from '@etherealengine/spatial/src/physics/components/TriggerComponent'
 import { AudioAnalysisEditor } from '../components/properties/AudioAnalysisEditor'
+import { CameraComponentNodeEditor } from '../components/properties/CameraComponentNodeEditor'
 import ColliderComponentEditor from '../components/properties/ColliderComponentEditor'
 import LinkNodeEditor from '../components/properties/LinkNodeEditor'
 import LoopAnimationNodeEditor from '../components/properties/LoopAnimationNodeEditor'
@@ -131,6 +133,7 @@ export const ComponentEditorsState = defineState({
       [RenderSettingsComponent.name]: RenderSettingsEditor,
       [FogSettingsComponent.name]: FogSettingsEditor,
       [CameraSettingsComponent.name]: CameraPropertiesNodeEditor,
+      [CameraComponent.name]: CameraComponentNodeEditor,
       [DirectionalLightComponent.name]: DirectionalLightNodeEditor,
       [HemisphereLightComponent.name]: HemisphereLightNodeEditor,
       [AmbientLightComponent.name]: AmbientLightNodeEditor,

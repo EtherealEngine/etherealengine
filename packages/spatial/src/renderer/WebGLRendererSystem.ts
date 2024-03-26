@@ -218,12 +218,12 @@ export class EngineRenderer {
     /** Postprocessing does not support multipass yet, so just use basic renderer when in VR */
     if (xrFrame) {
       // Assume camera.layers is source of truth for all xr cameras
-      xrCamera.layers.mask = camera.layers.mask
-      for (const c of xrCamera.cameras) c.layers.mask = camera.layers.mask
+      xrCamera.camera.layers.mask = camera.camera.layers.mask
+      for (const c of xrCamera.cameras) c.layers.mask = camera.camera.layers.mask
 
       this.rendering = true
       this.renderer.clear()
-      this.renderer.render(Engine.instance.scene, camera)
+      this.renderer.render(Engine.instance.scene, camera.camera)
       this.rendering = false
     } else {
       const state = getState(RendererState)
@@ -238,9 +238,9 @@ export class EngineRenderer {
         const width = canvasParent.clientWidth
         const height = canvasParent.clientHeight
 
-        if (camera.isPerspectiveCamera) {
+        if (camera.camera.isPerspectiveCamera) {
           camera.aspect = width / height
-          camera.updateProjectionMatrix()
+          camera.camera.updateProjectionMatrix()
         }
 
         state.qualityLevel > 0 && state.csm?.updateFrustums()
@@ -359,26 +359,26 @@ const reactor = () => {
 
   useEffect(() => {
     const camera = getComponent(Engine.instance.cameraEntity, CameraComponent)
-    if (engineRendererSettings.physicsDebug.value) camera.layers.enable(ObjectLayers.PhysicsHelper)
-    else camera.layers.disable(ObjectLayers.PhysicsHelper)
+    if (engineRendererSettings.physicsDebug.value) camera.camera.layers.enable(ObjectLayers.PhysicsHelper)
+    else camera.camera.layers.disable(ObjectLayers.PhysicsHelper)
   }, [engineRendererSettings.physicsDebug])
 
   useEffect(() => {
     const camera = getComponent(Engine.instance.cameraEntity, CameraComponent)
-    if (engineRendererSettings.avatarDebug.value) camera.layers.enable(ObjectLayers.AvatarHelper)
-    else camera.layers.disable(ObjectLayers.AvatarHelper)
+    if (engineRendererSettings.avatarDebug.value) camera.camera.layers.enable(ObjectLayers.AvatarHelper)
+    else camera.camera.layers.disable(ObjectLayers.AvatarHelper)
   }, [engineRendererSettings.avatarDebug])
 
   useEffect(() => {
     const camera = getComponent(Engine.instance.cameraEntity, CameraComponent)
-    if (engineRendererSettings.gridVisibility.value) camera.layers.enable(ObjectLayers.Gizmos)
-    else camera.layers.disable(ObjectLayers.Gizmos)
+    if (engineRendererSettings.gridVisibility.value) camera.camera.layers.enable(ObjectLayers.Gizmos)
+    else camera.camera.layers.disable(ObjectLayers.Gizmos)
   }, [engineRendererSettings.gridVisibility])
 
   useEffect(() => {
     const camera = getComponent(Engine.instance.cameraEntity, CameraComponent)
-    if (engineRendererSettings.nodeHelperVisibility.value) camera.layers.enable(ObjectLayers.NodeHelper)
-    else camera.layers.disable(ObjectLayers.NodeHelper)
+    if (engineRendererSettings.nodeHelperVisibility.value) camera.camera.layers.enable(ObjectLayers.NodeHelper)
+    else camera.camera.layers.disable(ObjectLayers.NodeHelper)
   }, [engineRendererSettings.nodeHelperVisibility])
 
   return null

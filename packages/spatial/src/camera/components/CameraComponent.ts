@@ -23,29 +23,78 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
+import { useEntityContext } from '@etherealengine/ecs'
+import { defineComponent, setComponent, useComponent } from '@etherealengine/ecs/src/ComponentFunctions'
+import { useEffect } from 'react'
 import { ArrayCamera, PerspectiveCamera } from 'three'
-
-import { defineComponent } from '@etherealengine/ecs/src/ComponentFunctions'
-import { addObjectToGroup, removeObjectFromGroup } from '../../renderer/components/GroupComponent'
+import { TransformComponent } from '../../SpatialModule'
+import { NameComponent } from '../../common/NameComponent'
+import { VisibleComponent } from '../../renderer/components/VisibleComponent'
 
 export const CameraComponent = defineComponent({
   name: 'CameraComponent',
   onInit: (entity) => {
     const camera = new ArrayCamera()
-    camera.fov = 60
-    camera.aspect = 1
-    camera.near = 0.1
-    camera.far = 1000
-    camera.cameras = [new PerspectiveCamera().copy(camera, false)]
-    return camera
+    return {
+      fov: 60 as number,
+      aspect: 1 as number,
+      near: 0.1 as number,
+      far: 1000 as number,
+      cameras: [new PerspectiveCamera().copy(camera, false)],
+      camera: camera
+    }
+    // const camera = new ArrayCamera()
+    // camera.fov = 60
+    // camera.aspect = 1
+    // camera.near = 0.1
+    // camera.far = 1000
+    // camera.cameras = [new PerspectiveCamera().copy(camera, false)]
+    // return camera
   },
-  onSet: (entity, component, json: undefined) => {
-    addObjectToGroup(entity, component.value)
+  onSet: (entity, component, json) => {
+    if (!json) {
+      return
+    }
+    if (typeof json.fov === 'number' && component.fov.value !== json.fov) {
+      component.fov.set(json.fov)
+    }
+    if (typeof json.aspect === 'number' && component.aspect.value !== json.aspect) {
+      component.aspect.set(json.aspect)
+    }
+    if (typeof json.near === 'number' && component.near.value !== json.near) {
+      component.near.set(json.near)
+    }
+    if (typeof json.far === 'number' && component.far.value !== json.far) {
+      component.far.set(json.far)
+    }
+    if (typeof json.camera === 'object' && component.camera.value !== json.camera) {
+      component.camera.set(json.camera)
+    }
   },
   onRemove: (entity, component) => {
-    removeObjectFromGroup(entity, component.value)
+    // removeObjectFromGroup(entity, component.value)
   },
-  toJSON: () => {
+  toJSON: (entity, component) => {
+    return {
+      fov: component.fov.value,
+      aspect: component.aspect.value,
+      near: component.near.value,
+      far: component.far.value
+    }
+  },
+  reactor: () => {
+    const entity = useEntityContext()
+    const cameraComponent = useComponent(entity, CameraComponent)
+
+    useEffect(() => {
+      setComponent(entity, VisibleComponent)
+      setComponent(entity, NameComponent, 'Camera')
+      setComponent(entity, TransformComponent)
+      setComponent(entity, CameraComponent)
+    }, [])
+
+    useEffect(() => {}, [])
+
     return null
   }
 })

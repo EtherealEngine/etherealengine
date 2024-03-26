@@ -311,6 +311,14 @@
       "lbl-camera-raycast-count": "Ray Count",
       "lbl-camera-raycast-length": "Ray Length"
     },
+    "cameraComponent": {
+      "name": "Camera Component",
+      "description": "Camera component settings.",
+      "lbl-fov": "Camera field of view",
+      "lbl-near": "Near",
+      "lbl-far": "Far",
+      "lbl-aspect": "Aspect Ratio"
+    },
     "directionalLight": {
       "name": "Directional Light",
       "description": "A light which illuminates the entire scene, but emits along a single direction.",
@@ -938,31 +946,30 @@
       "lbl-newProject": "New Project"
     }
   },
-  "visualScript":{
+  "visualScript": {
     "panel": {
       "title": "Visual Script",
-      "addVisualScript" : "Add Visual Script"
-    
+      "addVisualScript": "Add Visual Script"
     },
-    "picker":{
-      "title" : "Add Node"
+    "picker": {
+      "title": "Add Node"
     },
     "modal": {
-      "clear": {  
-        "title":"Clear Visual Script",
+      "clear": {
+        "title": "Clear Visual Script",
         "confirm": "Are you sure?"
       },
       "help": {
-        "title":"Help",
-        "addNodeHelp":" Right click anywhere to add a new node.",
-        "addConnectionHelp":"Drag from the output of one node to the input of another to create a connection or into empty space to add a new node and connect it",
-        "deleteNodeHelp":"Left click to select individual or use Shift+Left click to box select nodes or connections, backspace to delete selected nodes or connections."
+        "title": "Help",
+        "addNodeHelp": " Right click anywhere to add a new node.",
+        "addConnectionHelp": "Drag from the output of one node to the input of another to create a connection or into empty space to add a new node and connect it",
+        "deleteNodeHelp": "Left click to select individual or use Shift+Left click to box select nodes or connections, backspace to delete selected nodes or connections."
       },
       "load": {
-        "title":"Load Visual Script",
-        "examples":  "Select an example"
+        "title": "Load Visual Script",
+        "examples": "Select an example"
       },
-      "save":"Save Visual Script",
+      "save": "Save Visual Script",
       "buttons": {
         "clear": "Clear",
         "cancel": "Cancel",
@@ -974,23 +981,23 @@
         }
       }
     },
-    "sidePanel":{
+    "sidePanel": {
       "title": "Graph Utilities",
-      "node":{
+      "node": {
         "name": "Nodes",
         "description": "Individual logic units connected together to create a graph"
-        },
-      "template":{
+      },
+      "template": {
         "name": "Templates",
         "description": "Reusable graphs that can be added to other graphs."
-        },
-      "variables":{
+      },
+      "variables": {
         "name": "Variables",
         "description": "Variables that can be used in the graph.",
         "add": "Add Variable"
-        }
-      },
-    "editorPanel":{
+      }
+    },
+    "editorPanel": {
       "makeTemplate": "Make into template"
     }
   },

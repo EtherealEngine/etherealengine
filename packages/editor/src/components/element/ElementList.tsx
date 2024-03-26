@@ -73,6 +73,7 @@ import { SceneDynamicLoadTagComponent } from '@etherealengine/engine/src/scene/c
 import { SceneSettingsComponent } from '@etherealengine/engine/src/scene/components/SceneSettingsComponent'
 import { ShadowComponent } from '@etherealengine/engine/src/scene/components/ShadowComponent'
 import { TextComponent } from '@etherealengine/engine/src/scene/components/TextComponent'
+import { CameraComponent } from '@etherealengine/spatial/src/camera/components/CameraComponent'
 import { RigidBodyComponent } from '@etherealengine/spatial/src/physics/components/RigidBodyComponent'
 import { TriggerComponent } from '@etherealengine/spatial/src/physics/components/TriggerComponent'
 import Icon from '@etherealengine/ui/src/primitives/mui/Icon'
@@ -104,6 +105,7 @@ export const ComponentShelfCategoriesState = defineState({
         ImageComponent
       ],
       'Scene Composition': [
+        CameraComponent,
         PrimitiveGeometryComponent,
         GroundPlaneComponent,
         GroupComponent,
