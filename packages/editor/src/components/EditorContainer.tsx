@@ -57,6 +57,7 @@ import { ProjectBrowserPanelTab } from './assets/ProjectBrowserPanel'
 import { SceneAssetsPanelTab } from './assets/SceneAssetsPanel'
 import { ScenePanelTab } from './assets/ScenesPanel'
 import { ControlText } from './controlText/ControlText'
+import CopySceneDialog from './dialogs/CopySceneDialog'
 import { DialogState } from './dialogs/DialogState'
 import ErrorDialog from './dialogs/ErrorDialog'
 import { ProgressDialog } from './dialogs/ProgressDialog'
@@ -199,6 +200,25 @@ const onSaveAs = async () => {
   }
 }
 
+const onCopyScene = async () => {
+  const { projectName, sceneName } = getState(EditorState)
+  const abortController = new AbortController()
+  const result = await new Promise((resolve) => {
+    DialogState.setDialog(
+      <CopySceneDialog
+        currentSceneName={sceneName}
+        currentProjectName={projectName}
+        onConfirm={resolve}
+        onCancel={resolve}
+      />
+    )
+  })
+  DialogState.setDialog(null)
+  if (result?.name && result?.projectName) {
+    await saveScene(result?.projectName, result.name, abortController.signal)
+  }
+}
+
 const onImportSettings = () => {
   DialogState.setDialog(<ImportSettingsPanel />)
 }
@@ -288,6 +308,10 @@ const generateToolbarMenu = () => {
     {
       name: t('editor:menubar.saveAs'),
       action: onSaveAs
+    },
+    {
+      name: t('editor:menubar.copyScene'),
+      action: onCopyScene
     },
     {
       name: t('editor:menubar.importSettings'),
