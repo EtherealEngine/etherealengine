@@ -23,8 +23,8 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { MathUtils } from 'three'
 import { matches, Parser, Validator } from 'ts-matches'
+import { v4 as uuidv4 } from 'uuid'
 
 import { OpaqueType } from '@etherealengine/common/src/interfaces/OpaqueType'
 import multiLogger from '@etherealengine/common/src/logger'
@@ -331,7 +331,7 @@ export const dispatchAction = <A extends Action>(_action: A) => {
   action.$to = action.$to ?? 'all'
   action.$time = action.$time ?? HyperFlux.store.getDispatchTime() + HyperFlux.store.defaultDispatchDelay()
   action.$cache = action.$cache ?? false
-  action.$uuid = action.$uuid ?? MathUtils.generateUUID()
+  action.$uuid = action.$uuid ?? uuidv4()
   const topic = (action.$topic = action.$topic ?? HyperFlux.store.defaultTopic)
 
   if (process.env.APP_ENV === 'development' && !action.$stack) {

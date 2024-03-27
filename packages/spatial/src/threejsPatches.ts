@@ -23,12 +23,11 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
+import { Object3DUtils } from '@etherealengine/common/src/utils/Object3DUtils'
 import { isClient } from '@etherealengine/common/src/utils/getEnvironment'
+import { Entity } from '@etherealengine/ecs'
 import * as THREE from 'three'
 import { Euler, Matrix4, Object3D, Quaternion, Scene, SkinnedMesh, Vector2, Vector3, Vector4 } from 'three'
-
-import { Object3DUtils } from '@etherealengine/common/src/utils/Object3DUtils'
-import { Entity } from '@etherealengine/ecs'
 
 //@ts-ignore
 Vector3.prototype.toJSON = function () {

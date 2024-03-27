@@ -23,7 +23,7 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { EntityUUID, UUIDComponent } from '@etherealengine/ecs'
+import { UUIDComponent } from '@etherealengine/ecs'
 import {
   defineComponent,
   getComponent,
@@ -34,7 +34,12 @@ import {
   useOptionalComponent
 } from '@etherealengine/ecs/src/ComponentFunctions'
 import { Entity, UndefinedEntity } from '@etherealengine/ecs/src/Entity'
-import { createEntity, removeEntity, useEntityContext } from '@etherealengine/ecs/src/EntityFunctions'
+import {
+  createEntity,
+  generateEntityUUID,
+  removeEntity,
+  useEntityContext
+} from '@etherealengine/ecs/src/EntityFunctions'
 import { getMutableState, useState } from '@etherealengine/hyperflux'
 import { EngineState } from '@etherealengine/spatial/src/EngineState'
 import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
@@ -50,17 +55,7 @@ import { EntityTreeComponent, iterateEntityNode } from '@etherealengine/spatial/
 import { TransformComponent } from '@etherealengine/spatial/src/transform/components/TransformComponent'
 import { computeTransformMatrix } from '@etherealengine/spatial/src/transform/systems/TransformSystem'
 import { useEffect } from 'react'
-import {
-  Box3,
-  BufferGeometry,
-  LineBasicMaterial,
-  LineSegments,
-  MathUtils,
-  Matrix4,
-  Mesh,
-  Quaternion,
-  Vector3
-} from 'three'
+import { Box3, BufferGeometry, LineBasicMaterial, LineSegments, Matrix4, Mesh, Quaternion, Vector3 } from 'three'
 import { SceneAssetPendingTagComponent } from './SceneAssetPendingTagComponent'
 
 function createBBoxGridHelper(matrixWorld: Matrix4, bbox: Box3, density: number): LineSegments {
@@ -148,7 +143,7 @@ export const ObjectGridSnapComponent = defineComponent({
       setComponent(helper, NameComponent, 'helper')
       setComponent(helper, VisibleComponent)
       setComponent(helper, TransformComponent)
-      setComponent(helper, UUIDComponent, MathUtils.generateUUID() as EntityUUID)
+      setComponent(helper, UUIDComponent, generateEntityUUID())
       setComponent(helper, EntityTreeComponent, { parentEntity: entity })
       setComponent(helper, ObjectLayerMaskComponent, ObjectLayers.NodeHelper)
 

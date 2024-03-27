@@ -25,7 +25,7 @@ Ethereal Engine. All Rights Reserved.
 
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
 import { resolve, virtual } from '@feathersjs/schema'
-import { v4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 import { InstanceID, InstanceQuery, InstanceType } from '@etherealengine/common/src/schemas/networking/instance.schema'
 import type { HookContext } from '@etherealengine/server-core/declarations'
@@ -47,7 +47,7 @@ export const instanceExternalResolver = resolve<InstanceType, HookContext>({})
 
 export const instanceDataResolver = resolve<InstanceType, HookContext>({
   id: async () => {
-    return v4() as InstanceID
+    return uuidv4() as InstanceID
   },
   createdAt: getDateTimeSql,
   updatedAt: getDateTimeSql

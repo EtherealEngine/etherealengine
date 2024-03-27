@@ -35,7 +35,7 @@ import {
 } from '@etherealengine/client-core/src/user/components/Panel3D/useRender3DPanelSystem'
 import { getMutableState, useHookstate } from '@etherealengine/hyperflux'
 
-import { EntityUUID, UUIDComponent, setComponent } from '@etherealengine/ecs'
+import { UUIDComponent, generateEntityUUID, setComponent } from '@etherealengine/ecs'
 import { AssetPreviewCameraComponent } from '@etherealengine/engine/src/camera/components/AssetPreviewCameraComponent'
 import { EnvmapComponent } from '@etherealengine/engine/src/scene/components/EnvmapComponent'
 import { ModelComponent } from '@etherealengine/engine/src/scene/components/ModelComponent'
@@ -43,7 +43,6 @@ import { NameComponent } from '@etherealengine/spatial/src/common/NameComponent'
 import { ObjectLayerMaskComponent } from '@etherealengine/spatial/src/renderer/components/ObjectLayerComponent'
 import { VisibleComponent } from '@etherealengine/spatial/src/renderer/components/VisibleComponent'
 import { ObjectLayers } from '@etherealengine/spatial/src/renderer/constants/ObjectLayers'
-import { MathUtils } from 'three'
 import styles from '../styles.module.scss'
 
 export const ModelPreviewPanel = (props) => {
@@ -83,7 +82,7 @@ export const ModelPreviewPanel = (props) => {
     const renderPanelEntities = renderPanelState.entities[panelRef.current.id]
     const entity = renderPanelEntities[PanelEntities.model].value
     setComponent(entity, NameComponent, '3D Preview Entity')
-    const uuid = MathUtils.generateUUID() as EntityUUID
+    const uuid = generateEntityUUID()
     setComponent(entity, UUIDComponent, uuid)
     setComponent(entity, ModelComponent, { src: url, cameraOcclusion: false })
     setComponent(entity, EnvmapComponent, { type: 'Skybox', envMapIntensity: 2 })

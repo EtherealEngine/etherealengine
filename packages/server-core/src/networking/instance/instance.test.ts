@@ -25,7 +25,7 @@ Ethereal Engine. All Rights Reserved.
 
 import { Paginated } from '@feathersjs/feathers'
 import assert from 'assert'
-import { v1 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   LocationID,
@@ -49,8 +49,8 @@ describe('instance.test', () => {
   before(async () => {
     app = createFeathersKoaApp()
     await app.setup()
-    const name = `Test Location ${v1()}`
-    const sceneId = `test-scene-${v1()}` as SceneID
+    const name = `Test Location ${uuidv4()}`
+    const sceneId = `test-scene-${uuidv4()}` as SceneID
 
     testLocation = await app.service(locationPath).create(
       {

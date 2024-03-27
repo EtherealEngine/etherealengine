@@ -23,7 +23,7 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { v4 as uuid } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { EntityJsonType, SceneJsonType } from '../types/SceneTypes'
 
 // puts the scene settings from the the root entity into a sub entity
@@ -51,7 +51,7 @@ export const migrateSceneSettings = (json: SceneJsonType) => {
   // force reordering so our new entity can be at the start
   json.entities = {
     [json.root]: json.entities[json.root],
-    [uuid()]: newEntity,
+    [uuidv4()]: newEntity,
     ...json.entities
   }
 }

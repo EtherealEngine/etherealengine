@@ -25,10 +25,11 @@ Ethereal Engine. All Rights Reserved.
 
 import * as bitECS from 'bitecs'
 import React from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 import { HyperFlux } from '@etherealengine/hyperflux'
 import { removeAllComponents } from './ComponentFunctions'
-import { Entity, UndefinedEntity } from './Entity'
+import { Entity, EntityUUID, UndefinedEntity } from './Entity'
 
 export const createEntity = (): Entity => {
   let entity = bitECS.addEntity(HyperFlux.store)
@@ -52,4 +53,8 @@ export const EntityContext = React.createContext(UndefinedEntity)
 
 export const useEntityContext = () => {
   return React.useContext(EntityContext)
+}
+
+export const generateEntityUUID = () => {
+  return uuidv4() as EntityUUID
 }

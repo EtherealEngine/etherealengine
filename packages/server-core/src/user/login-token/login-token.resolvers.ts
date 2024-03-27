@@ -25,7 +25,7 @@ Ethereal Engine. All Rights Reserved.
 
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
 import { resolve, virtual } from '@feathersjs/schema'
-import { v4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 import { LoginTokenQuery, LoginTokenType } from '@etherealengine/common/src/schemas/user/login-token.schema'
 import type { HookContext } from '@etherealengine/server-core/declarations'
@@ -45,7 +45,7 @@ export const loginTokenExternalResolver = resolve<LoginTokenType, HookContext>({
 
 export const loginTokenDataResolver = resolve<LoginTokenType, HookContext>({
   id: async () => {
-    return v4()
+    return uuidv4()
   },
   token: async () => {
     return crypto.randomBytes(config.authentication.bearerToken.numBytes).toString('hex')

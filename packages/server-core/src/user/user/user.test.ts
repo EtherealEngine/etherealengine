@@ -24,7 +24,7 @@ Ethereal Engine. All Rights Reserved.
 */
 
 import assert from 'assert'
-import { v1 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 import { AvatarType, avatarPath } from '@etherealengine/common/src/schemas/user/avatar.schema'
 import { destroyEngine } from '@etherealengine/ecs/src/Engine'
@@ -114,7 +114,7 @@ describe('user.test', () => {
 
   it('should patch users', async () => {
     for (const user of users) {
-      const newName = v1() as UserName
+      const newName = uuidv4() as UserName
       await app.service(userPath).patch(
         user.id,
         {
@@ -130,7 +130,7 @@ describe('user.test', () => {
   })
 
   it('should patch a user with a query without affecting users not part of that query', async () => {
-    const newName = v1() as UserName
+    const newName = uuidv4() as UserName
     const user1 = users[0]
     const user2 = users[1]
     await app.service(userPath).patch(user1.id, {

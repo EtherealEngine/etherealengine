@@ -39,7 +39,7 @@ import { UserApiKeyType, userApiKeyPath } from '@etherealengine/common/src/schem
 import { UserName, userPath } from '@etherealengine/common/src/schemas/user/user.schema'
 import { copyFolderRecursiveSync, deleteFolderRecursive } from '@etherealengine/common/src/utils/fsHelperFunctions'
 import { Paginated } from '@feathersjs/feathers'
-import { v1 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { Application } from '../../../declarations'
 import { createFeathersKoaApp } from '../../createApp'
 import { useGit } from '../../util/gitHelperFunctions'
@@ -69,8 +69,8 @@ describe('project.test', () => {
   })
 
   before(async () => {
-    const name = ('test-project-user-name-' + v1()) as UserName
-    const avatarName = 'test-project-avatar-name-' + v1()
+    const name = ('test-project-user-name-' + uuidv4()) as UserName
+    const avatarName = 'test-project-avatar-name-' + uuidv4()
 
     const avatar = await app.service(avatarPath).create({
       name: avatarName
@@ -102,7 +102,7 @@ describe('project.test', () => {
 
   describe('create', () => {
     it('should add new project', async () => {
-      const projectName = `test-project-${v1()}`
+      const projectName = `test-project-${uuidv4()}`
 
       testProject = await app.service(projectPath).create(
         {
@@ -144,7 +144,7 @@ describe('project.test', () => {
       git.add('.')
       git.commit('initial commit')
 
-      testUpdateProjectName = `test-update-project-name-${v1()}`
+      testUpdateProjectName = `test-update-project-name-${uuidv4()}`
     })
 
     after(async () => {

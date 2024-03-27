@@ -23,16 +23,15 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
+import { destroyEngine } from '@etherealengine/ecs/src/Engine'
+import { createEngine } from '@etherealengine/spatial/src/initializeEngine'
 import approot from 'app-root-path'
 import assert from 'assert'
 import fs from 'fs-extra'
 import https from 'https'
 import fetch from 'node-fetch'
 import path from 'path/posix'
-import { v4 as uuid } from 'uuid'
-
-import { destroyEngine } from '@etherealengine/ecs/src/Engine'
-import { createEngine } from '@etherealengine/spatial/src/initializeEngine'
+import { v4 as uuidv4 } from 'uuid'
 import LocalStorage from '../../src/media/storageprovider/local.storage'
 import S3Provider from '../../src/media/storageprovider/s3.storage'
 import { getContentType } from '../../src/util/fileUtils'
@@ -40,7 +39,7 @@ import { providerAfterTest, providerBeforeTest } from './storageproviderconfig'
 
 describe('storageprovider', () => {
   const testFileName = 'TestFile.txt'
-  const testFolderName = `TestFolder-${uuid()}`
+  const testFolderName = `TestFolder-${uuidv4()}`
   const testFileContent = 'content'
   const folderKeyTemp = path.join(testFolderName, 'temp')
   const folderKeyTemp2 = path.join(testFolderName, 'temp2')

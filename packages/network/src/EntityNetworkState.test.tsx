@@ -27,7 +27,7 @@ import assert from 'assert'
 
 import { NetworkId } from '@etherealengine/common/src/interfaces/NetworkId'
 import { UserID } from '@etherealengine/common/src/schema.type.module'
-import { EntityUUID } from '@etherealengine/ecs'
+import { EntityUUID, generateEntityUUID } from '@etherealengine/ecs'
 import { PeerID, ReactorReconciler } from '@etherealengine/hyperflux'
 import { applyIncomingActions, dispatchAction } from '@etherealengine/hyperflux/functions/ActionFunctions'
 
@@ -41,7 +41,6 @@ import { SystemDefinitions } from '@etherealengine/ecs/src/SystemFunctions'
 import { createEngine } from '@etherealengine/spatial/src/initializeEngine'
 import { act, render } from '@testing-library/react'
 import React from 'react'
-import { MathUtils } from 'three'
 import { createMockNetwork } from '../tests/createMockNetwork'
 import './EntityNetworkState'
 import { NetworkObjectComponent, NetworkObjectOwnedTag } from './NetworkObjectComponent'
@@ -400,7 +399,7 @@ describe('EntityNetworkState', () => {
           networkId: objNetId,
           $topic: NetworkTopics.world,
           $peer: Engine.instance.store.peerID,
-          entityUUID: MathUtils.generateUUID() as any as EntityUUID
+          entityUUID: generateEntityUUID()
         })
       )
     }
@@ -424,7 +423,7 @@ describe('EntityNetworkState', () => {
         networkId: objNetId,
         $topic: NetworkTopics.world,
         $peer: Engine.instance.store.peerID,
-        entityUUID: MathUtils.generateUUID() as any as EntityUUID
+        entityUUID: generateEntityUUID()
       })
     )
 

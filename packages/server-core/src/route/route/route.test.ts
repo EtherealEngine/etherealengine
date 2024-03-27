@@ -27,7 +27,7 @@ import appRootPath from 'app-root-path'
 import assert from 'assert'
 import fs from 'fs'
 import path from 'path'
-import { v4 as uuid } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 import { destroyEngine } from '@etherealengine/ecs/src/Engine'
 
@@ -92,8 +92,8 @@ describe('route.test', () => {
   })
 
   it('should find the installed project routes', async () => {
-    testProject = `test-project-${uuid()}`
-    testRoute = `test-route-${uuid()}`
+    testProject = `test-project-${uuidv4()}`
+    testRoute = `test-route-${uuidv4()}`
 
     await app.service(projectPath).create({ name: testProject }, params)
     updateXREngineConfigForTest(testProject, testRoute)

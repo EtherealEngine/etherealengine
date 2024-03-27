@@ -23,7 +23,7 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { EntityUUID, UUIDComponent } from '@etherealengine/ecs'
+import { UUIDComponent } from '@etherealengine/ecs'
 import {
   ComponentJSONIDMap,
   getComponent,
@@ -31,12 +31,11 @@ import {
   setComponent
 } from '@etherealengine/ecs/src/ComponentFunctions'
 import { Entity, UndefinedEntity } from '@etherealengine/ecs/src/Entity'
-import { createEntity } from '@etherealengine/ecs/src/EntityFunctions'
+import { createEntity, generateEntityUUID } from '@etherealengine/ecs/src/EntityFunctions'
 import { ComponentJsonType } from '@etherealengine/engine/src/scene/types/SceneTypes'
 import { VisibleComponent } from '@etherealengine/spatial/src/renderer/components/VisibleComponent'
 import { EntityTreeComponent } from '@etherealengine/spatial/src/transform/components/EntityTree'
 import { TransformComponent } from '@etherealengine/spatial/src/transform/components/TransformComponent'
-import { MathUtils } from 'three'
 
 export const addEntityToScene = (
   componentJson: Array<ComponentJsonType>,
@@ -53,7 +52,7 @@ export const addEntityToScene = (
   }
   setComponent(newEntity, EntityTreeComponent, { parentEntity, childIndex })
   setComponent(newEntity, TransformComponent)
-  const uuid = MathUtils.generateUUID() as EntityUUID
+  const uuid = generateEntityUUID()
   setComponent(newEntity, UUIDComponent, uuid)
   setComponent(newEntity, VisibleComponent)
   for (const component of componentJson) {

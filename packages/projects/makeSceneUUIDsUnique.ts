@@ -26,23 +26,22 @@ Ethereal Engine. All Rights Reserved.
 import appRootPath from 'app-root-path'
 import fs from 'fs'
 import path from 'path'
-import { v4 } from 'uuid'
 
-import { EntityUUID } from '@etherealengine/ecs'
+import { EntityUUID, generateEntityUUID } from '@etherealengine/ecs'
 import { SceneJsonType } from '@etherealengine/engine/src/scene/types/SceneTypes'
 
 for (const project of fs.readdirSync(path.resolve(appRootPath.path, 'packages/projects/projects/'))) {
   const files = fs.readdirSync(path.resolve(appRootPath.path, 'packages/projects/projects/', project))
   const scenes = files.filter((dirent) => dirent.endsWith('.scene.json'))
   for (const scene of scenes) {
-    const uuidMapping = {} as { [uuid: string]: string }
+    const uuidMapping = {} as { [uuid: string]: EntityUUID }
     const sceneJson = JSON.parse(
       fs.readFileSync(path.resolve(appRootPath.path, 'packages/projects/projects/', project, scene)).toString()
     ) as SceneJsonType
     for (const uuid of Object.keys(sceneJson.entities)) {
-      uuidMapping[uuid] = v4()
+      uuidMapping[uuid] = generateEntityUUID()
     }
-    sceneJson.root = uuidMapping[Object.keys(sceneJson.entities)[0]] as EntityUUID
+    sceneJson.root = uuidMapping[Object.keys(sceneJson.entities)[0]]
     for (const uuid of Object.keys(sceneJson.entities)) {
       if (Object.keys(uuidMapping).includes(sceneJson.entities[uuid].parent!)) {
         sceneJson.entities[uuid].parent =

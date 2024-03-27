@@ -41,7 +41,7 @@ import {
 import { getDateTimeSql, toDateTimeSql } from '@etherealengine/common/src/utils/datetime-sql'
 import { getState } from '@etherealengine/hyperflux'
 import { KnexAdapterOptions, KnexAdapterParams, KnexService } from '@feathersjs/knex'
-import { v4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { Application } from '../../../declarations'
 import logger from '../../ServerLogger'
 import { ServerMode, ServerState } from '../../ServerState'
@@ -109,7 +109,7 @@ export class ProjectService<T = ProjectType, ServiceParams extends Params = Proj
     const { commitSHA, commitDate } = await getCommitSHADate(projectName)
 
     await super._create({
-      id: v4(),
+      id: uuidv4(),
       name: projectName,
       enabled,
       repositoryPath: gitData.repositoryPath,

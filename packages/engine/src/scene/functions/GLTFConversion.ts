@@ -23,17 +23,16 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { MathUtils, Object3D } from 'three'
+import { Object3D } from 'three'
 
 import config from '@etherealengine/common/src/config'
-import { EntityUUID } from '@etherealengine/ecs'
+import { generateEntityUUID } from '@etherealengine/ecs'
 
 import { sceneRelativePathIdentifier } from '@etherealengine/common/src/utils/parseSceneJSON'
 import { EntityJsonType, SceneJsonType } from '../types/SceneTypes'
 
 export const nodeToEntityJson = (node: any): EntityJsonType => {
   const parentId = node.extras?.parent ? { parent: node.extras.parent } : {}
-  const uuid = node.extras?.uuid ? node.extras.uuid : MathUtils.generateUUID()
   return {
     name: node.name,
     components: node.extensions
@@ -48,7 +47,7 @@ export const nodeToEntityJson = (node: any): EntityJsonType => {
 export const gltfToSceneJson = (gltf: any): SceneJsonType => {
   handleScenePaths(gltf, 'decode')
   const rootGL = gltf.scenes[gltf.scene]
-  const rootUuid = MathUtils.generateUUID() as EntityUUID
+  const rootUuid = generateEntityUUID()
   const result: SceneJsonType = {
     entities: {},
     root: rootUuid,

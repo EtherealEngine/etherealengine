@@ -24,7 +24,7 @@ Ethereal Engine. All Rights Reserved.
 */
 
 import { sha3_256 } from 'js-sha3'
-import { LoaderUtils, MathUtils, Mesh, Object3D } from 'three'
+import { LoaderUtils, Mesh, Object3D } from 'three'
 import matches, { Validator } from 'ts-matches'
 
 import { NO_PROXY, defineAction, dispatchAction, getMutableState } from '@etherealengine/hyperflux'
@@ -32,6 +32,7 @@ import { NO_PROXY, defineAction, dispatchAction, getMutableState } from '@ethere
 import config from '@etherealengine/common/src/config'
 import { pathJoin } from '@etherealengine/common/src/utils/miscUtils'
 import iterateObject3D from '@etherealengine/spatial/src/common/functions/iterateObject3D'
+import { v4 as uuidv4 } from 'uuid'
 import { AssetLoader } from '../../../classes/AssetLoader'
 import { modelResourcesPath } from '../../../functions/pathResolver'
 import { UploadRequestState } from '../../../state/UploadRequestState'
@@ -105,7 +106,7 @@ export default class BufferHandlerExtension extends ExporterExtension implements
   writeImage(image: HTMLImageElement | HTMLCanvasElement, imageDef: { [key: string]: any }) {
     //only execute when images are not embedded
     if (this.writer.options.embedImages) return
-    const name = MathUtils.generateUUID()
+    const name = uuidv4()
     const projectName = this.projectName
     const modelName = this.modelName
     let buffer: ArrayBuffer

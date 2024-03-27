@@ -35,9 +35,9 @@ import {
 import { getMutableState, getState, useHookstate } from '@etherealengine/hyperflux'
 
 import {
-  EntityUUID,
   UUIDComponent,
   createEntity,
+  generateEntityUUID,
   getMutableComponent,
   removeEntity,
   setComponent
@@ -51,7 +51,7 @@ import { addObjectToGroup } from '@etherealengine/spatial/src/renderer/component
 import { ObjectLayerMaskComponent } from '@etherealengine/spatial/src/renderer/components/ObjectLayerComponent'
 import { VisibleComponent } from '@etherealengine/spatial/src/renderer/components/VisibleComponent'
 import { ObjectLayers } from '@etherealengine/spatial/src/renderer/constants/ObjectLayers'
-import { MathUtils, Mesh, SphereGeometry } from 'three'
+import { Mesh, SphereGeometry } from 'three'
 
 export const MaterialPreviewPanel = (props) => {
   const panelRef = useRef() as React.MutableRefObject<HTMLDivElement>
@@ -88,7 +88,7 @@ export const MaterialPreviewPanel = (props) => {
     const renderPanelEntities = renderPanelState.entities[panelRef.current.id]
     const entity = createEntity()
     setComponent(entity, NameComponent, 'Material Preview Entity')
-    const uuid = MathUtils.generateUUID() as EntityUUID
+    const uuid = generateEntityUUID()
     setComponent(entity, UUIDComponent, uuid)
     setComponent(entity, VisibleComponent, true)
     const material = getState(MaterialLibraryState).materials[selectedMaterial.value].material

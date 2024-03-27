@@ -33,7 +33,7 @@ import { getState } from '@etherealengine/hyperflux'
 import { Application } from '@etherealengine/server-core/declarations'
 import appRootPath from 'app-root-path'
 import { ChildProcess } from 'child_process'
-import { v1 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { StartTestFileServer } from '../../server-core/src/createFileServer'
 import { onConnection } from '../src/channels'
 import { start } from '../src/start'
@@ -60,7 +60,7 @@ describe('InstanceLoad', () => {
     const loadLocation = onConnection(app)
 
     const type = 'guest'
-    const token = v1()
+    const token = uuidv4()
 
     const createdIdentityProvider = await app.service(identityProviderPath).create({
       type,

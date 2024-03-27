@@ -26,7 +26,8 @@ Ethereal Engine. All Rights Reserved.
 import { Entity, UndefinedEntity } from '@etherealengine/ecs'
 import { NO_PROXY, State, useHookstate } from '@etherealengine/hyperflux'
 import { useEffect } from 'react'
-import { MathUtils, Texture } from 'three'
+import { Texture } from 'three'
+import { v4 as uuidv4 } from 'uuid'
 import { LoadingArgs } from '../classes/AssetLoader'
 import { GLTF } from '../loaders/gltf/GLTFLoader'
 import { AssetType, ResourceManager, ResourceType } from '../state/ResourceState'
@@ -43,7 +44,7 @@ function useLoader<T extends AssetType>(
   const value = useHookstate<T | null>(null)
   const error = useHookstate<ErrorEvent | Error | null>(null)
   const progress = useHookstate<ProgressEvent<EventTarget> | null>(null)
-  const uuid = useHookstate<string>(MathUtils.generateUUID())
+  const uuid = useHookstate<string>(uuidv4())
 
   const unload = () => {
     if (url) ResourceManager.unload(url, entity, uuid.value)

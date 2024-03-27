@@ -24,7 +24,7 @@ Ethereal Engine. All Rights Reserved.
 */
 
 import { Knex } from 'knex'
-import { v4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   instanceServerSettingPath,
@@ -53,7 +53,12 @@ export async function seed(knex: Knex): Promise<void> {
         mode: process.env.INSTANCESERVER_MODE || 'dev',
         locationName: process.env.PRELOAD_LOCATION_NAME || ''
       }
-    ].map(async (item) => ({ ...item, id: v4(), createdAt: await getDateTimeSql(), updatedAt: await getDateTimeSql() }))
+    ].map(async (item) => ({
+      ...item,
+      id: uuidv4(),
+      createdAt: await getDateTimeSql(),
+      updatedAt: await getDateTimeSql()
+    }))
   )
 
   if (forceRefresh || testEnabled) {

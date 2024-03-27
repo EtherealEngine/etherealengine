@@ -41,7 +41,7 @@ import {
 import { userRelationshipPath } from '@etherealengine/common/src/schemas/user/user-relationship.schema'
 import { UserID, userPath } from '@etherealengine/common/src/schemas/user/user.schema'
 import { KnexAdapterParams } from '@feathersjs/knex'
-import { v1 as uuidv1 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { Application } from '../../../declarations'
 import logger from '../../ServerLogger'
 
@@ -128,7 +128,7 @@ export class AcceptInviteService implements ServiceInterface<AcceptInviteParams>
             {
               type: invite.identityProviderType,
               token: invite.token,
-              userId: uuidv1() as UserID
+              userId: uuidv4() as UserID
             },
             params as any
           )

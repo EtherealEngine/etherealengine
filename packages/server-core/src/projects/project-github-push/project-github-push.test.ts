@@ -34,7 +34,7 @@ import { destroyEngine } from '@etherealengine/ecs/src/Engine'
 import assert from 'assert'
 import { createHash } from 'crypto'
 import nock from 'nock'
-import { v1 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { Application } from '../../../declarations'
 import { createFeathersKoaApp } from '../../createApp'
 
@@ -56,10 +56,10 @@ describe('project-github-push.test', () => {
   })
 
   before(async () => {
-    const name = ('test-project-destination-check-user-name-' + v1()) as UserName
+    const name = ('test-project-destination-check-user-name-' + uuidv4()) as UserName
 
     const avatar = await app.service(avatarPath).create({
-      name: 'test-project-destination-check-avatar-name-' + v1()
+      name: 'test-project-destination-check-avatar-name-' + uuidv4()
     })
 
     const testUser = await app.service(userPath).create({
@@ -83,7 +83,7 @@ describe('project-github-push.test', () => {
   })
 
   before(async () => {
-    const projectName = `test-project-github-push-${v1()}`
+    const projectName = `test-project-github-push-${uuidv4()}`
     testProject = await app
       .service(projectPath)
       .create({ name: projectName, repositoryPath: `https://github.com/test-user/${projectName}` })
@@ -282,13 +282,13 @@ const getGitRef = () => ({
   url: 'https://api.github.com/repos/octocat/Hello-World/git/refs/heads/featureA',
   object: {
     type: 'commit',
-    sha: createHash('sha256').update(v1()).digest('hex'),
+    sha: createHash('sha256').update(uuidv4()).digest('hex'),
     url: 'https://api.github.com/repos/octocat/Hello-World/git/commits/aa218f56b14c9653891f9e74264a383fa43fefbd'
   }
 })
 
 const getGitCommitData = () => ({
-  sha: createHash('sha256').update(v1()).digest('hex'),
+  sha: createHash('sha256').update(uuidv4()).digest('hex'),
   node_id: 'MDY6Q29tbWl0NmRjYjA5YjViNTc4NzVmMzM0ZjYxYWViZWQ2OTVlMmU0MTkzZGI1ZQ==',
   url: 'https://api.github.com/repos/octocat/Hello-World/git/commits/7638417db6d59f3c431d3e1f261cc637155684cd',
   html_url: 'https://github.com/octocat/Hello-World/commit/7638417db6d59f3c431d3e1f261cc637155684cd',
@@ -305,7 +305,7 @@ const getGitCommitData = () => ({
   message: 'added readme, because im a good github citizen',
   tree: {
     url: 'https://api.github.com/repos/octocat/Hello-World/git/trees/691272480426f78a0138979dd3ce63b77f706feb',
-    sha: createHash('sha256').update(v1()).digest('hex')
+    sha: createHash('sha256').update(uuidv4()).digest('hex')
   },
   parents: [
     {
@@ -370,7 +370,7 @@ const getAuthenticatedUser = (username: string) => ({
 })
 
 const getGitBlob = () => {
-  const createdHash = createHash('sha256').update(v1()).digest('hex')
+  const createdHash = createHash('sha256').update(uuidv4()).digest('hex')
   return {
     url: `https://api.github.com/repos/test-user/example/git/blobs/${createdHash}`,
     sha: createdHash
@@ -378,10 +378,10 @@ const getGitBlob = () => {
 }
 
 const getGitTree = () => {
-  const sha1 = createHash('sha256').update(v1()).digest('hex')
-  const sha2 = createHash('sha256').update(v1()).digest('hex')
-  const sha3 = createHash('sha256').update(v1()).digest('hex')
-  const sha4 = createHash('sha256').update(v1()).digest('hex')
+  const sha1 = createHash('sha256').update(uuidv4()).digest('hex')
+  const sha2 = createHash('sha256').update(uuidv4()).digest('hex')
+  const sha3 = createHash('sha256').update(uuidv4()).digest('hex')
+  const sha4 = createHash('sha256').update(uuidv4()).digest('hex')
 
   return {
     sha: sha1,

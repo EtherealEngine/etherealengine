@@ -27,7 +27,7 @@ import { Paginated } from '@feathersjs/feathers/lib'
 import appRootPath from 'app-root-path'
 import fs from 'fs'
 import path from 'path'
-import { v4 as generateUUID } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   LocationData,
@@ -46,8 +46,8 @@ export const createLocations = async (app: Application, projectName: string) => 
       .readdirSync(path.resolve(appRootPath.path, 'packages/projects/projects', projectName))
       .filter((file) => file.endsWith('.scene.json'))
       .map(async (sceneJson) => {
-        const locationId = generateUUID() as LocationID
-        const settingsId = generateUUID()
+        const locationId = uuidv4() as LocationID
+        const settingsId = uuidv4()
         const sceneName = sceneJson.replace('.scene.json', '')
         const locationName = toCapitalCase(sceneName.replace('-', ' '))
         const locationSetting = {

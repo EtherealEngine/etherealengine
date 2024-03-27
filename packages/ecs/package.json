@@ -17,7 +17,8 @@
     "@etherealengine/common": "^1.6.0",
     "@etherealengine/hyperflux": "^1.6.0",
     "bitecs": "0.3.40",
-    "three": "0.158.0"
+    "three": "0.158.0",
+    "uuid": "9.0.0"
   },
   "devDependencies": {
     "@types/mocha": "10.0.1",

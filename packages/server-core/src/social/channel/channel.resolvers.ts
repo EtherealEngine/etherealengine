@@ -25,7 +25,7 @@ Ethereal Engine. All Rights Reserved.
 
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
 import { resolve, virtual } from '@feathersjs/schema'
-import { v4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 import { ChannelUserType, channelUserPath } from '@etherealengine/common/src/schemas/social/channel-user.schema'
 import { ChannelID, ChannelQuery, ChannelType } from '@etherealengine/common/src/schemas/social/channel.schema'
@@ -69,7 +69,7 @@ export const channelExternalResolver = resolve<ChannelType, HookContext>({
 
 export const channelDataResolver = resolve<ChannelType, HookContext>({
   id: async () => {
-    return v4() as ChannelID
+    return uuidv4() as ChannelID
   },
   createdAt: getDateTimeSql,
   updatedAt: getDateTimeSql

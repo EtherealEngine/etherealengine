@@ -84,7 +84,7 @@ import {
 } from 'mediasoup-client/lib/types'
 import type { EventEmitter } from 'primus'
 import Primus from 'primus-client'
-import { MathUtils } from 'three'
+import { v4 as uuidv4 } from 'uuid'
 import { LocationInstanceState } from '../common/services/LocationInstanceConnectionService'
 import { MediaInstanceState } from '../common/services/MediaInstanceConnectionService'
 import {
@@ -517,7 +517,7 @@ export const onTransportCreated = async (action: typeof MediasoupTransportAction
       callback: () => void,
       errback: (error: Error) => void
     ) => {
-      const requestID = MathUtils.generateUUID()
+      const requestID = uuidv4()
       dispatchAction(
         MediasoupTransportActions.requestTransportConnect({
           requestID,
@@ -603,7 +603,7 @@ export const onTransportCreated = async (action: typeof MediasoupTransportAction
         // up a server-side producer object, and get back a
         // producer.id. call callback() on success or errback() on
         // failure.
-        const requestID = MathUtils.generateUUID()
+        const requestID = uuidv4()
         dispatchAction(
           MediasoupMediaProducerActions.requestProducer({
             requestID,
@@ -669,7 +669,7 @@ export const onTransportCreated = async (action: typeof MediasoupTransportAction
       ) => {
         const { sctpStreamParameters, label, protocol, appData } = parameters
 
-        const requestID = MathUtils.generateUUID()
+        const requestID = uuidv4()
         dispatchAction(
           MediasoupDataProducerActions.requestProducer({
             requestID,

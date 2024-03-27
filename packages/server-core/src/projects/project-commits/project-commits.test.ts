@@ -32,7 +32,7 @@ import { UserName, userPath } from '@etherealengine/common/src/schemas/user/user
 import { destroyEngine } from '@etherealengine/ecs/src/Engine'
 import assert from 'assert'
 import nock from 'nock'
-import { v1 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { Application } from '../../../declarations'
 import { createFeathersKoaApp } from '../../createApp'
 
@@ -53,10 +53,10 @@ describe('project-commits.test', () => {
   })
 
   before(async () => {
-    const name = ('test-project-commits-user-name-' + v1()) as UserName
+    const name = ('test-project-commits-user-name-' + uuidv4()) as UserName
 
     const avatar = await app.service(avatarPath).create({
-      name: 'test-project-commits-avatar-name-' + v1()
+      name: 'test-project-commits-avatar-name-' + uuidv4()
     })
 
     const testUser = await app.service(userPath).create({

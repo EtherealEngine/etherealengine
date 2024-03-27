@@ -23,9 +23,9 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { Euler, Material, MathUtils, Matrix4, Mesh, Quaternion, Vector3 } from 'three'
+import { Euler, Material, Matrix4, Mesh, Quaternion, Vector3 } from 'three'
 
-import { EntityUUID, UUIDComponent } from '@etherealengine/ecs'
+import { EntityUUID, UUIDComponent, generateEntityUUID } from '@etherealengine/ecs'
 import {
   Component,
   ComponentJSONIDMap,
@@ -232,7 +232,7 @@ const createObjectFromSceneElement = (
   }
 
   const entityUUID =
-    componentJson.find((comp) => comp.name === UUIDComponent.jsonID)?.props.uuid ?? MathUtils.generateUUID()
+    componentJson.find((comp) => comp.name === UUIDComponent.jsonID)?.props.uuid ?? generateEntityUUID()
   if (!componentJson.some((comp) => comp.name === TransformComponent.jsonID)) {
     componentJson.push({ name: TransformComponent.jsonID })
   }
@@ -284,7 +284,7 @@ const duplicateObject = (entities: Entity[]) => {
       if (!entityData) return /** @todo entity may be loaded in via GLTF **/
 
       const entityDataClone = JSON.parse(JSON.stringify(entityData))
-      const newUUID = MathUtils.generateUUID() as EntityUUID
+      const newUUID = generateEntityUUID()
       copyMap[entityUUID] = newUUID
 
       const parentEntity = getComponent(entity, EntityTreeComponent).parentEntity!
@@ -502,7 +502,7 @@ const groupObjects = (entities: Entity[]) => {
   const childIndex = parentEntityTreeComponent.children.length
   const parentEntityUUID = getComponent(parentEntity, UUIDComponent)
 
-  const groupEntityUUID = MathUtils.generateUUID() as EntityUUID
+  const groupEntityUUID = generateEntityUUID()
 
   newSnapshot.data.entities[groupEntityUUID] = {
     name: 'New Group',

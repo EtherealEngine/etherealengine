@@ -39,7 +39,7 @@ const {
 } = require('@etherealengine/common/src/constants/ProjectKeyConstants')
 const { ObjectCannedACL, S3Client } = require('@aws-sdk/client-s3')
 const { nanoid } = require('nanoid')
-const { v4 } = require('uuid')
+const { v4: uuidv4 } = require('uuid')
 
 // TODO: check for existing avatar on S3
 
@@ -124,7 +124,7 @@ const uploadFile = (Key, Body) => {
 
 const saveToDB = async (name, extension) => {
   await knexClient.from(staticResourcePath).insert({
-    id: v4(),
+    id: uuidv4(),
     sid: nanoid(8),
     name,
     url: 'https://s3.amazonaws.com/' + BUCKET + '/' + AVATAR_FOLDER + '/' + name + extension,

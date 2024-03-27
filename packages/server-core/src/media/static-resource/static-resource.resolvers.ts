@@ -25,7 +25,7 @@ Ethereal Engine. All Rights Reserved.
 
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
 import { resolve, virtual } from '@feathersjs/schema'
-import { v4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   StaticResourceDatabaseType,
@@ -87,7 +87,7 @@ export const staticResourceExternalResolver = resolve<StaticResourceType, HookCo
 export const staticResourceDataResolver = resolve<StaticResourceType, HookContext>(
   {
     id: async () => {
-      return v4()
+      return uuidv4()
     },
     sid: async () => {
       return nanoid(8)

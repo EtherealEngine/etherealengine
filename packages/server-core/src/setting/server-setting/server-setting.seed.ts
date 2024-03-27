@@ -27,7 +27,7 @@ import appRootPath from 'app-root-path'
 import { Knex } from 'knex'
 import path from 'path'
 import url from 'url'
-import { v4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   ServerSettingDatabaseType,
@@ -79,7 +79,7 @@ export async function seed(knex: Knex): Promise<void> {
   const seedData: ServerSettingDatabaseType[] = await Promise.all(
     [server].map(async (item) => ({
       ...item,
-      id: v4(),
+      id: uuidv4(),
       createdAt: await getDateTimeSql(),
       updatedAt: await getDateTimeSql()
     }))

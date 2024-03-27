@@ -26,7 +26,7 @@ Ethereal Engine. All Rights Reserved.
 import { Paginated } from '@feathersjs/feathers'
 import i18n from 'i18next'
 import { useEffect } from 'react'
-import { v1 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 import config, { validateEmail, validatePhoneNumber } from '@etherealengine/common/src/config'
 import { AuthUserSeed, resolveAuthUser } from '@etherealengine/common/src/interfaces/AuthUser'
@@ -169,7 +169,7 @@ async function _resetToGuestToken(options = { reset: true }) {
   }
   const newProvider = await Engine.instance.api.service(identityProviderPath).create({
     type: 'guest',
-    token: v1(),
+    token: uuidv4(),
     userId: '' as UserID
   })
   const accessToken = newProvider.accessToken!

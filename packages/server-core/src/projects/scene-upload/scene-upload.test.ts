@@ -34,7 +34,7 @@ import { parseStorageProviderURLs } from '@etherealengine/common/src/utils/parse
 import { destroyEngine } from '@etherealengine/ecs/src/Engine'
 import defaultSceneSeed from '@etherealengine/projects/default-project/default.scene.json'
 import assert from 'assert'
-import { v1 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { Application } from '../../../declarations'
 import { createFeathersKoaApp } from '../../createApp'
 
@@ -49,11 +49,11 @@ describe('scene-upload.test', () => {
   })
 
   before(async () => {
-    projectName = `test-scene-project-${v1()}`
+    projectName = `test-scene-project-${uuidv4()}`
     await app.service(projectPath).create({ name: projectName })
 
-    const name = ('test-scene-upload-user-name-' + v1()) as UserName
-    const avatarName = 'test-scene-upload-avatar-name-' + v1()
+    const name = ('test-scene-upload-user-name-' + uuidv4()) as UserName
+    const avatarName = 'test-scene-upload-avatar-name-' + uuidv4()
 
     const avatar = await app.service(avatarPath).create({
       name: avatarName
@@ -78,7 +78,7 @@ describe('scene-upload.test', () => {
   })
 
   it('should upload a new scene', async () => {
-    const sceneName = `test-scene-name-${v1()}`
+    const sceneName = `test-scene-name-${uuidv4()}`
     const sceneData = structuredClone(defaultSceneSeed)
     const parsedSceneData = parseStorageProviderURLs(structuredClone(defaultSceneSeed))
 

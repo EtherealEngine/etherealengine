@@ -71,7 +71,7 @@ import { AssetClass } from '@etherealengine/engine/src/assets/enum/AssetClass'
 import { BadRequest, Forbidden } from '@feathersjs/errors'
 import { Paginated } from '@feathersjs/feathers'
 import { RestEndpointMethodTypes } from '@octokit/rest'
-import { v4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { Application } from '../../../declarations'
 import config from '../../appconfig'
 import { getPodsData } from '../../cluster/pods/pods-helper'
@@ -1536,7 +1536,7 @@ export const updateProject = async (
     ? // Add to DB
       await app.service(projectPath).create(
         {
-          id: v4(),
+          id: uuidv4(),
           name: projectName,
           enabled,
           repositoryPath,

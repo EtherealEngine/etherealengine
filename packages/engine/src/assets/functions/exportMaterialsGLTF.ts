@@ -23,8 +23,9 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { BufferGeometry, Material, MathUtils, Mesh, Scene } from 'three'
+import { BufferGeometry, Material, Mesh, Scene } from 'three'
 
+import { v4 as uuidv4 } from 'uuid'
 import { MaterialComponentType } from '../../scene/materials/components/MaterialComponent'
 import { registerMaterial, unregisterMaterial } from '../../scene/materials/functions/MaterialLibraryFunctions'
 import { GLTFExporterOptions } from '../exporters/gltf/GLTFExporter'
@@ -42,7 +43,8 @@ export default async function exportMaterialsGLTF(
   const nuMats: Material[] = []
   for (const material of materials) {
     const nuMat: Material = material.material.clone()
-    nuMat.uuid = MathUtils.generateUUID()
+    nuMat.uuid = uuidv4()
+
     registerMaterial(nuMat, material.src)
     nuMats.push(nuMat)
   }

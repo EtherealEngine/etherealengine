@@ -25,7 +25,7 @@ Ethereal Engine. All Rights Reserved.
 
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
 import { resolve, virtual } from '@feathersjs/schema'
-import { v4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 import { BotQuery, BotType } from '@etherealengine/common/src/schemas/bot/bot.schema'
 import { locationPath } from '@etherealengine/common/src/schemas/social/location.schema'
@@ -66,7 +66,7 @@ export const botExternalResolver = resolve<BotType, HookContext>({
 
 export const botDataResolver = resolve<BotType, HookContext>({
   id: async () => {
-    return v4()
+    return uuidv4()
   },
   instanceId: async (instanceId) => {
     return instanceId ?? ('' as InstanceID)

@@ -24,7 +24,7 @@ Ethereal Engine. All Rights Reserved.
 */
 
 import { Knex } from 'knex'
-import { v4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 import { HelmSettingType, helmSettingPath } from '@etherealengine/common/src/schemas/setting/helm-setting.schema'
 import appConfig from '@etherealengine/server-core/src/appconfig'
@@ -41,7 +41,12 @@ export async function seed(knex: Knex): Promise<void> {
         main: '',
         builder: ''
       }
-    ].map(async (item) => ({ ...item, id: v4(), createdAt: await getDateTimeSql(), updatedAt: await getDateTimeSql() }))
+    ].map(async (item) => ({
+      ...item,
+      id: uuidv4(),
+      createdAt: await getDateTimeSql(),
+      updatedAt: await getDateTimeSql()
+    }))
   )
 
   if (forceRefresh || testEnabled) {

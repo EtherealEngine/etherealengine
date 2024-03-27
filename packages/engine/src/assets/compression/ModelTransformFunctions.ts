@@ -57,7 +57,7 @@ import {
 } from '@gltf-transform/functions'
 import { createHash } from 'crypto'
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer'
-import { LoaderUtils, MathUtils } from 'three'
+import { LoaderUtils } from 'three'
 
 import { fileBrowserPath } from '@etherealengine/common/src/schema.type.module'
 import { baseName, pathJoin } from '@etherealengine/common/src/utils/miscUtils'
@@ -68,6 +68,7 @@ import ModelTransformLoader from './ModelTransformLoader'
 
 import config from '@etherealengine/common/src/config'
 import { getMutableState, NO_PROXY } from '@etherealengine/hyperflux'
+import { v4 as uuidv4 } from 'uuid'
 import { UploadRequestState } from '../state/UploadRequestState'
 
 import { KTX2Encoder } from '@etherealengine/xrui/core/textures/KTX2Encoder'
@@ -803,7 +804,7 @@ export async function transformModel(
       delete resources[image.uri!]
       image.uri = nuURI
     })
-    const defaultBufURI = MathUtils.generateUUID() + '.bin'
+    const defaultBufURI = uuidv4() + '.bin'
     json.buffers?.map((buffer) => {
       buffer.uri = pathJoin(
         args.resourceUri ? args.resourceUri : resourceName + '_resources',

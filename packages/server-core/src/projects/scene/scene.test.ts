@@ -31,7 +31,7 @@ import { destroyEngine } from '@etherealengine/ecs/src/Engine'
 import { SceneJsonType } from '@etherealengine/engine/src/scene/types/SceneTypes'
 import defaultSceneSeed from '@etherealengine/projects/default-project/default.scene.json'
 import assert from 'assert'
-import { v1 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { Application } from '../../../declarations'
 import { createFeathersKoaApp } from '../../createApp'
 
@@ -49,8 +49,8 @@ describe('scene.test', () => {
   })
 
   before(async () => {
-    projectName = `test-scene-project-${v1()}`
-    sceneName = `test-scene-name-${v1()}`
+    projectName = `test-scene-project-${uuidv4()}`
+    sceneName = `test-scene-name-${uuidv4()}`
     sceneData = structuredClone(defaultSceneSeed) as unknown as SceneJsonType
     parsedSceneData = parseStorageProviderURLs(structuredClone(defaultSceneSeed))
     await app.service(projectPath).create({ name: projectName })
@@ -78,7 +78,7 @@ describe('scene.test', () => {
     })
 
     it('should add a new scene', async () => {
-      const sceneName = `test-apartment-scene-${v1()}`
+      const sceneName = `test-apartment-scene-${uuidv4()}`
       await app.service(scenePath).update('', { name: sceneName, project: projectName, sceneData } as any)
 
       const addedSceneData = (await app

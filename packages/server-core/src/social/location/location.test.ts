@@ -24,7 +24,7 @@ Ethereal Engine. All Rights Reserved.
 */
 
 import assert from 'assert'
-import { v1 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 import { locationSettingPath } from '@etherealengine/common/src/schemas/social/location-setting.schema'
 import { LocationID, LocationType, locationPath } from '@etherealengine/common/src/schemas/social/location.schema'
@@ -51,8 +51,8 @@ describe('location.test', () => {
   })
 
   it('should create a new location', async () => {
-    const name = `Test Location ${v1()}`
-    const sceneId = `test-scene-${v1()}` as SceneID
+    const name = `Test Location ${uuidv4()}`
+    const sceneId = `test-scene-${uuidv4()}` as SceneID
 
     const item = await app.service(locationPath).create(
       {
@@ -92,7 +92,7 @@ describe('location.test', () => {
   })
 
   it('should be able to update the location', async () => {
-    const newName = `Update Test Location ${v1()}`
+    const newName = `Update Test Location ${uuidv4()}`
     const locationSetting = await app.service(locationSettingPath).create({
       locationType: 'public',
       audioEnabled: true,
