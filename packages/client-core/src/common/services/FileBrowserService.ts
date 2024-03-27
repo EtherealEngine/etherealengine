@@ -27,8 +27,13 @@ import { Paginated } from '@feathersjs/feathers/lib'
 
 import { defineState, getMutableState } from '@etherealengine/hyperflux'
 
-import { FileBrowserContentType, fileBrowserPath } from '@etherealengine/common/src/schema.type.module'
+import {
+  FileBrowserContentType,
+  fileBrowserPath,
+  staticResourcePath
+} from '@etherealengine/common/src/schema.type.module'
 import { Engine } from '@etherealengine/ecs/src/Engine'
+import { FileThumbnailJobState, extensionCanHaveThumbnail } from './FileThumbnailJobState'
 import { NotificationService } from './NotificationService'
 
 export const FILES_PAGE_LIMIT = 100
@@ -48,7 +53,66 @@ export const FileBrowserState = defineState({
 
 let _lastDir = null! as string
 
+const seenThumbnails = new Set<string>()
+
 export const FileBrowserService = {
+  fetchAllFiles: async (topDirectory: string) => {
+    let directories = [topDirectory]
+    let needThumbnails: FileBrowserContentType[] = []
+
+    while (directories.length > 0) {
+      const directory = `${directories.pop()}/`
+      console.log('Querying directory', directory)
+      const files = (await Engine.instance.api.service(fileBrowserPath).find({
+        query: {
+          $skip: 0,
+          $limit: FILES_PAGE_LIMIT * 100,
+          directory
+        }
+      })) as Paginated<FileBrowserContentType>
+      directories = files.data
+        .filter((file) => file.type === 'folder')
+        .map((file) => directory + file.name)
+        .concat(directories)
+      needThumbnails = needThumbnails.concat(
+        files.data.filter(
+          (file) => !seenThumbnails.has(file.key) && extensionCanHaveThumbnail(file.key.split('.').pop() ?? '')
+        )
+      )
+    }
+
+    console.log('The following files need thumbnails:\n' + needThumbnails.map(({ key }) => key).join('\n'))
+
+    Promise.all(
+      needThumbnails.map(async (file) => {
+        const { key, url } = file
+
+        seenThumbnails.add(key)
+
+        const resources = await Engine.instance.api.service(staticResourcePath).find({
+          query: { key }
+        })
+
+        if (resources.data.length === 0) {
+          return
+        }
+        const resource = resources.data[0]
+        if (resource.thumbnailURL != null) {
+          return
+        }
+        getMutableState(FileThumbnailJobState)[url].set({
+          key: url,
+          project: resource.project,
+          id: resource.id
+        })
+
+        // TODO: cache pending thumbnail promises by static resource key
+      })
+    )
+
+    console.log('Done')
+  },
+
   fetchFiles: async (directory: string = _lastDir, skip = 0) => {
     const fileBrowserState = getMutableState(FileBrowserState)
 
@@ -64,6 +128,36 @@ export const FileBrowserService = {
           directory
         }
       })) as Paginated<FileBrowserContentType>
+
+      Promise.all(
+        files.data
+          .filter((file) => !seenThumbnails.has(file.key) && extensionCanHaveThumbnail(file.key.split('.').pop() ?? ''))
+          .map(async (file) => {
+            const { key, url } = file
+
+            seenThumbnails.add(key)
+
+            const resources = await Engine.instance.api.service(staticResourcePath).find({
+              query: { key }
+            })
+
+            if (resources.data.length === 0) {
+              return
+            }
+            const resource = resources.data[0]
+            if (resource.thumbnailURL != null) {
+              return
+            }
+            getMutableState(FileThumbnailJobState)[url].set({
+              key: url,
+              project: resource.project,
+              id: resource.id
+            })
+
+            // TODO: cache pending thumbnail promises by static resource key
+          })
+      )
+
       fileBrowserState.merge({
         files: files.data,
         skip: files.skip,

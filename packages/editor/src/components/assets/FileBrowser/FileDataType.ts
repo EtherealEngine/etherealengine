@@ -32,5 +32,4 @@ export type FileDataType = {
   url: string
   type: string
   isFolder: boolean
-  Icon: any
 }

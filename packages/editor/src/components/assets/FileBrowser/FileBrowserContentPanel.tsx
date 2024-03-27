@@ -46,17 +46,12 @@ import {
 } from '@etherealengine/engine/src/assets/constants/ImageConvertParms'
 import { getMutableState, NO_PROXY, useHookstate } from '@etherealengine/hyperflux'
 
-import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew'
 import AddIcon from '@mui/icons-material/Add'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import AutorenewIcon from '@mui/icons-material/Autorenew'
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder'
 import DownloadIcon from '@mui/icons-material/Download'
-import PhotoSizeSelectActualIcon from '@mui/icons-material/PhotoSizeSelectActual'
 import SettingsIcon from '@mui/icons-material/Settings'
-import VideocamIcon from '@mui/icons-material/Videocam'
-import ViewInArIcon from '@mui/icons-material/ViewInAr'
-import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 
 import { Engine } from '@etherealengine/ecs/src/Engine'
 import Typography from '@etherealengine/ui/src/primitives/mui/Typography'
@@ -68,11 +63,13 @@ import { archiverPath, fileBrowserUploadPath, staticResourcePath } from '@ethere
 import { CommonKnownContentTypes } from '@etherealengine/common/src/utils/CommonKnownContentTypes'
 import { AssetLoader } from '@etherealengine/engine/src/assets/classes/AssetLoader'
 import { useFind } from '@etherealengine/spatial/src/common/functions/FeathersHooks'
+import Button from '@etherealengine/ui/src/primitives/mui/Button'
 import Checkbox from '@etherealengine/ui/src/primitives/mui/Checkbox'
 import FormControlLabel from '@etherealengine/ui/src/primitives/mui/FormControlLabel'
 import { SupportedFileTypes } from '../../../constants/AssetTypes'
 import { downloadBlobAsZip, inputFileWithAddToScene } from '../../../functions/assetFunctions'
 import { bytesToSize, unique } from '../../../functions/utils'
+import { EditorState } from '../../../services/EditorServices'
 import StringInput from '../../inputs/StringInput'
 import { ToolButton } from '../../toolbar/ToolButton'
 import { AssetSelectionChangePropsType } from '../AssetsPreviewPanel'
@@ -84,37 +81,6 @@ import { FileBrowserItem, FileTableWrapper } from './FileBrowserGrid'
 import { availableTableColumns, FilesViewModeSettings, FilesViewModeState } from './FileBrowserState'
 import { FileDataType } from './FileDataType'
 import { FilePropertiesPanel } from './FilePropertiesPanel'
-
-export const FileIconType = {
-  gltf: ViewInArIcon,
-  'gltf-binary': ViewInArIcon,
-  glb: ViewInArIcon,
-  vrm: AccessibilityNewIcon,
-  usdz: ViewInArIcon,
-  fbx: ViewInArIcon,
-  png: PhotoSizeSelectActualIcon,
-  jpeg: PhotoSizeSelectActualIcon,
-  jpg: PhotoSizeSelectActualIcon,
-  ktx2: PhotoSizeSelectActualIcon,
-  m3u8: VideocamIcon,
-  mp4: VideocamIcon,
-  mpeg: VolumeUpIcon,
-  mp3: VolumeUpIcon,
-  'model/gltf-binary': ViewInArIcon,
-  'model/gltf': ViewInArIcon,
-  'model/glb': ViewInArIcon,
-  'model/vrm': AccessibilityNewIcon,
-  'model/usdz': ViewInArIcon,
-  'model/fbx': ViewInArIcon,
-  'image/png': PhotoSizeSelectActualIcon,
-  'image/jpeg': PhotoSizeSelectActualIcon,
-  'image/jpg': PhotoSizeSelectActualIcon,
-  'application/pdf': null,
-  'application/vnd.apple.mpegurl': VideocamIcon,
-  'video/mp4': VideocamIcon,
-  'audio/mpeg': VolumeUpIcon,
-  'audio/mp3': VolumeUpIcon
-}
 
 type FileBrowserContentPanelProps = {
   onSelectionChanged: (assetSelectionChange: AssetSelectionChangePropsType) => void
@@ -191,8 +157,7 @@ const FileBrowserContentPanel: React.FC<FileBrowserContentPanelProps> = (props) 
       size: file.size ? bytesToSize(file.size) : '0',
       path: isFolder ? file.key.split(file.name)[0] : file.key.split(fullName)[0],
       fullName,
-      isFolder,
-      Icon: FileIconType[file.type]
+      isFolder
     }
   })
 
@@ -404,6 +369,12 @@ const FileBrowserContentPanel: React.FC<FileBrowserContentPanelProps> = (props) 
     validFiles.set(files.filter((file) => file.fullName.toLowerCase().includes(searchText.value.toLowerCase())))
   }, [searchText.value, fileState.files])
 
+  const projectName = useHookstate(getMutableState(EditorState).projectName)
+
+  const makeAllThumbnails = async () => {
+    await FileBrowserService.fetchAllFiles(`/projects/${projectName.value}`)
+  }
+
   const DropArea = () => {
     const [{ isFileDropOver }, fileDropRef] = useDrop({
       accept: [...SupportedFileTypes],
@@ -549,6 +520,11 @@ const FileBrowserContentPanel: React.FC<FileBrowserContentPanelProps> = (props) 
                 </>
               )}
             </div>
+          </div>
+          <div style={{ display: 'flex', width: '200px', flexDirection: 'column' }}>
+            <Button className={'medium-button button'} style={{ width: '100%' }} onClick={() => makeAllThumbnails()}>
+              Generate thumbnails
+            </Button>
           </div>
         </Popover>
       </>

@@ -56,7 +56,9 @@ export const staticResourceSchema = Type.Object(
     url: Type.String(),
     stats: Type.Record(Type.String(), Type.Any()),
     createdAt: Type.String({ format: 'date-time' }),
-    updatedAt: Type.String({ format: 'date-time' })
+    updatedAt: Type.String({ format: 'date-time' }),
+    thumbnailURL: Type.String(),
+    thumbnailType: Type.String()
   },
   { $id: 'StaticResource', additionalProperties: false }
 )

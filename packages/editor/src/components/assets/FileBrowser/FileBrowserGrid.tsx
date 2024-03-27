@@ -32,11 +32,10 @@ import { FileBrowserService } from '@etherealengine/client-core/src/common/servi
 import { StateMethods, getMutableState, useHookstate } from '@etherealengine/hyperflux'
 import { TransformComponent } from '@etherealengine/spatial/src/transform/components/TransformComponent'
 
-import DescriptionIcon from '@mui/icons-material/Description'
-import FolderIcon from '@mui/icons-material/Folder'
 import InputBase from '@mui/material/InputBase'
 import MenuItem from '@mui/material/MenuItem'
 import { PopoverPosition } from '@mui/material/Popover'
+import { FileIcon } from './FileIcon'
 
 import Paper from '@etherealengine/ui/src/primitives/mui/Paper'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
@@ -130,13 +129,7 @@ export const FileTableListBody = ({
   const tableColumns = {
     name: (
       <span className={styles.cellName}>
-        {file.isFolder ? (
-          <FolderIcon fontSize="inherit" />
-        ) : file.Icon ? (
-          <file.Icon fontSize="inherit" />
-        ) : (
-          <DescriptionIcon fontSize="inherit" />
-        )}
+        <FileIcon file={file} />
         {isRenaming ? <RenameInput fileName={file.name} onNameChanged={onNameChanged} /> : file.fullName}
       </span>
     ),
@@ -194,16 +187,7 @@ export const FileGridItem: React.FC<FileGridItemProps> = (props) => {
           fontSize: iconSize
         }}
       >
-        {props.item.isFolder ? (
-          <FolderIcon fontSize={'inherit'} />
-        ) : props.item.Icon ? (
-          <props.item.Icon fontSize={'inherit'} />
-        ) : (
-          <>
-            <DescriptionIcon fontSize={'inherit'} />
-            <span className={styles.extensionRibbon}>{props.item.type}</span>
-          </>
-        )}
+        <FileIcon file={props.item} showRibbon />
       </div>
       {props.isRenaming ? (
         <RenameInput fileName={props.item.name} onNameChanged={props.onNameChanged} />

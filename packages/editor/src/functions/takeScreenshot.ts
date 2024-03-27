@@ -26,10 +26,12 @@ Ethereal Engine. All Rights Reserved.
 import {
   Camera,
   ClampToEdgeWrapping,
+  Group,
   LinearFilter,
   PerspectiveCamera,
   RGBAFormat,
   SRGBColorSpace,
+  Scene,
   UnsignedByteType,
   Vector2,
   WebGLRenderTarget
@@ -49,9 +51,9 @@ import { EntityTreeComponent } from '@etherealengine/spatial/src/transform/compo
 import { TransformComponent } from '@etherealengine/spatial/src/transform/components/TransformComponent'
 import { KTX2Encoder } from '@etherealengine/xrui/core/textures/KTX2Encoder'
 
+import { getCanvasBlob } from '@etherealengine/client-core/src/common/utils'
 import { CameraComponent } from '@etherealengine/spatial/src/camera/components/CameraComponent'
 import { EditorState } from '../services/EditorServices'
-import { getCanvasBlob } from './thumbnails'
 
 function getResizedCanvas(canvas: HTMLCanvasElement, width: number, height: number) {
   const tmpCanvas = document.createElement('canvas')
@@ -81,7 +83,10 @@ export async function previewScreenshot(
   width: number,
   height: number,
   quality = 0.9,
-  scenePreviewCamera?: PerspectiveCamera
+  format = 'jpeg' as 'jpeg' | 'png',
+  scenePreviewCamera?: PerspectiveCamera,
+  scene = Engine.instance.scene as Group | Scene,
+  objectLayer: (typeof ObjectLayers)[keyof typeof ObjectLayers] = ObjectLayers.Scene
 ): Promise<Blob | null> {
   // Getting Scene preview camera or creating one if not exists
   if (!scenePreviewCamera) {
@@ -109,7 +114,7 @@ export async function previewScreenshot(
   scenePreviewCamera.aspect = width / height
   scenePreviewCamera.updateProjectionMatrix()
   scenePreviewCamera.layers.disableAll()
-  scenePreviewCamera.layers.set(ObjectLayers.Scene)
+  scenePreviewCamera.layers.set(objectLayer)
 
   let blob: Blob | null = null
   const renderer = EngineRenderer.instance.renderer
@@ -126,7 +131,7 @@ export async function previewScreenshot(
 
   renderer.setRenderTarget(renderTarget)
 
-  renderer.render(Engine.instance.scene, scenePreviewCamera)
+  renderer.render(scene, scenePreviewCamera)
 
   const pixels = new Uint8Array(4 * width * height)
   renderer.readRenderTargetPixels(renderTarget, 0, 0, width, height, pixels)
@@ -152,7 +157,7 @@ export async function previewScreenshot(
   canvas.height = height
   ctx.putImageData(flippedImageData, 0, 0)
   ctx.scale(1, -1)
-  blob = await getCanvasBlob(canvas, 'image/jpeg', quality)
+  blob = await getCanvasBlob(canvas, 'image/' + format, quality)
 
   // Restoring previous state
   scenePreviewCamera.aspect = prevAspect

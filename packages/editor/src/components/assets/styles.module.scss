@@ -92,26 +92,23 @@
   }
 
   .extensionRibbon {
-    /* credits to https://codepen.io/t_afif/pen/dyZOBex */
-
-    --f: 10px; /* control the folded part */
-    --r: 20px; /* control the ribbon shape */
-    --b: -10px; /* the bottom offset */
-
+    --stick-out: 0.5em;
+    
+    font-size: 0.135em;
+    font-weight: bold;
+    text-align: right;
     text-transform: uppercase;
-    font-size: 10px;
+    color: currentcolor;
+    padding: 0.2em 0.3em;
+    border-radius: 0.3em;
+    border: currentcolor 0.2em solid;
+    background: var(--dockBackground);
+    max-width: 90%;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     position: absolute;
-    inset: auto calc(-1 * var(--f)) var(--b) auto;
-    padding: 0 10px var(--f) calc(10px + var(--r));
-    clip-path: polygon(
-      0 0,
-      100% 0,
-      100% calc(100% - var(--f)),
-      calc(100% - var(--f)) 100%,
-      calc(100% - var(--f)) calc(100% - var(--f)),
-      0 calc(100% - var(--f))
-    );
-    background: black;
+    inset: calc(100% - 2.75em) var(--stick-out) auto auto;
   }
 }
 
