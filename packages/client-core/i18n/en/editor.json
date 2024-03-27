@@ -29,6 +29,7 @@
   "menubar": {
     "newScene": "New Scene",
     "saveScene": "Save Scene",
+    "copyScene": "Copy Scene to Project",
     "saveAs": "Save As",
     "importAsset": "Import Asset",
     "importSettings": "Import Settings",
@@ -1174,6 +1175,14 @@
       "lbl-name": "Scene Name",
       "info-name": "Name must be between 4 and 64 characters and cannot contain underscores",
       "lbl-confirm": "Save Scene"
+    },
+    "copyScene": {
+      "title": "Copy Scene to Project",
+      "lbl-name": "New Scene Name",
+      "info-name": "Name must be between 4 and 64 characters and cannot contain underscores",
+      "lbl-thumbnail": "Scene copied",
+      "lbl-confirm": "Copy Scene to Project",
+      "project": "Destination Project"
     },
     "support": {
       "title": "Support",

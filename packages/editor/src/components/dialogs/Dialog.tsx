@@ -42,11 +42,9 @@ const dialogHeaderStyles = {
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-between',
-  padding: '0 8px',
-  fontSize: '12px',
+  padding: '8px',
+  fontSize: '20px',
   overflow: 'hidden',
-  height: '32px',
-  background: 'black',
   borderTopLeftRadius: 'inherit',
   borderTopRightRadius: 'inherit',
   color: 'white'
@@ -95,6 +93,7 @@ interface Props {
   confirmLabel?: string
   onCancel?: any
   onConfirm?: any
+  disabled?: boolean
 }
 
 const Dialog = (props: Props) => {
@@ -113,6 +112,7 @@ const Dialog = (props: Props) => {
   return (
     <DialogForm tag={props.tag} onSubmit={onSubmitForm}>
       <div style={dialogContainerStyles as React.CSSProperties}>
+        <div style={dialogHeaderStyles as React.CSSProperties}>{props.title}</div>
         <div style={dialogContentStyles as React.CSSProperties}>{props.children}</div>
         {(props.onConfirm || props.onCancel || props.bottomNav) && (
           <div style={dialogBottomNavStyles}>
@@ -123,7 +123,12 @@ const Dialog = (props: Props) => {
               </SecondaryButton>
             )}
             {props.onConfirm && (
-              <Button type="submit" onClick={props.tag === 'form' ? null : props.onConfirm} style={buttonStyles}>
+              <Button
+                disabled={props.disabled}
+                type="submit"
+                onClick={props.tag === 'form' ? null : props.onConfirm}
+                style={buttonStyles}
+              >
                 {props.confirmLabel}
               </Button>
             )}
