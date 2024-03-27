@@ -43,8 +43,10 @@ export function CopySceneDialog({
   onConfirm,
   onCancel
 }: {
+  currentSceneName: string
+  currentProjectName: string
   onConfirm: (val: { name: string; projectName: string }) => void
-  onCancel: (val?: boolean) => void
+  onCancel: (val?: {}) => void
 }) {
   const name = useHookstate('')
   const { t } = useTranslation()
@@ -108,8 +110,8 @@ export function CopySceneDialog({
     >
       <div style={{ width: '100%' }}>
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-          <div style={}>Current Scene: {currentSceneName}</div>
-          <div style={}>Current Project: {currentProjectName}</div>
+          <div>Current Scene: {currentSceneName}</div>
+          <div>Current Project: {currentProjectName}</div>
           <FormField>
             <label htmlFor="name">{t('editor:dialog.copyScene.lbl-name')}</label>
             <StringInput

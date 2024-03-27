@@ -203,19 +203,19 @@ const onSaveAs = async () => {
 const onCopyScene = async () => {
   const { projectName, sceneName } = getState(EditorState)
   const abortController = new AbortController()
-  const result = await new Promise((resolve) => {
+  const result = (await new Promise((resolve) => {
     DialogState.setDialog(
       <CopySceneDialog
-        currentSceneName={sceneName}
-        currentProjectName={projectName}
+        currentSceneName={sceneName!}
+        currentProjectName={projectName!}
         onConfirm={resolve}
         onCancel={resolve}
       />
     )
-  })
+  })) as { name: string; projectName: string }
   DialogState.setDialog(null)
   if (result?.name && result?.projectName) {
-    await saveScene(result?.projectName, result.name, abortController.signal)
+    await saveScene(result.projectName, result.name, abortController.signal)
   }
 }
 
