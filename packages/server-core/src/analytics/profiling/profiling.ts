@@ -23,7 +23,35 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import Analytics from './analytics/analytics'
-import Profiling from './profiling/profiling'
+import { profilingMethods, profilingPath } from '@etherealengine/common/src/schemas/analytics/profiling.schema'
 
-export default [Analytics, Profiling]
+import { Application } from '../../../declarations'
+import { ProfilingService } from './profiling.class'
+import ProfilingDocs from './profiling.docs'
+import hooks from './profiling.hooks'
+
+declare module '@etherealengine/common/declarations' {
+  interface ServiceTypes {
+    [profilingPath]: ProfilingService
+  }
+}
+
+export default (app: Application): void => {
+  const options = {
+    name: profilingPath,
+    paginate: app.get('paginate'),
+    Model: app.get('knexClient'),
+    multi: true
+  }
+
+  app.use(profilingPath, new ProfilingService(options), {
+    // A list of all methods this service exposes externally
+    methods: profilingMethods,
+    // You can add additional custom events to be sent to clients here
+    events: [],
+    docs: ProfilingDocs
+  })
+
+  const service = app.service(profilingPath)
+  service.hooks(hooks)
+}

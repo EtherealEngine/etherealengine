@@ -23,6 +23,7 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
+import { filterAndSortSystemsByAvgDuration } from '@etherealengine/ecs'
 import { profile } from '@etherealengine/ecs/src/Timer'
 import { State, defineState, getMutableState, getState, useMutableState } from '@etherealengine/hyperflux'
 import { EngineRenderer, RenderSettingsState } from '@etherealengine/spatial/src/renderer/WebGLRendererSystem'
@@ -76,6 +77,8 @@ export const PerformanceState = defineState({
     performanceOffset: 0,
     isMobileGPU: false as boolean | undefined,
     // averageRenderTime: 0,
+    gpu: 'unknown',
+    device: 'unknown',
     budgets: {
       maxTextureSize: 0,
       max3DTextureSize: 0,
@@ -228,6 +231,12 @@ const decrementPerformance = () => {
   )
 }
 
+const maxSystemTimeMS = 1.0
+const profileSystemTime = 2500
+const profileSystemPerformance = () => {
+  const systems = filterAndSortSystemsByAvgDuration(maxSystemTimeMS)
+}
+
 const buildPerformanceState = async (
   renderer: EngineRenderer,
   onFinished: () => void,
@@ -243,6 +252,8 @@ const buildPerformanceState = async (
   })
   let tier = gpuTier.tier
   performanceState.isMobileGPU.set(gpuTier.isMobile)
+  if (gpuTier.gpu) performanceState.gpu.set(gpuTier.gpu)
+  if (gpuTier.device) performanceState.device.set(gpuTier.device)
 
   const gl = renderer.renderContext as WebGL2RenderingContext
   const max3DTextureSize = gl.getParameter(gl.MAX_3D_TEXTURE_SIZE)
@@ -263,6 +274,7 @@ const buildPerformanceState = async (
 
   performanceState.tier.set(tier as PerformanceTier)
   onFinished()
+  setInterval(profileSystemPerformance, profileSystemTime)
 }
 
 export const PerformanceManager = {

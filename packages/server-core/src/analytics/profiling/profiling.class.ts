@@ -23,7 +23,23 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import Analytics from './analytics/analytics'
-import Profiling from './profiling/profiling'
+import { Params } from '@feathersjs/feathers'
+import { KnexService } from '@feathersjs/knex'
 
-export default [Analytics, Profiling]
+import {
+  ProfilingData,
+  ProfilingPatch,
+  ProfilingQuery,
+  ProfilingType
+} from '@etherealengine/common/src/schemas/analytics/profiling.schema'
+
+import { KnexAdapterParams } from '@feathersjs/knex'
+
+export interface ProfilingParams extends KnexAdapterParams<ProfilingQuery> {}
+
+export class ProfilingService<T = ProfilingType, ServiceParams extends Params = ProfilingParams> extends KnexService<
+  ProfilingType,
+  ProfilingData,
+  ProfilingParams,
+  ProfilingPatch
+> {}

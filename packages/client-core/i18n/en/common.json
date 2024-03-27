@@ -72,6 +72,7 @@
     "tick": "Tick",
     "state": "State",
     "systems": "Systems",
+    "uuid": "Avg Duration: ",
     "entities": "Entities",
     "networks": "Networks",
     "actionsHistory": "Actions History",

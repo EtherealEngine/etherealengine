@@ -23,7 +23,28 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import Analytics from './analytics/analytics'
-import Profiling from './profiling/profiling'
+// For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
+import { resolve, virtual } from '@feathersjs/schema'
 
-export default [Analytics, Profiling]
+import { ProfilingQuery, ProfilingType } from '@etherealengine/common/src/schemas/analytics/profiling.schema'
+import type { HookContext } from '@etherealengine/server-core/declarations'
+
+import { fromDateTimeSql, getDateTimeSql } from '@etherealengine/common/src/utils/datetime-sql'
+
+export const ProfilingResolver = resolve<ProfilingType, HookContext>({
+  createdAt: virtual(async (profiling) => fromDateTimeSql(profiling.createdAt)),
+  updatedAt: virtual(async (profiling) => fromDateTimeSql(profiling.updatedAt))
+})
+
+export const ProfilingExternalResolver = resolve<ProfilingType, HookContext>({})
+
+export const ProfilingDataResolver = resolve<ProfilingType, HookContext>({
+  createdAt: getDateTimeSql,
+  updatedAt: getDateTimeSql
+})
+
+export const ProfilingPatchResolver = resolve<ProfilingType, HookContext>({
+  updatedAt: getDateTimeSql
+})
+
+export const ProfilingQueryResolver = resolve<ProfilingQuery, HookContext>({})

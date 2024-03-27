@@ -239,6 +239,8 @@ export const authenticationSettingPath = 'authentication-setting'
 
 export const analyticsPath = 'analytics'
 
+export const profilingPath = 'profiling'
+
 export const serverSettingPath = 'server-setting'
 
 export const scopeTypePath = 'scope-type'

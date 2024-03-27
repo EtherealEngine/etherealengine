@@ -37,6 +37,7 @@ import svgr from 'vite-plugin-svgr'
 const { isArray, mergeWith } = lodash
 
 import manifest from './manifest.default.json'
+import packageJson from './package.json'
 import PWA from './pwa.config'
 import { getClientSetting } from './scripts/getClientSettings'
 import { getCoilSetting } from './scripts/getCoilSettings'
@@ -247,7 +248,7 @@ export default defineConfig(async () => {
     }
   }
 
-  const define = {}
+  const define = { __IR_ENGINE_VERSION__: JSON.stringify(packageJson.version) }
   for (const [key, value] of Object.entries(process.env)) {
     define[`globalThis.process.env.${key}`] = JSON.stringify(value)
   }

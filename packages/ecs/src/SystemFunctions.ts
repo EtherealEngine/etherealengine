@@ -72,7 +72,28 @@ export interface System {
   postSystems: SystemUUID[]
   sceneSystem?: boolean
   // debug
-  systemDuration?: number
+  systemDuration: number
+  avgSystemDuration: number
+}
+
+export const filterAndSortSystemsByAvgDuration = (maxAvg = 0.0): System[] => {
+  const systems = SystemDefinitions
+  const sorted = [...systems.values()]
+    .filter((system: System) => system.avgSystemDuration > maxAvg)
+    .sort((left: System, right: System) => {
+      return right.avgSystemDuration - left.avgSystemDuration
+    })
+
+  return sorted
+}
+
+export const sortSystemsByAvgDuration = (): System[] => {
+  const systems = SystemDefinitions
+  const sorted = [...systems.values()].sort((left: System, right: System) => {
+    return right.avgSystemDuration - left.avgSystemDuration
+  })
+
+  return sorted
 }
 
 export const SystemDefinitions = new Map<SystemUUID, System>()
@@ -111,10 +132,10 @@ export function executeSystem(systemUUID: SystemUUID) {
   }
 
   const endTime = nowMilliseconds()
-
+  const systemDuration = endTime - startTime
+  system.systemDuration = systemDuration
+  if (system.systemDuration != 0) system.avgSystemDuration = (systemDuration + system.avgSystemDuration) * 0.5
   if (getState(SystemState).performanceProfilingEnabled) {
-    const systemDuration = endTime - startTime
-    system.systemDuration = systemDuration
     if (systemDuration > 50 && (lastWarningTime.get(systemUUID) ?? 0) < endTime - warningCooldownDuration) {
       lastWarningTime.set(systemUUID, endTime)
       logger.warn(`Long system execution detected. System: ${system.uuid} \n Duration: ${systemDuration}`)
@@ -149,7 +170,8 @@ export function defineSystem(systemConfig: SystemArgs) {
     ...systemConfig,
     uuid: systemConfig.uuid as SystemUUID,
     enabled: false,
-    systemDuration: 0
+    systemDuration: 0,
+    avgSystemDuration: 0
   } as Required<System>
 
   SystemDefinitions.set(system.uuid, system)

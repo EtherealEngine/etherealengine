@@ -23,7 +23,19 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import Analytics from './analytics/analytics'
-import Profiling from './profiling/profiling'
+import { createSwaggerServiceOptions } from 'feathers-swagger'
 
-export default [Analytics, Profiling]
+import {
+  profilingDataSchema,
+  ProfilingPatchSchema,
+  ProfilingQuerySchema,
+  profilingSchema
+} from '@etherealengine/common/src/schemas/analytics/profiling.schema'
+
+export default createSwaggerServiceOptions({
+  schemas: { ProfilingDataSchema: profilingDataSchema, ProfilingPatchSchema, ProfilingQuerySchema, profilingSchema },
+  docs: {
+    description: 'profiling service description',
+    securities: ['all']
+  }
+})
