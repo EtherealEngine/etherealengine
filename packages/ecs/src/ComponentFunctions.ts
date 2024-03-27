@@ -472,10 +472,14 @@ export const getAllComponentData = (entity: Entity): { [name: string]: Component
 export const removeAllComponents = (entity: Entity) => {
   try {
     for (const component of bitECS.getEntityComponents(HyperFlux.store, entity)) {
-      removeComponent(entity, component as Component)
+      try {
+        removeComponent(entity, component as Component)
+      } catch (e) {
+        console.error(e)
+      }
     }
-  } catch (_) {
-    // entity does not exist
+  } catch (e) {
+    console.error(e)
   }
 }
 

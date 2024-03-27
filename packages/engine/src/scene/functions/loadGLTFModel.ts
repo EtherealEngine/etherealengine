@@ -170,7 +170,8 @@ export const proxifyParentChildRelationships = (obj: Object3D) => {
         return getComponent(objEntity, TransformComponent).matrixWorld
       },
       set(value) {
-        throw new Error('Cannot set matrixWorld of proxified object')
+        if (value != undefined) throw new Error('Cannot set matrixWorld of proxified object')
+        console.warn('Setting to nil value is not supported LoadGLTFModel.ts: proxifyParentChildRelationships')
       }
     },
     parent: {
@@ -185,7 +186,8 @@ export const proxifyParentChildRelationships = (obj: Object3D) => {
         return Engine.instance.scene
       },
       set(value) {
-        throw new Error('Cannot set parent of proxified object')
+        if (value != undefined) throw new Error('Cannot set parent of proxified object')
+        console.warn('Setting to nil value is not supported LoadGLTFModel.ts: proxifyParentChildRelationships')
       }
     },
     children: {
@@ -207,7 +209,8 @@ export const proxifyParentChildRelationships = (obj: Object3D) => {
         }
       },
       set(value) {
-        throw new Error('Cannot set children of proxified object')
+        if (value != undefined) throw new Error('Cannot set children of proxified object')
+        console.warn('Setting to nil value is not supported LoadGLTFModel.ts: proxifyParentChildRelationships')
       }
     },
     isProxified: {
