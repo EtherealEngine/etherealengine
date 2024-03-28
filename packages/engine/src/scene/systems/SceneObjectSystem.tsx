@@ -69,6 +69,7 @@ import { ModelComponent, useMeshOrModel } from '../components/ModelComponent'
 import { SourceComponent } from '../components/SourceComponent'
 import { UpdatableCallback, UpdatableComponent } from '../components/UpdatableComponent'
 import { getModelSceneID } from '../functions/loaders/ModelFunctions'
+import { MaterialLibraryState } from '../materials/MaterialLibrary'
 
 export const ExpensiveMaterials = new Set([MeshPhongMaterial, MeshStandardMaterial, MeshPhysicalMaterial])
 
@@ -107,6 +108,7 @@ export const disposeObject3D = (obj: Object3D) => {
   if (typeof light.dispose === 'function') light.dispose()
 }
 
+/**@todo refactor this to use preprocessor directives instead of new cloned materials with different shaders */
 export function setupObject(obj: Object3D, forceBasicMaterials = false) {
   const child = obj as any as Mesh<any, any>
 
@@ -115,9 +117,16 @@ export function setupObject(obj: Object3D, forceBasicMaterials = false) {
     const shouldMakeBasic =
       (forceBasicMaterials || isMobileXRHeadset) && ExpensiveMaterials.has(child.material.constructor)
     if (!forceBasicMaterials && !isMobileXRHeadset && child.userData.lastMaterial) {
+      const prevEntry = unregisterMaterial(child.material)
       child.material = child.userData.lastMaterial
+      prevEntry && registerMaterial(child.userData.lastMaterial, prevEntry.src, prevEntry.parameters)
       delete child.userData.lastMaterial
     } else if (shouldMakeBasic && !child.userData.lastMaterial) {
+      const basicMaterial = getState(MaterialLibraryState).materials[`basic-${child.material.uuid}`]
+      if (basicMaterial) {
+        child.material = basicMaterial.material
+        return
+      }
       const prevMaterial = child.material
       const onlyEmmisive = prevMaterial.emissiveMap && !prevMaterial.map
       const prevMatEntry = unregisterMaterial(prevMaterial)
@@ -134,6 +143,8 @@ export function setupObject(obj: Object3D, forceBasicMaterials = false) {
 
       child.material = nuMaterial
       child.userData.lastMaterial = prevMaterial
+
+      nuMaterial.uuid = `basic-${prevMaterial.uuid}`
       prevMatEntry && registerMaterial(nuMaterial, prevMatEntry.src, prevMatEntry.parameters)
     }
   }

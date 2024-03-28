@@ -58,7 +58,7 @@ import { AvatarComponent } from '../components/AvatarComponent'
 import { AvatarControllerComponent } from '../components/AvatarControllerComponent'
 import { AvatarDissolveComponent } from '../components/AvatarDissolveComponent'
 import { AvatarPendingComponent } from '../components/AvatarPendingComponent'
-import { TransparencyDitheringComponent } from '../components/TransparencyDitheringComponent'
+import { TransparencyDitheringComponent, ditherCalculationType } from '../components/TransparencyDitheringComponent'
 import { AvatarMovementSettingsState } from '../state/AvatarMovementSettingsState'
 import { LocalAvatarState } from '../state/AvatarState'
 import { bindAnimationClipFromMixamo } from './retargetMixamoRig'
@@ -186,8 +186,10 @@ export const setupAvatarProportions = (entity: Entity, vrm: VRM) => {
  */
 export const setupAvatarForUser = (entity: Entity, model: VRM) => {
   const selfAvatarEntity = AvatarComponent.getSelfAvatarEntity()
-  if (entity == selfAvatarEntity)
-    setComponent(entity, TransparencyDitheringComponent, { overrideFaceCulling: true, useLocalCenter: true })
+  if (entity == selfAvatarEntity) {
+    setComponent(entity, TransparencyDitheringComponent[0], { calculationType: ditherCalculationType.worldTransformed })
+    setComponent(entity, TransparencyDitheringComponent[1], { calculationType: ditherCalculationType.localPosition })
+  }
 
   setComponent(entity, AvatarRigComponent, {
     normalizedRig: model.humanoid.normalizedHumanBones,
