@@ -25,63 +25,26 @@ Ethereal Engine. All Rights Reserved.
 
 import React from 'react'
 
-import Box from '@etherealengine/ui/src/primitives/mui/Box'
-import CircularProgress from '@etherealengine/ui/src/primitives/mui/CircularProgress'
-import Typography from '@etherealengine/ui/src/primitives/mui/Typography'
-
-import { SxProps, Theme } from '@mui/material/styles'
-import { Variant } from '@mui/material/styles/createTypography'
+import LoadingCircle from '@etherealengine/ui/src/primitives/tailwind/LoadingCircle'
+import Text from '@etherealengine/ui/src/primitives/tailwind/Text'
 
 interface Props {
   className?: string
+  textClassName?: string
   title?: React.ReactNode
   description?: string
-  variant?: Variant
-  titleColor?: string
-  sx?: SxProps<Theme>
   fullHeight?: boolean
-  flexDirection?: string
 }
 
-const LoadingView = ({
-  className,
-  title,
-  description,
-  variant,
-  titleColor,
-  sx,
-  fullHeight = true,
-  flexDirection
-}: Props) => {
-  if (!variant) {
-    variant = 'h6'
-  }
-
+const LoadingView = ({ className, title, description, textClassName, fullHeight = true }: Props) => {
   return (
-    <Box
-      className={className}
-      sx={{
-        height: fullHeight ? '100%' : '100px',
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        ...sx
-      }}
-    >
-      <CircularProgress size={40} sx={{ marginBottom: 1 }} />
-      {title && (
-        <Typography variant={variant} sx={{ color: titleColor ? titleColor : 'var(--textColor)' }}>
-          {title}
-        </Typography>
-      )}
-      {description && (
-        <Typography variant={'body2'} sx={{ color: 'var(--textColor)', opacity: 0.65 }}>
-          {description}
-        </Typography>
-      )}
-    </Box>
+    <div className={`flex w-full flex-col items-center justify-center ${fullHeight ? 'h-full' : 'h-24'} ${className}`}>
+      <LoadingCircle className="mb-1 h-6 w-6" />
+
+      {title && <Text className={textClassName}>{title}</Text>}
+
+      {description && <Text className="opacity-65">{description}</Text>}
+    </div>
   )
 }
 

@@ -31,23 +31,49 @@ import { defineState, getMutableState } from '@etherealengine/hyperflux'
 const lightTheme = {
   'bg-primary': '#F5F5F5',
   'bg-secondary': '#FFFFFF',
-  'bg-highlight': '#FFFFFF',
-  'bg-surface-main': '#F5F5F5',
+  'bg-highlight': '#F5F5F5',
+  'bg-surface-main': '#FFFFFF',
+  'bg-surface-input': '#FFFFFF',
+  'bg-table-secondary': '#F9FAFB',
+  'bg-blue-secondary': '#D4DFF7',
+  'bg-banner-informative': '#FFFBEB',
+
+  'bg-tag-green': '#10B981',
+  'bg-tag-red': '#744364',
+  'bg-tag-yellow': '#FEF3C7',
+
   'text-primary': '#262626',
   'text-secondary': '#6B7280',
-  'text-highlight': '#FFFFFF',
-  'border-primary': '#E5E7EB'
+  'text-highlight': '#000000',
+  'icon-green': '#0D9488 ',
+  'icon-red': '#E11D48',
+
+  'border-primary': '#E5E7EB',
+  selection: '#3166D0'
 }
 
 const darkTheme = {
   'bg-primary': '#111113',
-  'bg-secondary': '#1A1B1E',
+  'bg-secondary': '#1A1B1E', // not important now
   'bg-highlight': '#212226',
   'bg-surface-main': '#1A1B1E',
+  'bg-surface-input': '#141619',
+  'bg-table-secondary': '#212226',
+  'bg-blue-secondary': '#2A3753',
+  'bg-banner-informative': '#D9770633',
+
+  'bg-tag-green': '#064E3B',
+  'bg-tag-red': '#FEE2E2',
+  'bg-tag-yellow': '#CA8A04',
+
   'text-primary': '#F5F5F5',
   'text-secondary': '#D4D4D4',
   'text-highlight': '#FFFFFF',
-  'border-primary': '#2B2C30'
+  'icon-green': '#0D9488 ',
+  'icon-red': '#FB7185',
+
+  'border-primary': '#2B2C30',
+  selection: '#1E4273'
 }
 
 const themes = {

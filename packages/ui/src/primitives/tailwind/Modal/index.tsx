@@ -28,6 +28,7 @@ import { useTranslation } from 'react-i18next'
 import { MdClose } from 'react-icons/md'
 import { twMerge } from 'tailwind-merge'
 import Button from '../Button'
+import LoadingCircle from '../LoadingCircle'
 import Text from '../Text'
 
 export interface ModalProps {
@@ -35,11 +36,23 @@ export interface ModalProps {
   hideFooter?: boolean
   className?: string
   children: ReactNode
-  onClose?: () => void
+  submitLoading?: boolean
+  closeButtonDisabled?: boolean
+  submitButtonDisabled?: boolean
+  closeButtonText?: string
+  submitButtonText?: string
+  onClose?: (isHeader: boolean) => void
   onSubmit?: () => void
 }
 
-export const ModalHeader = ({ title, onClose }: { closeIcon?: boolean; title?: string; onClose?: () => void }) => {
+export const ModalHeader = ({
+  title,
+  onClose
+}: {
+  closeIcon?: boolean
+  title?: string
+  onClose?: (isHeader: boolean) => void
+}) => {
   return (
     <div className="border-b-theme-primary relative flex items-center justify-center border-b px-6 py-5">
       {title && <Text>{title}</Text>}
@@ -47,36 +60,79 @@ export const ModalHeader = ({ title, onClose }: { closeIcon?: boolean; title?: s
         variant="outline"
         className="absolute right-0 border-0 dark:bg-transparent dark:text-[#A3A3A3]"
         startIcon={<MdClose />}
-        onClick={onClose}
+        onClick={() => onClose && onClose(true)}
       />
     </div>
   )
 }
 
-export const ModalFooter = ({ onCancel, onSubmit }: { onCancel?: () => void; onSubmit?: () => void }) => {
+export const ModalFooter = ({
+  onCancel,
+  onSubmit,
+  submitLoading,
+  closeButtonDisabled,
+  submitButtonDisabled,
+  closeButtonText,
+  submitButtonText
+}: {
+  onCancel?: (isHeader: boolean) => void
+  onSubmit?: () => void
+  submitLoading?: boolean
+  closeButtonDisabled?: boolean
+  submitButtonDisabled?: boolean
+  closeButtonText?: string
+  submitButtonText?: string
+}) => {
   const { t } = useTranslation()
   return (
     <div className="border-t-theme-primary grid grid-flow-col border-t px-6 py-5">
-      <Button variant="outline" onClick={onCancel}>
-        {t('common:components.cancel')}
+      <Button variant="outline" disabled={closeButtonDisabled} onClick={() => onCancel && onCancel(false)}>
+        {closeButtonText || t('common:components.cancel')}
       </Button>
       {onSubmit && (
-        <Button onClick={onSubmit} className="place-self-end">
-          {t('common:components.confirm')}
+        <Button
+          endIcon={submitLoading ? <LoadingCircle className="h-6 w-6" /> : undefined}
+          disabled={submitButtonDisabled || submitLoading}
+          onClick={onSubmit}
+          className="place-self-end"
+        >
+          {submitButtonText || t('common:components.confirm')}
         </Button>
       )}
     </div>
   )
 }
 
-const Modal = ({ title, onClose, onSubmit, hideFooter, children, className }: ModalProps) => {
-  const twClassName = twMerge('relative max-h-full w-full max-w-2xl p-4', className)
+const Modal = ({
+  title,
+  onClose,
+  onSubmit,
+  hideFooter,
+  children,
+  className,
+  submitLoading,
+  closeButtonText,
+  submitButtonText,
+  closeButtonDisabled,
+  submitButtonDisabled
+}: ModalProps) => {
+  const twClassName = twMerge('relative max-h-[80vh] w-full overflow-y-auto', className)
   return (
     <div className={twClassName}>
-      <div className="bg-theme-primary relative rounded-lg shadow">
+      <div className="bg-theme-surface-main relative rounded-lg shadow">
         {onClose && <ModalHeader title={title} onClose={onClose} />}
         <div className="w-full px-10 py-6">{children}</div>
-        {!hideFooter && <ModalFooter onCancel={onClose} onSubmit={onSubmit} />}
+        {!hideFooter && (
+          <ModalFooter
+            closeButtonText={closeButtonText}
+            submitButtonText={submitButtonText}
+            closeButtonDisabled={closeButtonDisabled}
+            submitButtonDisabled={submitButtonDisabled}
+            onCancel={onClose}
+            onSubmit={onSubmit}
+            submitLoading={submitLoading}
+          />
+        )}
       </div>
     </div>
   )

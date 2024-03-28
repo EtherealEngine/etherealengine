@@ -24,18 +24,37 @@ Ethereal Engine. All Rights Reserved.
 */
 
 import React from 'react'
-import './index.css'
+import { twMerge } from 'tailwind-merge'
 
-interface ToolTipProps {
+interface TooltipProps {
   title: string
-  direction: 'top' | 'bottom' | 'left' | 'right'
+  direction?: 'top' | 'bottom' | 'left' | 'right'
+  children: React.ReactElement
+  className?: string
 }
 
-const ToolTip = ({ title, direction = 'top', children, ...props }) => {
-  return React.cloneElement(children as React.ReactElement, {
-    className: `${children.props.className} tooltip`,
-    'data-content': title
-  })
+const TooltipDirectionClass = {
+  top: 'bottom-5',
+  bottom: 'top-5',
+  left: 'right-5',
+  right: 'left-5'
 }
 
-export default ToolTip
+const Tooltip = ({ title, direction = 'top', children, className }: TooltipProps) => {
+  return (
+    <div className="group relative flex items-center justify-center">
+      {children}
+      <span
+        className={twMerge(
+          'absolute z-10 scale-0 text-wrap rounded bg-gray-800 p-2 text-xs text-white transition-all group-hover:scale-100',
+          TooltipDirectionClass[direction],
+          className
+        )}
+      >
+        {title}
+      </span>
+    </div>
+  )
+}
+
+export default Tooltip

@@ -32,19 +32,30 @@ export interface CheckboxProps {
   label?: string
   className?: string
   onChange: (value: boolean) => void
+  disabled?: boolean
 }
 
-const Checkbox = ({ className, label, value, onChange }: CheckboxProps) => {
+const Checkbox = ({ className, label, value, onChange, disabled }: CheckboxProps) => {
   const twClassName = twMerge(
     'h-4 w-4 rounded',
-    'border-gray-300 bg-gray-100 text-[#375DAF] focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600',
+    'border-gray-300 bg-gray-100 text-blue-400 focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600',
     className
   )
 
   return (
     <div className="flex w-full items-center gap-4">
-      <input type="checkbox" className={twClassName} checked={value} onChange={() => onChange(!value)} />
-      {label && <Label className="self-stretch">{label}</Label>}
+      <input
+        type="checkbox"
+        className={twClassName}
+        checked={value}
+        onChange={() => onChange(!value)}
+        disabled={disabled}
+      />
+      {label && (
+        <Label onClick={() => onChange(!value)} className="cursor-pointer self-stretch">
+          {label}
+        </Label>
+      )}
     </div>
   )
 }

@@ -34,12 +34,15 @@ module.exports = {
   darkMode: ["class", '[data-theme="dark"]'],
   important: true, // important in prod is must be
   theme: {
+    
     extend: {
       textColor: {
         theme: {
           primary: "var(--text-primary)",
           secondary: "var(--text-secondary)",
-          highlight: "var(--text-highlight)"
+          highlight: "var(--text-highlight)",
+          iconGreen: "var(--icon-green)",
+          iconRed: "var(--icon-red)"
         }
       },
       backgroundColor: {
@@ -47,13 +50,25 @@ module.exports = {
           primary: "var(--bg-primary)",
           secondary: "var(--bg-secondary)",
           highlight: "var(--bg-highlight)",
-          surfaceMain: "var(--bg-surface-main)"
+          surfaceInput: "var(--bg-surface-input)",
+          'surface-main': "var(--bg-surface-main)",
+          'table-secondary': "var(--bg-table-secondary)",
+          'blue-secondary': "var(--bg-blue-secondary)",
+          buttonTertiary: "var(--bg-button-tertiary)",
+          bannerInformative: "var(--bg-banner-informative)",
+          tagGreen: "var(--bg-tag-green)",
+          tagRed: "var(--bg-tag-red)",
+          tagYellow: "var(--bg-tag-yellow)",
+          selection: "var(--selection)"
         }
       },
       borderColor: {
         theme: {
           primary: "var(--border-primary)"
         }
+      },
+      colors: {
+        'blue-primary': "#375DAF",
       }
     }
   }

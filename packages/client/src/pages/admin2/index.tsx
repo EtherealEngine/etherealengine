@@ -25,37 +25,32 @@ Ethereal Engine. All Rights Reserved.
 
 import { t } from 'i18next'
 import React, { Suspense } from 'react'
-import { Route, Routes } from 'react-router-dom'
 
 import LoadingCircle from '@etherealengine/ui/src/primitives/tailwind/LoadingCircle'
 
+import AdminRoutes from '@etherealengine/client-core/src/admin2/adminRoutes'
 import { useEngineInjection } from '@etherealengine/client-core/src/components/World/EngineHooks'
-import Admin from './admin'
+import { useRemoveEngineCanvas } from '@etherealengine/client-core/src/hooks/useRemoveEngineCanvas'
 
 const LocationRoutes = () => {
   const projectsLoaded = useEngineInjection()
+  useRemoveEngineCanvas()
 
   if (!projectsLoaded)
     return (
-      <LoadingCircle
-        className="flex h-1/4 w-1/4 items-center justify-center"
-        message={t('common:loader.loadingProjects')}
-      />
+      <LoadingCircle className="flex w-[3%] items-center justify-center" message={t('common:loader.loadingProjects')} />
     )
 
   return (
     <Suspense
       fallback={
         <LoadingCircle
-          className="flex h-1/4 w-1/4 items-center justify-center"
+          className="flex w-[3%] items-center justify-center"
           message={t('common:loader.loadingLocation')}
         />
       }
     >
-      <Routes>
-        <Route path=":locationName" element={<Admin />} />
-        <Route path="/" element={<Admin />} />
-      </Routes>
+      <AdminRoutes />
     </Suspense>
   )
 }

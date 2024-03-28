@@ -23,7 +23,7 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import React, { InputHTMLAttributes } from 'react'
+import React, { InputHTMLAttributes, forwardRef } from 'react'
 import { HiXCircle } from 'react-icons/hi'
 import { twMerge } from 'tailwind-merge'
 import Label from '../Label'
@@ -34,52 +34,77 @@ export interface InputProps extends React.HTMLAttributes<HTMLInputElement> {
   containerClassname?: string
   description?: string
   type?: InputHTMLAttributes<HTMLInputElement>['type']
-  onChange: InputHTMLAttributes<HTMLInputElement>['onChange']
+  onChange?: InputHTMLAttributes<HTMLInputElement>['onChange']
   error?: string
   disabled?: boolean
-  icon?: JSX.Element
+  startComponent?: JSX.Element
+  endComponent?: JSX.Element
 }
 
-const Input = ({
-  className,
-  containerClassname,
-  label,
-  type = 'text',
-  error,
-  description,
-  value,
-  itemType,
-  onChange,
-  disabled,
-  icon,
-  ...props
-}: InputProps) => {
-  const twClassname = twMerge(
-    'text-base font-normal tracking-tight',
-    'textshadow-sm border-theme-primary flex h-9 w-full rounded-lg border bg-transparent px-3.5 py-5 transition-colors',
-    'file:border-0 file:bg-transparent file:text-sm file:font-medium',
-    'placeholder:text-muted-foreground focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50',
-    icon ? 'ps-10' : undefined,
-    className
-  )
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  (
+    {
+      className,
+      containerClassname,
+      label,
+      type = 'text',
+      error,
+      description,
+      value,
+      itemType,
+      onChange,
+      disabled,
+      startComponent,
+      endComponent,
+      ...props
+    },
+    ref
+  ) => {
+    const twClassname = twMerge(
+      'text-base font-normal tracking-tight',
+      'textshadow-sm border-theme-primary bg-theme-surfaceInput flex h-9 w-full rounded-lg border px-3.5 py-5 transition-colors',
+      'file:bg-theme-surfaceInput file:border-0 file:text-sm file:font-medium',
+      'dark:[color-scheme:dark]',
+      'focus-visible:ring-ring placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50',
+      startComponent ? 'ps-10' : undefined,
+      endComponent ? 'pe-10' : undefined,
+      className
+    )
 
-  const twContainerClassname = twMerge('flex w-full flex-col items-center gap-2', containerClassname)
+    const twContainerClassname = twMerge('flex w-full flex-col items-center gap-2', containerClassname)
 
-  return (
-    <div className={twContainerClassname}>
-      {label && <Label className="self-stretch">{label}</Label>}
-      <div className="relative w-full">
-        {icon && <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3.5">{icon}</div>}
-        <input disabled={disabled} type={type} className={twClassname} value={value} onChange={onChange} {...props} />
+    return (
+      <div className={twContainerClassname}>
+        {label && <Label className="self-stretch">{label}</Label>}
+        <div className="bg-theme-surface-main relative w-full">
+          {startComponent && (
+            <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3.5">
+              {startComponent}
+            </div>
+          )}
+          <input
+            ref={ref}
+            disabled={disabled}
+            type={type}
+            className={twClassname}
+            value={value}
+            onChange={onChange}
+            {...props}
+          />
+
+          {endComponent && (
+            <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center pe-3.5">{endComponent}</div>
+          )}
+        </div>
+        {description && <p className="text-theme-secondary self-stretch text-xs">{description}</p>}
+        {error && (
+          <p className="text-theme-iconRed inline-flex items-center gap-2.5 self-start text-sm">
+            <HiXCircle /> {error}
+          </p>
+        )}
       </div>
-      {description && <p className="text-theme-secondary self-stretch text-xs">{description}</p>}
-      {error && (
-        <p className="text-[#E11D48 text-sm">
-          <HiXCircle className="mr-2.5" /> {error}
-        </p>
-      )}
-    </div>
-  )
-}
+    )
+  }
+)
 
 export default Input

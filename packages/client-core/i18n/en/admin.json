@@ -1,6 +1,15 @@
 {
   "components": {
     "location": {
+      "columns": {
+        "name": "Name",
+        "sceneId": "Scene",
+        "maxUsersPerInstance": "Max Users Per Instance",
+        "locationType": "Type",
+        "tags": "Tags",
+        "videoEnabled": "Video Enabled",
+        "action": "Action"
+      },
       "lbl-name": "Name",
       "lbl-maxuser": "Max Users",
       "lbl-scene": "Scene",
@@ -12,7 +21,10 @@
       "lbl-se": "Screen Sharing Enabled",
       "lbl-fe": "Face Streaming Enabled",
       "createLocation": "Create Location",
+      "updateLocation": "Update Location",
+      "removeLocation": "Remove Location",
       "type": "Type",
+      "selectScene": "Select a Scene",
       "sceneCantEmpty": "Scene can't be empty",
       "maxUserCantEmpty": "Max users can't be empty",
       "nameCantEmpty": "Name can't be empty",
@@ -23,7 +35,8 @@
       "typeRequired": "Type is required",
       "confirmLocationDelete": "Do you want to delete location",
       "lobby": "Lobby",
-      "featured": "Featured"
+      "featured": "Featured",
+      "locations": "Locations"
     },
     "bot": {
       "uniqueCommand": "Command should be unique",
@@ -70,7 +83,8 @@
       "refresh": "Refresh",
       "name": "Name",
       "fillRequiredFields": "Please fill all required field",
-      "fixErrorFields": "Please fix all errors"
+      "fixErrorFields": "Please fix all errors",
+      "logOut": "Log Out"
     },
     "analytics": {
       "loading": "Loading analytics...",
@@ -104,11 +118,23 @@
       "clearAllScopes": "Clear All Scopes"
     },
     "invite": {
+      "columns": {
+        "id": "Id",
+        "name": "Name",
+        "passcode": "Passcode",
+        "type": "Type",
+        "targetObjectId": "Target ID",
+        "spawnDetails": "Spawn Details",
+        "action": "Action"
+      },
+      "invites": "Invites",
       "sendInvite": "Send Invite",
       "receivedInvite": "Received Invite",
       "confirmInviteDelete": "Do you want to delete invite",
       "confirmMultiInviteDelete": "Do you want to delete all of the selected invites?",
-      "create": "Create new invite(s)",
+      "create": "Create Invite",
+      "recipients": "Recipents",
+      "type": "Type",
       "singleTargetLabel": "Invite recipient",
       "targetLabel": "Invite recipients",
       "target": "Enter a comma-separated list of invite codes and/or emails/SMSes",
@@ -118,20 +144,53 @@
       "party": "Party ID",
       "submit": "Send Invite(s)",
       "update": "Update Invite",
+      "remove": "Remove Invite",
+      "removeInvites": "Remove Invites",
       "location": "Location",
       "instance": "Instance",
       "user": "User",
+      "new-user": "User",
       "spawnPoint": "Spawn Point",
-      "deleteSelected": "Delete selected invites"
+      "userPosition": "User Position",
+      "timedInvite": "Timed",
+      "oneTime": "One Time Use",
+      "makeAdmin": "Make Admin",
+      "selectLocation": "Select Location",
+      "selectInstance": "Select Instance",
+      "spawnAtPosition": "Spawn at Position",
+      "selectSpawnPoint": "Select Spawn Point",
+      "selectUserPosition": "Select User Position",
+      "deleteSelected": "Delete selected invites",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "errors": {
+        "recipients": "Please enter the email recipients",
+        "inviteLocation": "Please select a location",
+        "inviteInstance": "Please select an instance",
+        "spawnPoint": "Please select a spawn point",
+        "userPosition": "Please select a user position",
+        "startTime": "Please select the start date and time",
+        "endTime": "Please select the end date and time"
+      }
     },
     "channel": {
+      "channels": "Channels",
+      "columns": {
+        "id": "Id",
+        "name": "Name",
+        "action": "Action"
+      },
       "instanceRequired": "Instance is required",
       "instanceCantEmpty": "Instance can't be empty",
       "instance": "Instance",
       "createOne": "Create One",
       "createChannel": "Create Channel",
+      "update": "Update Channel",
       "confirmChannelDelete": "Do you want to delete channel?",
-      "name": "Channel Name"
+      "confirmMultiChannelDelete": "Do you want to delete these channels?",
+      "name": "Channel Name",
+      "remove": "Remove Channel",
+      "removeChannels": "Remove Channels"
     },
     "project": {
       "columns": {
@@ -221,22 +280,58 @@
       "refreshGithubRepoAccess": "Refresh GitHub Repo Access",
       "refreshingGithubRepoAccess": "Refreshing"
     },
+    "buildStatus": {
+      "columns": {
+        "id": "Build #",
+        "status": "Status",
+        "commitSHA":"Commit SHA",
+        "logs":"Logs",
+        "dateStarted": "Date Started",
+        "dateEnded": "Date Ended"
+      },
+      "buildStatus": "Build Status",
+      "running": "Running",
+      "viewLogs": "View Logs"
+    },
     "instance": {
+      "columns": {
+        "id": "Instance ID",
+        "ipAddress": "IP Address",
+        "currentUsers": "Current Users",
+        "locationName": "Location",
+        "channelId": "Channel",
+        "podName": "Pod Name",
+        "action": "Action"
+      },
+      "actions": {
+        "view": "View",
+        "delete": "Delete"
+      },
+      "instances": "Instance",
       "confirmInstanceDelete": "Do you want to delete instance",
       "location": "Location",
       "count": "Count",
+      "kick": "Kick",
+      "ban": "Ban",
       "kickDuration": "Kick Duration",
-      "confirmUserBan": "Are you sure you want to ban this user?"
+      "confirmUserBan": "Are you sure you want to ban this user?",
+      "noInstanceUsers": "No users in this instance"
     },
     "resources": {
-      "resources": "resources",
-      "id": "Id",
-      "key": "Key",
-      "name": "Name",
-      "mimeType": "Mime Type",
-      "project": "Project",
+      "columns": {
+        "id": "Id",
+        "key": "Key",
+        "name": "Name",
+        "mimeType": "Mime Type",
+        "project": "Project",
+        "action": "Action"
+      },
+      "confirmation": "Confirmation",
+      "resources": "Resources",
       "resourceType": "Resource Type",
       "preview": "Preview",
+      "createResource": "Create Resource",
+      "resourceName": "Resource Name",
       "confirmResourceDelete": "Do you want to delete resource",
       "nameCantEmpty": "Name can't be empty",
       "resourceTypeCantEmpty": "Resource type can't be empty",
@@ -250,7 +345,10 @@
       "resourceUrl": "Resource URL"
     },
     "setting": {
-      "authentication": "Authentication",
+      "authentication": {
+        "header": "Authentication",
+        "subtitle": "Edit Authentication Settings"
+      },
       "service": "Service",
       "secret": "Secret",
       "entity": "Entity",
@@ -299,7 +397,14 @@
       "apiKey": "ApiKey",
       "url": "URL",
       "chargebee": "Chargebee",
-      "client": "Client",
+      "client": {
+        "header": "Client",
+        "subtitle": "Edit Client Settings",
+        "main": "Main",
+        "logo": "Logo",
+        "other": "Other",
+        "media": "Audio & Video"
+      },
       "clientId": "OAuth2 client_id",
       "clientSecret": "OAuth2 client_secret",
       "coil": "Coil",
@@ -315,7 +420,10 @@
       "webmanifestLink": "Webmanifest",
       "swScriptLink": "service-worker.js",
       "releaseName": "Release Name",
-      "email": "Email",
+      "email": {
+        "header": "Email",
+        "subtitle": "Edit Email Settings"
+      },
       "smtp": "SMTP",
       "port": "Port",
       "secure": "Secure",
@@ -327,7 +435,10 @@
       "group": "group",
       "party": "Party",
       "smsNameCharLimit": "SMS Name Character Limit",
-      "instanceServer": "Instance Server",
+      "instanceServer": {
+        "header": "Instance Server",
+        "subtitle": "Edit Instance Server Settings"
+      },
       "clientHost": "Client Host",
       "rtcStartPort": "RTC Start Port",
       "rtcEndPort": "RTC End Port",
@@ -339,7 +450,6 @@
       "redis": "Redis",
       "enabled": "Enabled",
       "address": "Address",
-      "server": "Server",
       "hostName": "Host Name",
       "rootDirectory": "Root Directory",
       "publicDirectory": "Public Directory",
@@ -353,7 +463,6 @@
       "githubWebhookSecret": "Github Webhook Secret",
       "githubPrivateKey": "Github Private Key",
       "instanceserverUnreachableTimeoutSeconds": "Seconds for instanceserver to be considered unreachable",
-      "project": "Project",
       "patchInstanceserver": "Patch Instanceserver",
       "hub": "Hub",
       "placeholderText": "This is the input placeholder",
@@ -388,19 +497,34 @@
       "screenshareMidResMaxBitrate": "Screenshare mid-res video max bitrate (kbps)",
       "screenshareHighResMaxBitrate": "Screenshare high-res video max bitrate (kbps)",
       "privacyPolicy": "Privacy Policy",
-      "taskServer": {
-        "taskServer": "Task Server",
-        "port": "Port",
-        "processInterval": "Process Interval"
+      "project": {
+        "header": "Project",
+        "subtitle": "Edit Project Settings",
+        "submit": "Submit",
+        "clear": "Clear",
+        "noSettingsMessage": "No schema available in xrengine.config.ts"
+      },
+      "server": {
+        "header": "Server",
+        "subtitle": "Edit Mode, Storage Provider, Host Name, Hub,etc."
       },
       "helm": {
         "header": "Helm Chart Versions",
+        "subtitle": "To apply a new Helm chart version, Save here, then go to /admin/projects and then Rebuild",
         "main": "Main deployment Helm version",
         "builder": "Builder deployment Helm version",
         "explainer": "To apply a new Helm chart version, Save here, then go to /admin/projects and then Rebuild",
         "builderHelmToDeploy": "Builder Helm chart to deploy",
         "mainHelmToDeploy": "Main Helm chart to deploy"
-      }
+      },
+      "taskServer": {
+        "taskServer": "Task Server",
+        "subtitle": "Edit Task Server Settings",
+        "port": "Port",
+        "processInterval": "Process Interval"
+      },
+      
+      "plugins": "Plugins"
     },
     "avatar": {
       "columns": {
@@ -415,6 +539,8 @@
       "source": "Source",
       "file": "File",
       "url": "Url",
+      "uploadAvatar": "Upload Avatar Model",
+      "avatarUrlPreview": "Enter Avatar URL to preview",
       "add": "Add Avatar",
       "update": "Update Avatar",
       "view": "View Avatar",
@@ -424,8 +550,12 @@
       "avatarUrl": "Avatar URL",
       "thumbnailUrl": "Thumbnail URL",
       "selectAvatar": "Select Avatar",
+      "clearAvatar": "Clear Avatar",
       "selectThumbnail": "Select Thumbnail",
+      "clearThumbnail": "Clear Thumbnail",
       "saveThumbnail": "Generate Thumbnail",
+      "uploadThumbnail": "Upload Thumbnail",
+      "thumbnailURLPreview": "Enter thumbnail URL to preview",
       "saveThumbnailTooltip": "Generate thumbnail from avatar preview",
       "nameCantEmpty": "Name can't be empty",
       "avatarUrlCantEmpty": "Avatar url can't be empty",
@@ -448,11 +578,22 @@
       "confirmThumbnailReplace": "Do you want to replace previously selected avatar thumbnail with current avatar preview?"
     },
     "user": {
+      "columns": {
+        "id": "Id",
+        "name": "Name",
+        "avatar": "Avatar",
+        "accountIdentifier": "Linked Accounts",
+        "action": "Action"
+      },
+      "users": "Users",
+      "addUser": "Add User",
+      "updateUser": "Update User",
       "nameCantEmpty": "Name can't be empty",
       "avatarCantEmpty": "Avatar can't be empty",
       "scopeTypeCantEmpty": "Scope type can't be empty",
       "createUser": "Create User",
       "nameRequired": "Name is required",
+      "namePlaceholder": "Enter name of the user",
       "avatarRequired": "Avatar is required",
       "scopeTypeRequired": "Scope type is required",
       "hideGuests": "Hide guests",
@@ -463,7 +604,10 @@
       "location": "Location",
       "inviteCode": "Invite Code",
       "instance": "Instance",
+      "remove": "Remove User",
+      "removeUsers": "Remove Users",
       "confirmUserDelete": "Do you want to delete user",
+      "confirmMultiUserDelete": "Do you want to delete all these users?",
       "isGuest": "Is guest",
       "selectAllScopes": "Select All Scopes",
       "clearAllScopes": "Clear All Scopes",
@@ -476,33 +620,62 @@
       "linkedIn": "LinkedIn",
       "twitter": "Twitter",
       "sms": "SMS",
-      "email": "Email"
+      "email": "Email",
+      "selectAvatar": "Select an Avatar",
+      "selectScopes": "Select Scopes"
     },
     "server": {
+      "servers": "Servers",
       "loading": "Fetching Server Info",
       "loadingLogs": "Fetching Server Logs",
       "name": "Name",
       "status": "Status",
+      "serverStatus": {
+        "succeeded": "Succeeded",
+        "running": "Running",
+        "terminated": "Terminated"
+      },
       "type": "Type",
       "users": "Users",
       "instance": "Instance",
       "restarts": "Restarts",
       "containers": "Containers",
       "container": "Container",
-      "age": "Age",
+      "age": "Time",
       "logs": "Logs",
+      "serverLogs": "Server Logs",
+      "actions": "Actions",
       "autoRefresh": "Auto Refresh",
       "none": "None",
       "seconds": "seconds",
       "minute": "minute",
       "minutes": "minutes",
       "download": "Download",
-      "confirmPodDelete": "Do you want to delete pod"
+      "downloadLogs": "Download Logs",
+      "removePod": "Remove Pod",
+      "confirmPodDelete": "Do you want to delete pod",
+      "viewLogs": "View Logs"
     },
     "recording": {
-      "recording": "Recording",
+      "columns": {
+        "id": "Recording ID",
+        "user": "User",
+        "ended": "Ended",
+        "schema": "Schema",
+        "preview": "Preview",
+        "action": "Action"
+      },
+      "recording": "Recordings",
       "confirmRecordingDelete": "Do you want to delete recording",
       "recordingFiles": "Recordings Files for:"
+    },
+    "route": {
+      "routes": "Routes",
+      "columns": {
+        "project": "Project",
+        "route": "Route",
+        "action": "Active"
+      }
     }
   }
 }

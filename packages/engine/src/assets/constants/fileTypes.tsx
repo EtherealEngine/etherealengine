@@ -69,7 +69,9 @@ export const MimeTypeToAssetType = {
   'image/jpeg': AssetType.JPEG,
   'image/ktx2': AssetType.KTX2,
   'model/gltf-binary': AssetType.glB,
-  'model/gltf+json': AssetType.glTF
+  'model/gltf+json': AssetType.glTF,
+  'model/vrm': AssetType.VRM,
+  'model/vrml': AssetType.VRM
 } as Record<string, AssetType>
 
 export const AssetTypeToMimeType = {

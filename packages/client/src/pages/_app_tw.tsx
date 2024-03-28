@@ -63,7 +63,7 @@ const AppPage = () => {
   }, [])
 
   useEffect(() => {
-    if (!isLoggedIn.value || projectComponents) return
+    if (!isLoggedIn.value || projectComponents.length) return
     loadWebappInjection().then((result) => {
       setProjectComponents(result)
     })

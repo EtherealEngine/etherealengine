@@ -110,7 +110,7 @@ const Email = () => {
   return (
     <Box>
       <Typography component="h1" className={styles.settingsHeading}>
-        {t('admin:components.setting.email')}
+        {t('admin:components.setting.email.header')}
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6}>

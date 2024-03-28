@@ -45,7 +45,7 @@ const InstanceServer = () => {
   return (
     <Box>
       <Typography component="h1" className={styles.settingsHeading}>
-        {t('admin:components.setting.instanceServer')}
+        {t('admin:components.setting.instanceServer.header')}
       </Typography>
       {instanceServerSettings.map((el) => (
         <Grid container spacing={3} key={el?.id || ''}>

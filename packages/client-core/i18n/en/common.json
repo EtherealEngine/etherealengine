@@ -7,8 +7,12 @@
     "processing": "Processing",
     "retry": "Retry",
     "close": "Close",
+    "continue": "Continue",
+    "configure": "Configure",
+    "back": "Back",
     "submit": "Submit",
-    "search": "Search"
+    "search": "Search",
+    "copyText": "Copy Text"
   },
   "tooltip": {
     "pressKey": "Press {{tip}} to {{message}}"
@@ -121,5 +125,21 @@
     "validation-error": "Please input valid {{type}}",
     "login-error": "Failed to login"
   },
-  "exploreRedirect": "Explore Worlds"
+  "table": {
+    "refetching": "Refetching Data...",
+    "noData": "Data is Empty"
+  },
+  "multiEmailInput": {
+    "placeholder": "Type or paste email addresses and press `Enter`...",
+    "alreadyAdded": "{{email}} has already been added!",
+    "invalidEmail": "{{email}} is not a valid email address!"
+  },
+  "exploreRedirect": "Explore Worlds",
+  "select": {
+    "fetching": "Fetching options...",
+    "filter": "Filter options",
+    "selectOption": "Select Option",
+    "selectOptions": "Select Options"
+  },
+  "timeAgo": "{{time}} ago"
 }

@@ -62,7 +62,7 @@ const Project = () => {
     if (selectedProject.value) {
       resetSettingsFromSchema()
     }
-  }, [selectedProject.value])
+  }, [selectedProject])
 
   useEffect(() => {
     if (!projectSetting.length) {

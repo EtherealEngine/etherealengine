@@ -46,7 +46,7 @@ const DragNDrop = ({
   ...props
 }: DragNDropProps) => {
   const twClassName = twMerge(
-    'bg-secondary flex items-center justify-center rounded-md border-2 border-dashed border-gray-300 p-4 dark:hover:bg-slate-800',
+    'bg-secondary flex items-center justify-center rounded-md border-2 border-dashed border-gray-300 p-4',
     className
   )
   const [_, drop] = useDrop(
@@ -72,7 +72,7 @@ const DragNDrop = ({
   )
   return (
     <div className={twClassName} {...props} ref={drop}>
-      <label className="justify-cente flex h-full w-full cursor-pointer items-center">
+      <label className="flex h-full w-full cursor-pointer items-center justify-center">
         {children}
         {props.acceptInput && (
           <input

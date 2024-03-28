@@ -39,24 +39,28 @@ const sizes = {
 export interface AvatarImageProps extends React.HTMLAttributes<HTMLImageElement> {
   src: string
   size?: keyof typeof sizes
+  name?: string
 }
 
-const AvatarPlaceholder = ({ className }: { className: string }) => (
-  <div className={`${className} relative overflow-hidden bg-gray-100 dark:bg-gray-600`}>
-    <svg className="scale-50" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-    </svg>
+const AvatarPlaceholder = ({ className, name }: { className: string; name: string }) => (
+  <div className={twMerge('grid grid-cols-1 place-items-center rounded-lg bg-[#10BCAA] text-white', className)}>
+    {name[0] ? name[0] : 'U'}
   </div>
 )
 
-const AvatarImage = ({ src, size = 'medium', className }: AvatarImageProps) => {
+const AvatarImage = ({ src, size = 'medium', className, name }: AvatarImageProps) => {
   const imageLoaded = useHookstate(true)
-  const twClassName = twMerge(`${sizes[size]} rounded-full`, className)
+  const twClassName = twMerge(`${sizes[size]}`, className)
 
   return imageLoaded.value ? (
-    <img className={twClassName} src={src} alt={src.split('/').at(-1)} onError={() => imageLoaded.set(false)} />
+    <img
+      className={`${twClassName} rounded-full`}
+      src={src}
+      alt={src.split('/').at(-1)}
+      onError={() => imageLoaded.set(false)}
+    />
   ) : (
-    <AvatarPlaceholder className={twClassName} />
+    <AvatarPlaceholder className={twClassName} name={name || 'U'} />
   )
 }
 

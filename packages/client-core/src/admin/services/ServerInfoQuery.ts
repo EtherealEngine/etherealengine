@@ -23,35 +23,31 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
-import { NO_PROXY, useHookstate } from '@etherealengine/hyperflux'
-
 import { useFind } from '@etherealengine/spatial/src/common/functions/FeathersHooks'
 
 import { PodsType, ServerPodInfoType, podsPath } from '@etherealengine/common/src/schema.type.module'
-import { useEffect } from 'react'
+import { useMemo } from 'react'
 
 export const useServerInfoFind = () => {
   const serverInfoQuery = useFind(podsPath)
-  const serverInfo = useHookstate([] as typeof serverInfoQuery.data)
-
-  useEffect(() => {
+  const serverInfo = useMemo(() => {
     const allPods: ServerPodInfoType[] = []
     for (const item of serverInfoQuery.data as PodsType[]) {
       allPods.push(...item.pods)
     }
 
-    serverInfo.set([
+    return [
       {
         id: 'all',
         label: 'All',
         pods: allPods
       },
       ...serverInfoQuery.data
-    ])
+    ]
   }, [serverInfoQuery.data])
 
   return {
     ...serverInfoQuery,
-    data: serverInfo.get(NO_PROXY)
+    data: serverInfo
   }
 }

@@ -213,6 +213,7 @@ export const instanceFriendsPath = 'instance-friends'
 
 export const routePath = 'route'
 
+export const helmMainVersionPath = 'helm-main-version'
 export const helmBuilderVersionPath = 'helm-builder-version'
 
 export const coilSettingPath = 'coil-setting'
