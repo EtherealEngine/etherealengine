@@ -82,7 +82,6 @@
     "@types/hark": "1.2.2",
     "@types/node": "18.15.5",
     "@types/react": "18.2.0",
-    "@types/react-router-dom": "5.3.3",
     "@types/three": "0.158.0",
     "css-modules-require-hook": "4.2.3",
     "esbuild": "0.17.12",

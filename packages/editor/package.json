@@ -66,7 +66,6 @@
     "@types/node": "18.15.5",
     "@types/react": "18.2.0",
     "@types/react-dom": "18.2.0",
-    "@types/react-router-dom": "5.3.3",
     "@types/three": "0.158.0",
     "@types/uuid": "^9.0.1",
     "mocha": "10.2.0",

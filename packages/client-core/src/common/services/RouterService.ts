@@ -32,18 +32,22 @@ import { Engine } from '@etherealengine/ecs/src/Engine'
 import { defineState, getMutableState, NO_PROXY, useHookstate } from '@etherealengine/hyperflux'
 import { loadRoute } from '@etherealengine/projects/loadRoute'
 
-type QueryParamsType = { [key: string]: string }
+type SearchParamsType = { [key: string]: string }
 
+/**
+ * `pathname` state resets to null after every navigate so that only react-router maintains the actual url
+ * `searchParams` state is only reset manually. previous search params are added along with the new search params
+ */
 export const RouterState = defineState({
   name: 'RouterState',
   initial: () => ({
-    pathname: location.pathname,
-    queryParams: {} as QueryParamsType
+    pathname: location.pathname as string | null,
+    searchParams: {} as SearchParamsType
   }),
-  navigate: (pathname: string, queryParams: QueryParamsType | { redirectUrl: string } = {}) => {
+  navigate: (pathname: string, searchParams: SearchParamsType | { redirectUrl: string } = {}) => {
     getMutableState(RouterState).set({
       pathname,
-      queryParams
+      searchParams
     })
   }
 })
@@ -56,8 +60,6 @@ export type CustomRoute = {
 
 /**
  * getCustomRoutes used to get the routes created by the user.
- *
- * @return {Promise}
  */
 export const getCustomRoutes = async (): Promise<CustomRoute[]> => {
   const routes = (await Engine.instance.api
@@ -97,25 +99,29 @@ export const useCustomRoutes = () => {
   }, [])
 
   useEffect(() => {
-    if (location.pathname !== routerState.pathname.value) {
-      routerState.pathname.set(location.pathname)
-    }
-  }, [location.pathname])
+    if (!routerState.pathname.value) return
 
-  useEffect(() => {
     if (location.pathname !== routerState.pathname.value) {
-      const urlSearchParams = new URLSearchParams(routerState.queryParams.value)
+      const urlSearchParams = new URLSearchParams(routerState.searchParams.value)
+      if (urlSearchParams.has('redirectUrl')) {
+        urlSearchParams.set('hasRedirected', '1')
+      }
+
       if (urlSearchParams.toString().length > 0) {
         navigate(`${routerState.pathname.value}?${urlSearchParams}`)
       } else {
         navigate(routerState.pathname.value)
       }
     }
-  }, [routerState.pathname, routerState.queryParams])
+
+    routerState.pathname.set(null)
+  }, [routerState.pathname, routerState.searchParams])
 
   useEffect(() => {
-    const redirectUrl = new URLSearchParams(window.location.search).get('redirectUrl')
-    if (redirectUrl) {
+    const urlSearchParams = new URLSearchParams(window.location.search)
+    const redirectUrl = urlSearchParams.get('redirectUrl')
+    const hasRedirected = urlSearchParams.get('hasRedirected')
+    if (redirectUrl && !hasRedirected) {
       RouterState.navigate(redirectUrl)
     }
   }, [])
