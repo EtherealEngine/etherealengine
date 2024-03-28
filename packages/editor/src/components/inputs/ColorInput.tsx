@@ -23,8 +23,8 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
+import SketchPicker from '@uiw/react-color-sketch'
 import React, { useEffect, useState } from 'react'
-import SketchPicker from 'react-color/lib/Sketch'
 import { Color } from 'three'
 
 import Popover from '@mui/material/Popover'
@@ -40,16 +40,6 @@ interface ColorInputProp {
   disabled?: boolean
   isValueAsInteger?: boolean
 }
-
-/**
- * ColorInput used to render the view of component.
- *
- * @param       {object | number} value
- * @param       {function} onChange
- * @param       {boolean} disabled
- * @param       {any} rest
- * @constructor
- */
 
 export function ColorInput({ value, onChange, onRelease, onSelect, disabled, ...rest }: ColorInputProp) {
   const [color, setColor] = useState(value)

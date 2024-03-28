@@ -23,8 +23,8 @@ All portions of the code written by the Ethereal Engine team are Copyright © 20
 Ethereal Engine. All Rights Reserved.
 */
 
+import SketchPicker from '@uiw/react-color-sketch'
 import React, { useEffect, useState } from 'react'
-import { SketchPicker } from 'react-color'
 
 import Button from '@etherealengine/ui/src/primitives/mui/Button'
 import Popover from '@etherealengine/ui/src/primitives/mui/Popover'
