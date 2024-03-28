@@ -175,7 +175,7 @@ const ensurePushStatus = async (context: HookContext<ProjectService>) => {
     )
     context.projectPushIds = context.projectPushIds.concat(pushableAllowedProjects.map((project) => project.id))
 
-    if (githubIdentityProvider) {
+    if (githubIdentityProvider.data.length > 0) {
       const repositoryPaths: string[] = []
       repoAccess.forEach((item) => {
         if (item.hasWriteAccess) {

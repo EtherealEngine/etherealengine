@@ -38,10 +38,11 @@ import { getMutableState, getState, useHookstate } from '@etherealengine/hyperfl
 import Dialog from '@mui/material/Dialog'
 
 import { NotificationService } from '@etherealengine/client-core/src/common/services/NotificationService'
-import { SceneDataType, scenePath } from '@etherealengine/common/src/schema.type.module'
+import { SceneDataType, projectPath, scenePath } from '@etherealengine/common/src/schema.type.module'
 import { useQuery } from '@etherealengine/ecs/src/QueryFunctions'
 import { SceneServices, SceneState } from '@etherealengine/engine/src/scene/Scene'
 import { SceneAssetPendingTagComponent } from '@etherealengine/engine/src/scene/components/SceneAssetPendingTagComponent'
+import { useFind } from '@etherealengine/spatial/src/common/functions/FeathersHooks'
 import CircularProgress from '@etherealengine/ui/src/primitives/mui/CircularProgress'
 import { t } from 'i18next'
 import { inputFileWithAddToScene } from '../functions/assetFunctions'
@@ -373,6 +374,8 @@ const EditorContainer = () => {
   const dialogComponent = useHookstate(getMutableState(DialogState).dialog).value
   const dockPanelRef = useRef<DockLayout>(null)
 
+  const projectQuery = useFind(projectPath, { query: { name: projectName.value, allowed: true, $limit: 1 } })
+
   const panelMenu = tabs.map((tab) => {
     return {
       name: tab.title,
@@ -403,6 +406,13 @@ const EditorContainer = () => {
   })
 
   useHotkeys(`${cmdOrCtrlString}+s`, () => onSaveScene() as any)
+
+  useEffect(() => {
+    if (projectQuery.status && projectQuery.status !== 'pending' && projectQuery.data.length === 0) {
+      NotificationService.dispatchNotify('You do not have access to this project.', { variant: 'error' })
+      onCloseProject()
+    }
+  }, [projectQuery])
 
   useEffect(() => {
     if (!sceneModified.value) return
